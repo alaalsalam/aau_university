@@ -141,16 +141,30 @@ def search(q: str, type: str | None = None):
 @api_endpoint
 def get_home():
     # WHY+WHAT: aggregate home sections in one public call to reduce frontend round-trips and return news/events/colleges/faqs with generation metadata.
-    return {
-        "news": _list_home_section("news", limit=4, filters={"is_published": 1}),
-        "events": _list_home_section("events", limit=4, filters={"is_published": 1}),
-        "colleges": _list_home_section("colleges", limit=6, filters={"is_active": 1}),
-        "faqs": _list_home_section("faqs", limit=6, filters={"is_published": 1}),
-        "meta": {
-            "generated_at": now_ts(),
-            "source": _home_source(),
-        },
-    }
+    try:
+        return {
+            "news": _list_home_section("news", limit=4, filters={"is_published": 1}),
+            "events": _list_home_section("events", limit=4, filters={"is_published": 1}),
+            "colleges": _list_home_section("colleges", limit=6, filters={"is_active": 1}),
+            "faqs": _list_home_section("faqs", limit=6, filters={"is_published": 1}),
+            "meta": {
+                "generated_at": now_ts(),
+                "source": _home_source(),
+            },
+        }
+    except Exception:
+        # WHY+WHAT: log minimal server-side diagnostics for unexpected home aggregation failures while keeping the public response contract stable.
+        frappe.log_error(frappe.get_traceback(), "AAU Home API get_home failure")
+        return {
+            "news": [],
+            "events": [],
+            "colleges": [],
+            "faqs": [],
+            "meta": {
+                "generated_at": now_ts(),
+                "source": _home_source(),
+            },
+        }
 
 
 def _list_home_section(entity_key: str, limit: int, filters: dict | None = None) -> list[dict]:
