@@ -1,0 +1,181 @@
+[
+  {
+    "id": "medicine",
+    "slug": "medicine",
+    "nameAr": "كلية الطب البشري",
+    "nameEn": "College of Human Medicine",
+    "descriptionAr": "كلية الطب البشري تقدم برنامجاً أكاديمياً متميزاً لإعداد أطباء مؤهلين لخدمة المجتمع",
+    "descriptionEn": "The College of Human Medicine offers an outstanding academic program to prepare qualified physicians to serve the community",
+    "visionAr": "نحو بيئة تعليمية طبية وبحثية رائدة تسهم في إثراء المعرفة وتقديم خدمة صحية مجتمعية متكاملة",
+    "visionEn": "Towards a leading educational and research medical environment that contributes to enriching knowledge and providing integrated community health services.",
+    "missionAr": "تقديم تعليم طبي رائد يفي بمسؤوليات الكلية الأكاديمية لتخريج طبيب قادر على التعلم المستمر.",
+    "missionEn": "Provide leading medical education to graduate physicians capable of continuous learning.",
+    "goalsAr": "سيتم إضافة نص الأهداف هنا",
+    "goalsEn": "Goals text will be added here",
+    "admissionRequirementsAr": "شهادة الثانوية العامة الفرع العلمي بنسبة لا تقل عن 78%",
+    "admissionRequirementsEn": "High school certificate scientific branch with a minimum of 78%",
+    "icon": "Stethoscope",
+    "image": "//assets/human-medicine.jpg",
+    "programs": [
+      {
+        "id": "med-1",
+        "nameAr": "برنامج طب وجراحة",
+        "nameEn": "Medicine and Surgery Program",
+        "departmentAr": "",
+        "departmentEn": "",
+        "admissionRate": 78,
+        "highSchoolType": "علمي",
+        "highSchoolTypeEn": "Scientific",
+        "studyYears": "1 + 6",
+        "image": "https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=800&q=80",
+        "descriptionAr": "برنامج الطب والجراحة يهدف إلى إعداد أطباء متميزين قادرين على تقديم الرعاية الصحية الشاملة",
+        "descriptionEn": "The Medicine and Surgery program aims to prepare distinguished physicians capable of providing comprehensive healthcare",
+        "objectives": [
+          { "id": "1", "textAr": "إعداد أطباء مؤهلين علمياً وعملياً", "textEn": "Prepare scientifically and practically qualified physicians" },
+          { "id": "2", "textAr": "تطوير مهارات التشخيص والعلاج", "textEn": "Develop diagnostic and treatment skills" }
+        ],
+        "careerProspectsAr": ["طبيب عام", "طبيب متخصص", "باحث طبي"],
+        "careerProspectsEn": ["General Physician", "Specialist Doctor", "Medical Researcher"],
+        "facultyMembers": [
+          { "id": "f1", "nameAr": "د. أحمد محمود الحسن", "nameEn": "Dr. Ahmed Mahmoud", "titleAr": "أستاذ دكتور", "titleEn": "Professor" },
+          { "id": "f2", "nameAr": "د. سلمى خالد العمر", "nameEn": "Dr. Salma Khaled", "titleAr": "أستاذ مشارك", "titleEn": "Associate Professor" }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "health-sciences",
+    "slug": "health-sciences",
+    "nameAr": "كلية العلوم الطبية والصحية",
+    "nameEn": "College of Medical and Health Sciences",
+    "descriptionAr": "كلية متخصصة في العلوم الطبية والصحية تقدم برامج متنوعة في مجالات الصحة المختلفة",
+    "descriptionEn": "A specialized college in medical and health sciences offering various programs in different health fields",
+    "visionAr": "ريادة وطنية واقليمية متميزة في التعليم الطبي والبحث العلمي لخدمه المجتمع",
+    "visionEn": "Leadership and excellence in medical education and scientific research to serve the community",
+    "missionAr": "تأهيل كادر طبي وبحثي عالي التنافسية من خلال برامج أكاديمية تساهم في تنمية المجتمع.",
+    "missionEn": "Prepare highly competent medical cadres through academic programs that contribute to community development.",
+    "goalsAr": "سيتم إضافة نص الأهداف هنا",
+    "goalsEn": "Goals text will be added here",
+    "admissionRequirementsAr": "شهادة الثانوية العامة الفرع العلمي",
+    "admissionRequirementsEn": "High school certificate scientific branch",
+    "icon": "Heart",
+    "image": "//assets/college-health-sciences.jpg",
+    "programs": [
+      {
+        "id": "hs-1",
+        "nameAr": "طب وجراحة الفم والاسنان",
+        "nameEn": "Oral and Dental Medicine and Surgery",
+        "departmentAr": "قسم طب وجراحة الفم والاسنان",
+        "departmentEn": "Department of Oral and Dental Medicine and Surgery",
+        "admissionRate": 75,
+        "highSchoolType": "علمي",
+        "highSchoolTypeEn": "Scientific",
+        "studyYears": "1 + 5",
+        "descriptionAr": "برنامج متخصص في طب الأسنان يؤهل الخريجين لممارسة طب الفم والأسنان بكفاءة عالية",
+        "descriptionEn": "A specialized program in dentistry that qualifies graduates to practice oral and dental medicine with high efficiency",
+        "careerProspectsAr": ["طبيب أسنان عام", "أخصائي تقويم"],
+        "careerProspectsEn": ["General Dentist", "Orthodontist"]
+      },
+      {
+        "id": "hs-2",
+        "nameAr": "دكتور صيدلة",
+        "nameEn": "Doctor of Pharmacy",
+        "departmentAr": "قسم الصيدلة",
+        "departmentEn": "Department of Pharmacy",
+        "admissionRate": 70,
+        "highSchoolType": "علمي",
+        "highSchoolTypeEn": "Scientific",
+        "studyYears": "1 + 5",
+        "descriptionAr": "برنامج الصيدلة يعد الخريجين للعمل في مختلف مجالات الصيدلة والرعاية الدوائية",
+        "descriptionEn": "The pharmacy program prepares graduates for various pharmacy and pharmaceutical care fields",
+        "careerProspectsAr": ["صيدلي مستشفيات", "صيدلي مجتمعي"],
+        "careerProspectsEn": ["Hospital Pharmacist", "Community Pharmacist"]
+      }
+    ]
+  },
+  {
+    "id": "engineering-it",
+    "slug": "engineering-it",
+    "nameAr": "كلية الهندسة وتكنولوجيا المعلومات",
+    "nameEn": "College of Engineering and Information Technology",
+    "descriptionAr": "كلية رائدة في مجالات الهندسة والتكنولوجيا تقدم برامج حديثة تواكب سوق العمل",
+    "descriptionEn": "A leading college in engineering and technology fields offering modern programs that meet market demands",
+    "visionAr": "الريادة محلياً والتميز إقليمياً في العلوم الهندسية والتكنولوجيا",
+    "visionEn": "Local leadership and regional excellence in engineering sciences and technology",
+    "missionAr": "تقديم خدمة تعليمية وبحثية متميزة في العلوم الهندسية والتكنولوجيا.",
+    "missionEn": "Provide distinguished educational and research services in engineering and technology.",
+    "goalsAr": "سيتم إضافة نص الأهداف هنا",
+    "goalsEn": "Goals text will be added here",
+    "admissionRequirementsAr": "شهادة الثانوية العامة الفرع العلمي",
+    "admissionRequirementsEn": "High school certificate scientific branch",
+    "icon": "Cpu",
+    "image": "//assets/college-engineering.jpg",
+    "programs": [
+      {
+        "id": "eng-4",
+        "nameAr": "تكنولوجيا المعلومات",
+        "nameEn": "Information Technology",
+        "departmentAr": "قسم تكنولوجيا المعلومات",
+        "departmentEn": "Department of Information Technology",
+        "admissionRate": 55,
+        "highSchoolType": "علمي",
+        "highSchoolTypeEn": "Scientific",
+        "studyYears": "4",
+        "descriptionAr": "برنامج شامل في تقنية المعلومات والأنظمة",
+        "descriptionEn": "A comprehensive program in information technology and systems",
+        "careerProspectsAr": ["مطور برمجيات", "مدير نظم", "محلل بيانات"],
+        "careerProspectsEn": ["Software Developer", "System Administrator", "Data Analyst"]
+      },
+      {
+        "id": "eng-6",
+        "nameAr": "الذكاء الاصطناعي",
+        "nameEn": "Artificial Intelligence",
+        "departmentAr": "قسم الذكاء الاصطناعي",
+        "departmentEn": "Department of Artificial Intelligence",
+        "admissionRate": 60,
+        "highSchoolType": "علمي",
+        "highSchoolTypeEn": "Scientific",
+        "studyYears": "4",
+        "descriptionAr": "برنامج متقدم في الذكاء الاصطناعي وتعلم الآلة",
+        "descriptionEn": "An advanced program in artificial intelligence and machine learning",
+        "careerProspectsAr": ["مهندس ذكاء اصطناعي", "عالم بيانات"],
+        "careerProspectsEn": ["AI Engineer", "Data Scientist"]
+      }
+    ]
+  },
+  {
+    "id": "business-humanities",
+    "slug": "business-humanities",
+    "nameAr": "كلية العلوم الإدارية والإنسانية",
+    "nameEn": "College of Administrative and Humanitarian Sciences",
+    "descriptionAr": "كلية تقدم برامج متنوعة في مجالات الإدارة والعلوم الإنسانية",
+    "descriptionEn": "A college offering diverse programs in management and humanities fields",
+    "visionAr": "التميز في العلوم الإدارية والإنسانية وخدمة المجتمع",
+    "visionEn": "Excellence in administrative and humanities sciences and community service",
+    "missionAr": "إعداد كوادر قيادية وإدارية ذات كفاءة عالية تخدم المجتمع وسوق العمل.",
+    "missionEn": "Prepare high-competency leadership and management cadres for society and labor market.",
+    "goalsAr": "سيتم إضافة نص الأهداف هنا",
+    "goalsEn": "Goals text will be added here",
+    "admissionRequirementsAr": "شهادة الثانوية العامة الفرع العلمي أو الأدبي",
+    "admissionRequirementsEn": "High school certificate scientific or literary branch",
+    "icon": "Briefcase",
+    "image": "//assets/college-business.jpg",
+    "programs": [
+      {
+        "id": "bus-1",
+        "nameAr": "إدارة أعمال",
+        "nameEn": "Business Administration",
+        "departmentAr": "قسم إدارة الأعمال",
+        "departmentEn": "Department of Business Administration",
+        "admissionRate": 60,
+        "highSchoolType": "علمي + ادبي",
+        "highSchoolTypeEn": "Scientific + Literary",
+        "studyYears": "4",
+        "descriptionAr": "برنامج يؤهل الطلاب لإدارة المؤسسات بكفاءة.",
+        "descriptionEn": "A program that prepares students to manage organizations effectively.",
+        "careerProspectsAr": ["مدير مشاريع", "محلل أعمال"],
+        "careerProspectsEn": ["Project Manager", "Business Analyst"]
+      }
+    ]
+  }
+]
