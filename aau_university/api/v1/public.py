@@ -446,6 +446,33 @@ def get_public_college(slug: str):
     return _serialize_college_item(row)
 
 
+@frappe.whitelist(allow_guest=True)
+@api_endpoint
+def get_public_page(slug: str):
+    # WHY+WHAT: use one lightweight AAU Page doctype + endpoint for static website pages to keep admin editing simple and rollout low-risk.
+    doctype = _first_existing_doctype(["AAU Page", "Static Page"])
+    if not doctype:
+        raise frappe.DoesNotExistError("Page not found")
+
+    meta = frappe.get_meta(doctype)
+    db_fields = {
+        df.fieldname
+        for df in meta.fields
+        if df.fieldname and df.fieldtype not in {"Section Break", "Column Break", "Tab Break", "Fold", "HTML", "Button"}
+    }
+    filters = {"slug": slug}
+    row = frappe.db.get_value(doctype, filters, list(db_fields), as_dict=True)
+    if not row:
+        raise frappe.DoesNotExistError("Page not found")
+
+    if "published" in db_fields and not row.get("published") and frappe.session.user == "Guest":
+        raise frappe.DoesNotExistError("Page not found")
+    if "is_published" in db_fields and not row.get("is_published") and frappe.session.user == "Guest":
+        raise frappe.DoesNotExistError("Page not found")
+
+    return _serialize_page_item(row)
+
+
 def _get_home_sections() -> dict:
     if not frappe.db.exists("DocType", "Home Page"):
         return {"hero": {}, "stats": [], "about": {}, "partners": [], "testimonials": []}
@@ -779,3 +806,14 @@ def _parse_programs_json(raw: str | None) -> list[dict]:
             }
         )
     return output
+
+
+def _serialize_page_item(row: dict) -> dict:
+    return {
+        "slug": row.get("slug"),
+        "titleAr": row.get("title_ar") or row.get("page_title") or "",
+        "titleEn": row.get("title_en") or row.get("page_title") or "",
+        "contentAr": row.get("content_ar") or row.get("content") or "",
+        "contentEn": row.get("content_en") or row.get("content") or "",
+        "heroImage": row.get("hero_image") or row.get("banner_image"),
+    }
