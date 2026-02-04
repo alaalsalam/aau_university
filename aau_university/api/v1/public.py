@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import annotations
 
+import json
+
 import frappe
 
 from .registry import ADMIN_ROLES, SEARCH_TYPES
@@ -142,7 +144,13 @@ def search(q: str, type: str | None = None):
 def get_home():
     # WHY+WHAT: aggregate home sections in one public call to reduce frontend round-trips and return news/events/colleges/faqs with generation metadata.
     try:
+        home_sections = _get_home_sections()
         return {
+            "hero": home_sections["hero"],
+            "stats": home_sections["stats"],
+            "about": home_sections["about"],
+            "partners": home_sections["partners"],
+            "testimonials": home_sections["testimonials"],
             "news": _list_home_section("news", limit=4, filters={"is_published": 1}),
             "events": _list_home_section("events", limit=4, filters={"is_published": 1}),
             "colleges": _list_home_section("colleges", limit=6, filters={"is_active": 1}),
@@ -156,6 +164,11 @@ def get_home():
         # WHY+WHAT: log minimal server-side diagnostics for unexpected home aggregation failures while keeping the public response contract stable.
         frappe.log_error(frappe.get_traceback(), "AAU Home API get_home failure")
         return {
+            "hero": {},
+            "stats": [],
+            "about": {},
+            "partners": [],
+            "testimonials": [],
             "news": [],
             "events": [],
             "colleges": [],
@@ -165,6 +178,92 @@ def get_home():
                 "source": _home_source(),
             },
         }
+
+
+def _get_home_sections() -> dict:
+    if not frappe.db.exists("DocType", "Home Page"):
+        return {"hero": {}, "stats": [], "about": {}, "partners": [], "testimonials": []}
+
+    meta = frappe.get_meta("Home Page")
+    fields = [
+        "hero_title",
+        "hero_subtitle",
+        "hero_description",
+        "hero_image",
+        "hero_cta_text",
+        "hero_cta_link",
+        "about_title",
+        "about_description",
+        "students_count",
+        "programs_count",
+        "graduates_count",
+    ]
+    if meta.get_field("home_sections_json"):
+        fields.append("home_sections_json")
+    rows = frappe.get_all(
+        "Home Page",
+        fields=fields,
+        filters={"is_published": 1} if meta.get_field("is_published") else None,
+        order_by="display_order asc, modified desc",
+        limit_page_length=1,
+        ignore_permissions=True,
+    )
+    if not rows:
+        return {"hero": {}, "stats": [], "about": {}, "partners": [], "testimonials": []}
+
+    row = rows[0]
+    extra = _parse_home_sections_json(row.get("home_sections_json"))
+    hero = {
+        "badgeAr": extra.get("hero", {}).get("badgeAr", "مرحباً بكم في جامعة الجيل الجديد"),
+        "badgeEn": extra.get("hero", {}).get("badgeEn", "Welcome to AJ JEEL ALJADEED UNIVERSITY"),
+        "titlePrimaryAr": extra.get("hero", {}).get("titlePrimaryAr", row.get("hero_title") or "جامعة الجيل الجديد"),
+        "titlePrimaryEn": extra.get("hero", {}).get("titlePrimaryEn", row.get("hero_title") or "AJ JEEL ALJADEED"),
+        "titleSecondaryAr": extra.get("hero", {}).get("titleSecondaryAr", "الجامعة"),
+        "titleSecondaryEn": extra.get("hero", {}).get("titleSecondaryEn", "UNIVERSITY"),
+        "descriptionAr": extra.get("hero", {}).get("descriptionAr", row.get("hero_description") or row.get("hero_subtitle") or ""),
+        "descriptionEn": extra.get("hero", {}).get("descriptionEn", row.get("hero_description") or row.get("hero_subtitle") or ""),
+        "applyTextAr": extra.get("hero", {}).get("applyTextAr", row.get("hero_cta_text") or "التقديم الآن"),
+        "applyTextEn": extra.get("hero", {}).get("applyTextEn", row.get("hero_cta_text") or "Apply Now"),
+        "applyLink": extra.get("hero", {}).get("applyLink", row.get("hero_cta_link") or "/admission"),
+        "exploreTextAr": extra.get("hero", {}).get("exploreTextAr", "استكشف الكليات"),
+        "exploreTextEn": extra.get("hero", {}).get("exploreTextEn", "Explore Colleges"),
+        "exploreLink": extra.get("hero", {}).get("exploreLink", "/colleges"),
+        "discoverTextAr": extra.get("hero", {}).get("discoverTextAr", "اكتشف المزيد"),
+        "discoverTextEn": extra.get("hero", {}).get("discoverTextEn", "Discover More"),
+        "image": extra.get("hero", {}).get("image", row.get("hero_image")),
+    }
+
+    colleges_count = frappe.db.count("Colleges") if frappe.db.exists("DocType", "Colleges") else 0
+    stats = extra.get("stats", []) if isinstance(extra.get("stats"), list) else []
+    if not stats:
+        stats = [
+            {"key": "students", "number": str(row.get("students_count") or 0), "labelAr": "طالب وطالبة", "labelEn": "Students", "icon": "GraduationCap"},
+            {"key": "faculty", "number": "500+", "labelAr": "عضو هيئة تدريس", "labelEn": "Faculty Members", "icon": "Users"},
+            {"key": "programs", "number": str(row.get("programs_count") or 0), "labelAr": "برنامج أكاديمي", "labelEn": "Academic Programs", "icon": "BookOpen"},
+            {"key": "colleges", "number": str(colleges_count or 0), "labelAr": "كليات متخصصة", "labelEn": "Specialized Colleges", "icon": "Award"},
+        ]
+
+    about = extra.get("about", {}) if isinstance(extra.get("about"), dict) else {}
+    about.setdefault("titleAr", row.get("about_title") or "عن الجامعة")
+    about.setdefault("titleEn", row.get("about_title") or "About the University")
+    about.setdefault("descriptionAr", row.get("about_description") or "")
+    about.setdefault("descriptionEn", row.get("about_description") or "")
+
+    partners = extra.get("partners", []) if isinstance(extra.get("partners"), list) else []
+    testimonials = extra.get("testimonials", []) if isinstance(extra.get("testimonials"), list) else []
+
+    return {"hero": hero, "stats": stats, "about": about, "partners": partners, "testimonials": testimonials}
+
+
+def _parse_home_sections_json(raw: str | None) -> dict:
+    if not raw:
+        return {}
+    try:
+        parsed = json.loads(raw)
+    except Exception:
+        frappe.logger("aau_university").warning("[AAU API] Invalid home_sections_json payload on Home Page")
+        return {}
+    return parsed if isinstance(parsed, dict) else {}
 
 
 def _list_home_section(entity_key: str, limit: int, filters: dict | None = None) -> list[dict]:
