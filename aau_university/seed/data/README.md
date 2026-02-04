@@ -8,4 +8,6 @@
 
 ## What
 - `home_content.json` is extracted from frontend mock sources in `AAU-16.24/services/data`.
-- It contains four top-level keys aligned with `/api/aau/home`: `news`, `events`, `colleges`, `faqs`.
+- `news.json` is extracted from `AAU-16.24/services/data/news.service.mock.ts` for news list/detail seeding.
+- `home_content.json` keeps the `/api/aau/home` contract keys: `news`, `events`, `colleges`, `faqs`.
+- `news.json` is consumed by `aau_university.utils.seed_news.seed_news` for idempotent upserts by `slug`.
