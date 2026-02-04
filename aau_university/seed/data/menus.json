@@ -1,0 +1,31 @@
+{
+  "main": [
+    { "labelAr": "الرئيسية", "labelEn": "Home", "url": "/", "group": "main", "order": 1 },
+    { "labelAr": "عن الجامعة", "labelEn": "About", "url": "/about", "group": "main", "order": 2 },
+    { "labelAr": "كلياتنا", "labelEn": "Colleges", "url": "/colleges", "group": "main", "order": 3 },
+    { "labelAr": "الأخبار", "labelEn": "News", "url": "/news", "group": "main", "order": 4 },
+    { "labelAr": "القبول", "labelEn": "Admission", "url": "/admission", "group": "main", "order": 5 },
+    { "labelAr": "تواصل معنا", "labelEn": "Contact", "url": "/contact", "group": "main", "order": 6 },
+    { "labelAr": "فريق العمل", "labelEn": "Team", "url": "/team", "group": "more", "order": 7 },
+    { "labelAr": "الكادر التعليمي", "labelEn": "Faculty", "url": "/faculty", "group": "more", "order": 8 },
+    { "labelAr": "المراكز", "labelEn": "Centers", "url": "/centers", "group": "more", "order": 9 },
+    { "labelAr": "الشركاء", "labelEn": "Partners", "url": "/partners", "group": "more", "order": 10 },
+    { "labelAr": "العروض", "labelEn": "Offers", "url": "/offers", "group": "more", "order": 11 },
+    { "labelAr": "الحياة الجامعية", "labelEn": "Campus Life", "url": "/campus-life", "group": "more", "order": 12 },
+    { "labelAr": "المشاريع", "labelEn": "Projects", "url": "/projects-studio", "group": "more", "order": 13 },
+    { "labelAr": "الفعاليات", "labelEn": "Events", "url": "/events", "group": "more", "order": 14 },
+    { "labelAr": "المدونة", "labelEn": "Blog", "url": "/blog", "group": "more", "order": 15 }
+  ],
+  "footer": [
+    { "labelAr": "الكليات", "labelEn": "Colleges", "url": "/colleges", "group": "quick", "order": 1 },
+    { "labelAr": "القبول", "labelEn": "Admission", "url": "/admission", "group": "quick", "order": 2 },
+    { "labelAr": "الأخبار", "labelEn": "News", "url": "/news", "group": "quick", "order": 3 },
+    { "labelAr": "تواصل معنا", "labelEn": "Contact", "url": "/contact", "group": "quick", "order": 4 }
+  ],
+  "social": [
+    { "labelAr": "فيسبوك", "labelEn": "Facebook", "url": "https://facebook.com/ngu.edu.iq", "group": "social", "openInNewTab": true, "order": 1 },
+    { "labelAr": "تويتر", "labelEn": "Twitter", "url": "https://twitter.com/ngu_edu_iq", "group": "social", "openInNewTab": true, "order": 2 },
+    { "labelAr": "إنستغرام", "labelEn": "Instagram", "url": "https://instagram.com/ngu.edu.iq", "group": "social", "openInNewTab": true, "order": 3 },
+    { "labelAr": "لينكدإن", "labelEn": "LinkedIn", "url": "https://linkedin.com/school/ngu-edu-iq", "group": "social", "openInNewTab": true, "order": 4 }
+  ]
+}
