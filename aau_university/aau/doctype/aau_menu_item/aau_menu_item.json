@@ -1,0 +1,70 @@
+{
+ "actions": [],
+ "creation": "2026-02-04 23:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "editable_grid": 1,
+ "field_order": [
+  "label_ar",
+  "label_en",
+  "url",
+  "group",
+  "open_in_new_tab",
+  "order"
+ ],
+ "fields": [
+  {
+   "fieldname": "label_ar",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Label (AR)",
+   "reqd": 1
+  },
+  {
+   "fieldname": "label_en",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Label (EN)",
+   "reqd": 1
+  },
+  {
+   "fieldname": "url",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "URL",
+   "reqd": 1
+  },
+  {
+   "fieldname": "group",
+   "fieldtype": "Data",
+   "label": "Group"
+  },
+  {
+   "default": "0",
+   "fieldname": "open_in_new_tab",
+   "fieldtype": "Check",
+   "label": "Open In New Tab"
+  },
+  {
+   "default": "0",
+   "fieldname": "order",
+   "fieldtype": "Int",
+   "label": "Order"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-02-04 23:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "AAU",
+ "name": "AAU Menu Item",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

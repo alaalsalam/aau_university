@@ -473,6 +473,29 @@ def get_public_page(slug: str):
     return _serialize_page_item(row)
 
 
+@frappe.whitelist(allow_guest=True)
+@api_endpoint
+def get_public_menu(key: str):
+    # WHY+WHAT: expose all navigation/footer links via one public menu endpoint keyed by menu type for low-risk dynamic header/footer management.
+    doctype = _first_existing_doctype(["AAU Menu"])
+    if not doctype:
+        raise frappe.DoesNotExistError("Menu not found")
+
+    try:
+        docname = frappe.db.get_value(doctype, {"key": key}, "name")
+        if not docname:
+            raise frappe.DoesNotExistError("Menu not found")
+        doc = frappe.get_doc(doctype, docname)
+        if not doc.get("published") and frappe.session.user == "Guest":
+            raise frappe.DoesNotExistError("Menu not found")
+        return _serialize_menu(doc)
+    except frappe.DoesNotExistError:
+        raise
+    except Exception:
+        frappe.log_error(frappe.get_traceback(), f"AAU Menu API get_public_menu failure ({key})")
+        raise
+
+
 def _get_home_sections() -> dict:
     if not frappe.db.exists("DocType", "Home Page"):
         return {"hero": {}, "stats": [], "about": {}, "partners": [], "testimonials": []}
@@ -817,3 +840,20 @@ def _serialize_page_item(row: dict) -> dict:
         "contentEn": row.get("content_en") or row.get("content") or "",
         "heroImage": row.get("hero_image") or row.get("banner_image"),
     }
+
+
+def _serialize_menu(doc) -> dict:
+    items = []
+    for item in doc.get("items") or []:
+        items.append(
+            {
+                "labelAr": item.get("label_ar") or "",
+                "labelEn": item.get("label_en") or "",
+                "url": item.get("url") or "",
+                "group": item.get("group") or "",
+                "openInNewTab": bool(item.get("open_in_new_tab")),
+                "order": int(item.get("order") or item.get("idx") or 0),
+            }
+        )
+    items.sort(key=lambda row: row.get("order", 0))
+    return {"key": doc.get("key"), "items": items}
