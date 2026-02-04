@@ -1,0 +1,29 @@
+[
+  {
+    "slug": "about",
+    "titleAr": "عن جامعة الجيل الجديد",
+    "titleEn": "About AJ JEEL ALJADEED UNIVERSITY",
+    "contentAr": "جامعة الجيل الجديد تأسست سنة 2022م. وتقع وسط العاصمة صنعاء في شارع الرقاص من جهة الدائري ويمكن الوصول إليها أيضا من شارع الستين. وتضم الجامعة حاليا أربع كليات هي كلية الطب البشري وكلية العلوم الطبية والصحية وكلية الهندسة وتكنولوجيا المعلومات وكلية العلوم الإدارية والإنسانية.\n\nكلمة رئيس الجامعة:\nبسم الله الرحمن الرحيم. الحمد لله رب العالمين، والصلاة والسلام على خاتم الأنبياء والمرسلين. يسرني أن أرحب بأبنائنا الطلاب والطالبات الذين يتطلعون للانضمام إلى أسرة الجامعة والالتحاق بأحد برامجها الأكاديمية.",
+    "contentEn": "Al Jeel Al Jadeed University was established in 2022 and is located in the center of Sana'a on Al-Raqqas Street near the Ring Road. It can also be accessed from Sixty Street. The university currently includes four colleges: Human Medicine, Medical and Health Sciences, Engineering and Information Technology, and Administrative and Human Sciences.\n\nPresident Message:\nIn the name of Allah, the Most Gracious, the Most Merciful. Praise be to Allah, Lord of the Worlds. I am pleased to welcome our students who are looking forward to joining the university family and enrolling in one of its academic programs.",
+    "heroImage": "//assets/about-university.jpg",
+    "published": 1
+  },
+  {
+    "slug": "admission",
+    "titleAr": "القبول والتسجيل",
+    "titleEn": "Admission & Registration",
+    "contentAr": "ابدأ رحلتك الأكاديمية معنا من خلال التقديم عبر نموذج القبول.\n\nخطوات التقديم الأساسية:\n1) تعبئة المعلومات الشخصية\n2) اختيار الكلية والبرنامج\n3) رفع الوثائق المطلوبة\n4) مراجعة الطلب وإرساله",
+    "contentEn": "Start your academic journey with us by applying through the admission form.\n\nMain application steps:\n1) Fill personal information\n2) Select college and program\n3) Upload required documents\n4) Review and submit",
+    "heroImage": null,
+    "published": 1
+  },
+  {
+    "slug": "contact",
+    "titleAr": "تواصل معنا",
+    "titleEn": "Contact Us",
+    "contentAr": "نحن هنا للإجابة على استفساراتكم ومساعدتكم.\n\nالهاتف: +964 XXX XXX XXXX\nالبريد الإلكتروني: info@ngu.edu.iq\nالعنوان: صنعاء، اليمن",
+    "contentEn": "We are here to answer your questions and assist you.\n\nPhone: +964 XXX XXX XXXX\nEmail: info@ngu.edu.iq\nAddress: Sanaa, Yemen",
+    "heroImage": null,
+    "published": 1
+  }
+]
