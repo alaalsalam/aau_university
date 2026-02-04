@@ -267,6 +267,98 @@ def get_public_news(slug: str):
     return _serialize_news_item(row)
 
 
+@frappe.whitelist(allow_guest=True)
+@api_endpoint
+def list_public_events(limit: int | None = None, page: int | None = None):
+    # WHY+WHAT: keep list+detail public endpoints separate so event listing stays lean and details are fetched only when needed for low-risk scaling.
+    doctype = _first_existing_doctype(["Events", "Event"])
+    if not doctype:
+        return {"items": [], "pagination": {"page": 1, "limit": 10, "total": 0, "has_more": False}}
+
+    form_dict = getattr(frappe.local, "form_dict", {}) or {}
+    parsed_limit = max(1, min(int(limit or form_dict.get("limit") or 10), 50))
+    parsed_page = max(1, int(page or form_dict.get("page") or 1))
+    offset = (parsed_page - 1) * parsed_limit
+
+    meta = frappe.get_meta(doctype)
+    db_fields = {
+        df.fieldname
+        for df in meta.fields
+        if df.fieldname and df.fieldtype not in {"Section Break", "Column Break", "Tab Break", "Fold", "HTML", "Button"}
+    }
+    filters = {"is_published": 1} if "is_published" in db_fields else {}
+    total = frappe.db.count(doctype, filters=filters)
+    sort_parts = []
+    if "display_order" in db_fields:
+        sort_parts.append("display_order asc")
+    if "date" in db_fields:
+        sort_parts.append("date desc")
+    if "event_date" in db_fields:
+        sort_parts.append("event_date desc")
+    sort_parts.append("modified desc")
+    order_by = ", ".join(sort_parts)
+
+    rows = frappe.get_all(
+        doctype,
+        fields=list(db_fields),
+        filters=filters,
+        order_by=order_by,
+        limit_start=offset,
+        limit_page_length=parsed_limit,
+        ignore_permissions=True,
+    )
+    items = [_serialize_event_item(row) for row in rows]
+    return {
+        "items": items,
+        "pagination": {
+            "page": parsed_page,
+            "limit": parsed_limit,
+            "total": total,
+            "has_more": offset + len(items) < total,
+        },
+    }
+
+
+@frappe.whitelist(allow_guest=True)
+@api_endpoint
+def get_public_event(slug: str):
+    doctype = _first_existing_doctype(["Events", "Event"])
+    if not doctype:
+        raise frappe.DoesNotExistError("Event not found")
+
+    meta = frappe.get_meta(doctype)
+    db_fields = {
+        df.fieldname
+        for df in meta.fields
+        if df.fieldname and df.fieldtype not in {"Section Break", "Column Break", "Tab Break", "Fold", "HTML", "Button"}
+    }
+    filters = {"slug": slug} if "slug" in db_fields else {"name": slug}
+    if "is_published" in db_fields:
+        filters["is_published"] = 1
+
+    row = frappe.db.get_value(doctype, filters, list(db_fields), as_dict=True)
+    if not row:
+        # WHY+WHAT: support existing rows missing slug by matching the computed slug from title/event_title so rollout is backward-compatible.
+        fallback_filters = {"is_published": 1} if "is_published" in db_fields else {}
+        candidates = frappe.get_all(
+            doctype,
+            fields=list(db_fields),
+            filters=fallback_filters,
+            ignore_permissions=True,
+            limit_page_length=200,
+            order_by="modified desc",
+        )
+        for candidate in candidates:
+            candidate_slug = _serialize_event_item(candidate).get("slug")
+            if candidate_slug == slug or candidate.get("name") == slug:
+                row = candidate
+                break
+    if not row:
+        raise frappe.DoesNotExistError("Event not found")
+
+    return _serialize_event_item(row)
+
+
 def _get_home_sections() -> dict:
     if not frappe.db.exists("DocType", "Home Page"):
         return {"hero": {}, "stats": [], "about": {}, "partners": [], "testimonials": []}
@@ -478,3 +570,54 @@ def _slugify_news_value(value: str | None) -> str:
     slug = re.sub(r"[^\w\s-]", "", str(value).strip().lower())
     slug = re.sub(r"[-\s]+", "-", slug)
     return slug.strip("-")
+
+
+def _serialize_event_item(row: dict) -> dict:
+    slug = row.get("slug") or _slugify_news_value(
+        row.get("title_en")
+        or row.get("title_ar")
+        or row.get("event_title")
+        or row.get("title")
+    )
+    title_ar = row.get("title_ar") or row.get("title") or row.get("event_title")
+    title_en = row.get("title_en") or row.get("title") or row.get("event_title")
+    description_ar = row.get("description_ar") or row.get("description") or row.get("content") or ""
+    description_en = row.get("description_en") or row.get("description") or row.get("content") or ""
+    content_ar = row.get("content_ar") or row.get("content") or description_ar
+    content_en = row.get("content_en") or row.get("content") or description_en
+    date = row.get("date") or row.get("event_date")
+    end_date = row.get("end_date")
+    location_ar = row.get("location_ar") or row.get("location")
+    location_en = row.get("location_en") or row.get("location")
+    organizer_ar = row.get("organizer_ar") or row.get("organizer")
+    organizer_en = row.get("organizer_en") or row.get("organizer")
+    raw_tags = row.get("tags")
+    if isinstance(raw_tags, str):
+        tags = [part.strip() for part in raw_tags.split(",") if part.strip()]
+    elif isinstance(raw_tags, (list, tuple)):
+        tags = [str(part).strip() for part in raw_tags if str(part).strip()]
+    else:
+        tags = []
+
+    return {
+        "id": row.get("id") or row.get("name") or slug,
+        "slug": slug,
+        "titleAr": title_ar,
+        "titleEn": title_en,
+        "descriptionAr": description_ar,
+        "descriptionEn": description_en,
+        "contentAr": content_ar,
+        "contentEn": content_en,
+        "date": str(date)[:10] if date else None,
+        "endDate": str(end_date)[:10] if end_date else None,
+        "locationAr": location_ar,
+        "locationEn": location_en,
+        "organizerAr": organizer_ar,
+        "organizerEn": organizer_en,
+        "category": row.get("category") or "other",
+        "status": row.get("status") or "upcoming",
+        "registrationRequired": bool(row.get("registration_required")),
+        "registrationLink": row.get("registration_link"),
+        "image": row.get("image"),
+        "tags": tags,
+    }

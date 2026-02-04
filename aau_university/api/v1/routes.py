@@ -163,6 +163,8 @@ def ensure_routes():
         Rule("/aau/home", methods=["GET"], endpoint=public.get_home),
         Rule("/aau/news", methods=["GET"], endpoint=public.list_public_news),
         Rule("/aau/news/<path:slug>", methods=["GET"], endpoint=public.get_public_news),
+        Rule("/aau/events", methods=["GET"], endpoint=public.list_public_events),
+        Rule("/aau/events/<path:slug>", methods=["GET"], endpoint=public.get_public_event),
         # Users & roles
         Rule("/users", methods=["GET"], endpoint=access.list_users),
         Rule("/users", methods=["POST"], endpoint=access.create_user),
