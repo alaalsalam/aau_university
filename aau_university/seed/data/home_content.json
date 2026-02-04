@@ -12,7 +12,11 @@
       "image": "https://images.unsplash.com/photo-1562774053-701939374585?w=800",
       "date": "2025-01-15",
       "views": 245,
-      "tags": ["infrastructure", "education", "facilities"]
+      "tags": [
+        "infrastructure",
+        "education",
+        "facilities"
+      ]
     },
     {
       "id": "2",
@@ -26,7 +30,11 @@
       "image": "https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=800",
       "date": "2025-01-10",
       "views": 189,
-      "tags": ["research", "award", "excellence"]
+      "tags": [
+        "research",
+        "award",
+        "excellence"
+      ]
     },
     {
       "id": "3",
@@ -40,7 +48,11 @@
       "image": "https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=800",
       "date": "2025-01-05",
       "views": 312,
-      "tags": ["partnership", "international", "collaboration"]
+      "tags": [
+        "partnership",
+        "international",
+        "collaboration"
+      ]
     },
     {
       "id": "4",
@@ -54,7 +66,11 @@
       "image": "https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=800",
       "date": "2024-12-20",
       "views": 428,
-      "tags": ["education", "technology", "library"]
+      "tags": [
+        "education",
+        "technology",
+        "library"
+      ]
     }
   ],
   "events": [
@@ -255,5 +271,121 @@
       "answerEn": "Yes, you can submit a transfer request after completing at least one semester. You must meet the transfer requirements and obtain approval from both colleges involved.",
       "category": "academic"
     }
-  ]
+  ],
+  "hero": {
+    "badgeAr": "مرحباً بكم في جامعة الجيل الجديد",
+    "badgeEn": "Welcome to AJ JEEL ALJADEED UNIVERSITY",
+    "titlePrimaryAr": "جامعة الجيل الجديد",
+    "titlePrimaryEn": "AJ JEEL ALJADEED",
+    "titleSecondaryAr": "الجامعة",
+    "titleSecondaryEn": "UNIVERSITY",
+    "descriptionAr": "مؤسسة تعليمية رائدة تهدف إلى إعداد خريجين متخصصين ومؤهلين علميًا وتقنيًا لخدمة المجتمع",
+    "descriptionEn": "A leading educational institution aiming to prepare specialized and scientifically qualified graduates to serve the community",
+    "applyTextAr": "التقديم الآن",
+    "applyTextEn": "Apply Now",
+    "applyLink": "/admission",
+    "exploreTextAr": "استكشف الكليات",
+    "exploreTextEn": "Explore Colleges",
+    "exploreLink": "/colleges",
+    "discoverTextAr": "اكتشف المزيد",
+    "discoverTextEn": "Discover More",
+    "image": "/assets/ngu-building.jpg"
+  },
+  "stats": [
+    {
+      "key": "students",
+      "number": "10,000+",
+      "labelAr": "طالب وطالبة",
+      "labelEn": "Students",
+      "icon": "GraduationCap"
+    },
+    {
+      "key": "faculty",
+      "number": "500+",
+      "labelAr": "عضو هيئة تدريس",
+      "labelEn": "Faculty Members",
+      "icon": "Users"
+    },
+    {
+      "key": "programs",
+      "number": "50+",
+      "labelAr": "برنامج أكاديمي",
+      "labelEn": "Academic Programs",
+      "icon": "BookOpen"
+    },
+    {
+      "key": "colleges",
+      "number": "4",
+      "labelAr": "كليات متخصصة",
+      "labelEn": "Specialized Colleges",
+      "icon": "Award"
+    }
+  ],
+  "about": {
+    "titleAr": "عن الجامعة",
+    "titleEn": "About the University",
+    "descriptionAr": "جامعة الجيل الجديد تأسست سنة 2022م.وتقع وسط العاصمة صنعاء في شارع الرقاص من جهة الدائري ويمكن الوصول اليهاء ايضا من شارع الستين. وتضم الجامعة حاليا اربع كليات هي كلية الطب البشري وكلية العلوم الطبية والصحيه وكليه الهندسة وتكنولوجيا المعلومات وكلية العلوم الاداريه والانسانية",
+    "descriptionEn": "Al Jeel Al Jadeed University was established in 2022 and is located in the center of the capital, Sana’a, on Al-Raqqas Street near the Ring Road. It can also be accessed from Sixty Street. The university branch is also located on Al-Maqaleh Street. The university currently includes four colleges: the College of Human Medicine, the College of Medical and Health Sciences, the College of Engineering and Information Technology, and the College of Administrative and Human Sciences.",
+    "image": "/assets/students-studying.jpg",
+    "values": [
+      {
+        "key": "vision",
+        "icon": "Eye",
+        "gradient": "from-blue-500 to-cyan-500",
+        "titleAr": "الرؤية",
+        "titleEn": "Vision",
+        "contentAr": "مؤسسة تعليميه رائدة وطنياومتميزة اقليميا فعالة في بناء مجتمع المعرفة",
+        "contentEn": "A leading educational institution nationally, distinguished regionally, and effective in building a knowledge society."
+      },
+      {
+        "key": "mission",
+        "icon": "Target",
+        "gradient": "from-amber-500 to-orange-500",
+        "titleAr": "الرسالة",
+        "titleEn": "Mission",
+        "contentAr": "إعداد خريجين يتمتعون بالكفاءة العلمية والمهنية والتعلم مدى الحياة، من خلال تقديم خبرة تعليمية رائدة ترتكز على بيئة علمية وتعليمية داعمة، وبرامج أكاديمية نوعية مبتكرة تسهم في مواكبة المتغيرات الراهنة والاحتياجات التنموية وتلبي متطلبات سوق العمل، وتسهم في خدمة المجتمع وتعزيز التنمية المستدامة",
+        "contentEn": "Preparing graduates who possess scientific and professional competence and lifelong learning skills, through providing a pioneering educational experience based on a supportive scientific and educational environment, and innovative, high-quality academic programs that contribute to keeping pace with contemporary changes and developmental needs, meet labor market requirements, serve the community, and enhance sustainable development."
+      },
+      {
+        "key": "goals",
+        "icon": "Flag",
+        "gradient": "from-emerald-500 to-green-500",
+        "titleAr": "الأهداف",
+        "titleEn": "Goals",
+        "contentAr": "تحقيق التميز الأكاديمي والبحثي، وتعزيز الشراكة المجتمعية، وتوفير بيئة تعليمية محفزة، وتنمية الموارد البشرية والمادية للجامعة.",
+        "contentEn": "Achieving academic and research excellence, enhancing community partnership, providing a stimulating educational environment, and developing human and material resources."
+      },
+      {
+        "key": "values",
+        "icon": "Heart",
+        "gradient": "from-rose-500 to-pink-500",
+        "titleAr": "القيم",
+        "titleEn": "Values",
+        "contentAr": "الريادة والتعلم المستمر , الابتكار والإبداع ,المسؤولية والشفافية , العمل بروح الفريق",
+        "contentEn": "Leadership and Continuous Learning , Innovation and Creativity , Responsibility and Transparency , Teamwork Spirit"
+      }
+    ],
+    "president": {
+      "nameAr": "أ.د/ همدان الشامي",
+      "nameEn": "Prof. Dr. Hamdan Al-Shami",
+      "titleAr": "رئيس الجامعة",
+      "titleEn": "University President",
+      "leadAr": "بسم الله الرحمن الرحيم. الحمد لله رب العالمين، والصلاة والسلام على خاتم الأنبياء والمرسلين، محمد بن عبدالله الصادق الأمين، وعلى آله وصحبه أجمعين.",
+      "leadEn": "In the name of Allah, the Most Gracious, the Most Merciful. Praise be to Allah, Lord of the Worlds, and prayers and peace be upon the Seal of the Prophets and Messengers, Muhammad bin Abdullah, the Truthful and Trustworthy, and upon all his family and companions.",
+      "paragraphsAr": [
+        "يسرني أن أرحب بأبنائنا الطلاب والطالبات الذين يتطلعون للانضمام إلى أسرة الجامعة والالتحاق بأحد برامجها الأكاديمية للعام الجامعي 2023 – 2024م، وأن أقدم هذا الدليل الذي يعطي لمحة موجزة عن التخصصات الأكاديمية المتاحة في الجامعة.",
+        "أبنائي الطلاب والطالبات... سعت الجامعة منذ تأسيسها بكل جد أن تكون شريكاً فاعلاً في تحسين نوعية التعليم الجامعي، وتوفير بيئة جامعية تشجع على الإبداع والريادة والتميز وتنمية قدراتهم ومواهبهم.",
+        "وهي حريصة على تحديث برامجها باستمرار، واستقطاب الكوادر الأكاديمية المتميزة، وتوظيف التقنيات الحديثة. كما تسعى لتعزيز شراكاتها المجتمعية والأكاديمية، وترسيخ قيم الجودة لضمان أفضل المخرجات.",
+        "ختاماً، نثق بأنكم ستكونون على قدر المسؤولية في تمثيل الجامعة وتحقيق رؤيتها، وبناء مستقبل مشرق لكم ولوطنكم. والله ولي التوفيق."
+      ],
+      "paragraphsEn": [
+        "I am pleased to welcome our male and female students who are looking forward to joining the university family and enrolling in one of its academic programs for the academic year 2023-2024, and to present this guide which gives a brief overview of the academic specializations available at the university.",
+        "My students... Since its establishment, the university has strived earnestly to be an effective partner in improving the quality of university education, and providing a university environment that encourages creativity, leadership, excellence, and the development of their capabilities and talents.",
+        "It is keen to constantly update its programs, attract distinguished academic staff, and employ modern technologies. It also seeks to strengthen its community and academic partnerships, and consolidate quality values to ensure the best outputs.",
+        "In conclusion, we trust that you will be up to the responsibility of representing the university and achieving its vision, and building a bright future for you and your country. And Allah is the Guardian of success."
+      ]
+    }
+  },
+  "partners": [],
+  "testimonials": []
 }

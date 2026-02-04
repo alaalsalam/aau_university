@@ -14,7 +14,7 @@ def seed_home(site: str | None = None):
     try:
         payload = _load_home_seed_data()
         summary = {
-            "home_page": _seed_home_page(),
+            "home_page": _seed_home_page(payload),
             "news": _seed_records(
                 section="news",
                 rows=payload.get("news", []),
@@ -74,18 +74,34 @@ def _first_existing_doctype(candidates: list[str]) -> str | None:
     return None
 
 
-def _seed_home_page() -> dict:
+def _seed_home_page(seed_payload: dict) -> dict:
     doctype = _first_existing_doctype(["Home Page"])
     if not doctype:
         return {"doctype": None, "created": 0, "updated": 0, "skipped": 1, "message": "DocType missing"}
 
+    home_sections_payload = {
+        "hero": seed_payload.get("hero", {}),
+        "stats": seed_payload.get("stats", []),
+        "about": seed_payload.get("about", {}),
+        "partners": seed_payload.get("partners", []),
+        "testimonials": seed_payload.get("testimonials", []),
+    }
+
+    # WHY+WHAT: persist structured home sections JSON in Home Page so /api/aau/home can serve the non-list sections from database-backed seed content.
     payload = {
         "page_title": "AAU University Home",
-        "hero_title": "Welcome to AAU University",
-        "hero_subtitle": "Academic excellence and practical learning.",
-        "hero_description": "Discover programs, events, and student opportunities.",
-        "about_title": "About AAU University",
-        "about_description": "AAU provides quality education for future leaders.",
+        "hero_title": seed_payload.get("hero", {}).get("titlePrimaryEn", "Welcome to AAU University"),
+        "hero_subtitle": seed_payload.get("hero", {}).get("badgeEn", "Welcome to AJ JEEL ALJADEED UNIVERSITY"),
+        "hero_description": seed_payload.get("hero", {}).get("descriptionEn", "Discover programs, events, and student opportunities."),
+        "hero_image": seed_payload.get("hero", {}).get("image"),
+        "hero_cta_text": seed_payload.get("hero", {}).get("applyTextEn", "Apply Now"),
+        "hero_cta_link": seed_payload.get("hero", {}).get("applyLink", "/admission"),
+        "about_title": seed_payload.get("about", {}).get("titleEn", "About the University"),
+        "about_description": seed_payload.get("about", {}).get("descriptionEn", ""),
+        "students_count": _to_int(seed_payload.get("stats", [{}])[0].get("number")),
+        "programs_count": _to_int(seed_payload.get("stats", [{}, {}, {}])[2].get("number")),
+        "graduates_count": 0,
+        "home_sections_json": json.dumps(home_sections_payload, ensure_ascii=False),
         "is_published": 1,
     }
     action = _upsert_doc(doctype, payload, unique_fields=["page_title", "name"])
@@ -300,3 +316,12 @@ def _to_iso_date(value: str | None) -> str | None:
     if len(value) >= 10:
         return value[:10]
     return None
+
+
+def _to_int(value: str | int | None) -> int:
+    if value is None:
+        return 0
+    if isinstance(value, int):
+        return value
+    digits = "".join(char for char in str(value) if char.isdigit())
+    return int(digits) if digits else 0
