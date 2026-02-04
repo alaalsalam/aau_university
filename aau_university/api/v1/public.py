@@ -154,25 +154,75 @@ def get_home():
 
 
 def _list_home_section(entity_key: str, limit: int, filters: dict | None = None) -> list[dict]:
-    original_form_dict = frappe._dict(frappe.form_dict or {})
-    try:
-        frappe.form_dict = frappe._dict({"page": 1, "limit": limit})
-        for key, value in (filters or {}).items():
-            frappe.form_dict[key] = value
-        result = list_entities(entity_key, public=True)
-        return result.get("data", [])
-    except Exception:
-        frappe.logger("aau_university").warning(f"[AAU API] Home section unavailable: {entity_key}")
-        return []
-    finally:
-        frappe.form_dict = original_form_dict
+    candidates = {
+        "news": ["News"],
+        "events": ["Events", "Event"],
+        "colleges": ["Colleges", "College"],
+        "faqs": ["FAQs", "FAQ"],
+    }.get(entity_key, [])
+    return _list_home_doctype(candidates=candidates, limit=limit, filters=filters)
 
 
 def _home_source() -> str:
-    source_doctypes = ["News", "Events", "Colleges", "FAQs"]
+    source_doctypes = ["News", "Events", "Colleges", "FAQ"]
     if frappe.db.exists("DocType", "Home Page"):
         source_doctypes.insert(0, "Home Page")
+    if frappe.db.exists("DocType", "FAQs"):
+        source_doctypes[-1] = "FAQs"
     return ", ".join(source_doctypes)
+
+
+def _list_home_doctype(candidates: list[str], limit: int, filters: dict | None = None) -> list[dict]:
+    doctype = next((name for name in candidates if frappe.db.exists("DocType", name)), None)
+    if not doctype:
+        return []
+    try:
+        meta = frappe.get_meta(doctype)
+        db_fields = [
+            df.fieldname
+            for df in meta.fields
+            if df.fieldname
+            and df.fieldtype
+            not in {"Section Break", "Column Break", "Tab Break", "Fold", "HTML", "Button"}
+        ]
+        list_filters = {key: value for key, value in (filters or {}).items() if key in db_fields}
+        order_by = "display_order asc" if "display_order" in db_fields else "modified desc"
+        rows = frappe.get_all(
+            doctype,
+            fields=db_fields,
+            filters=list_filters,
+            ignore_permissions=True,
+            limit_page_length=limit,
+            order_by=order_by,
+        )
+        return [_normalize_home_record(row) for row in rows]
+    except Exception:
+        frappe.logger("aau_university").warning(f"[AAU API] Home section unavailable: {doctype}")
+        return []
+
+
+def _normalize_home_record(row: dict) -> dict:
+    normalized = {to_camel(key): value for key, value in row.items()}
+
+    if "event_title" in row and "title" not in row:
+        normalized["title"] = row.get("event_title")
+    if "event_date" in row and "date" not in row:
+        normalized["date"] = row.get("event_date")
+    if "publish_date" in row and "date" not in row:
+        normalized["date"] = row.get("publish_date")
+    if "college_name" in row and "name" not in row:
+        normalized["name"] = row.get("college_name")
+    if (
+        "title" in row
+        and "content" in row
+        and "question" not in row
+        and "publish_date" not in row
+        and "event_title" not in row
+        and "college_name" not in row
+    ):
+        normalized["question"] = row.get("title")
+        normalized["answer"] = row.get("content")
+    return normalized
 
 
 def _build_link(entity_key: str, identifier: str | None) -> str:
