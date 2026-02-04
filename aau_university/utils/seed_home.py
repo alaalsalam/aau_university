@@ -1,20 +1,48 @@
 # -*- coding: utf-8 -*-
 from __future__ import annotations
 
+import json
+from pathlib import Path
+
 import frappe
-from frappe.utils import add_days, nowdate
+
+SEED_FILE = Path(__file__).resolve().parents[1] / "seed" / "data" / "home_content.json"
 
 
 def seed_home(site: str | None = None):
-    # WHY+WHAT: provide immediate smoke-test content after deploy by creating minimal Home Page, News, Events, Colleges, and FAQ records if missing.
     connected_here = _connect_if_needed(site)
     try:
+        payload = _load_home_seed_data()
         summary = {
             "home_page": _seed_home_page(),
-            "news": _seed_news(),
-            "events": _seed_events(),
-            "colleges": _seed_colleges(),
-            "faqs": _seed_faqs(),
+            "news": _seed_records(
+                section="news",
+                rows=payload.get("news", []),
+                doctype_candidates=["News"],
+                unique_fields=["slug", "title", "title_en", "title_ar"],
+                mapper=_map_news,
+            ),
+            "events": _seed_records(
+                section="events",
+                rows=payload.get("events", []),
+                doctype_candidates=["Events", "Event"],
+                unique_fields=["slug", "event_title", "title"],
+                mapper=_map_event,
+            ),
+            "colleges": _seed_records(
+                section="colleges",
+                rows=payload.get("colleges", []),
+                doctype_candidates=["Colleges", "College"],
+                unique_fields=["slug", "college_name", "name", "name_en", "name_ar"],
+                mapper=_map_college,
+            ),
+            "faqs": _seed_records(
+                section="faqs",
+                rows=payload.get("faqs", []),
+                doctype_candidates=["FAQs", "FAQ"],
+                unique_fields=["slug", "title", "question", "question_en", "question_ar"],
+                mapper=_map_faq,
+            ),
         }
         frappe.db.commit()
         return {"ok": True, "data": summary}
@@ -31,6 +59,14 @@ def _connect_if_needed(site: str | None) -> bool:
     return True
 
 
+def _load_home_seed_data() -> dict:
+    # WHY+WHAT: load git-versioned home JSON extracted from frontend mocks so any site can be populated consistently with one command.
+    if not SEED_FILE.exists():
+        frappe.throw(f"Seed file not found: {SEED_FILE}")
+    with SEED_FILE.open("r", encoding="utf-8") as handle:
+        return json.load(handle)
+
+
 def _first_existing_doctype(candidates: list[str]) -> str | None:
     for doctype in candidates:
         if frappe.db.exists("DocType", doctype):
@@ -41,7 +77,7 @@ def _first_existing_doctype(candidates: list[str]) -> str | None:
 def _seed_home_page() -> dict:
     doctype = _first_existing_doctype(["Home Page"])
     if not doctype:
-        return {"doctype": None, "created": 0, "skipped": 1}
+        return {"doctype": None, "created": 0, "updated": 0, "skipped": 1, "message": "DocType missing"}
 
     payload = {
         "page_title": "AAU University Home",
@@ -52,192 +88,90 @@ def _seed_home_page() -> dict:
         "about_description": "AAU provides quality education for future leaders.",
         "is_published": 1,
     }
-    created = _insert_if_missing(doctype, payload, unique_fields=["page_title"])
-    return {"doctype": doctype, "created": int(created), "skipped": int(not created)}
+    action = _upsert_doc(doctype, payload, unique_fields=["page_title", "name"])
+    return {
+        "doctype": doctype,
+        "created": 1 if action == "created" else 0,
+        "updated": 1 if action == "updated" else 0,
+        "skipped": 1 if action == "skipped" else 0,
+    }
 
 
-def _seed_news() -> dict:
-    doctype = _first_existing_doctype(["News"])
+def _seed_records(
+    section: str,
+    rows: list[dict],
+    doctype_candidates: list[str],
+    unique_fields: list[str],
+    mapper,
+) -> dict:
+    doctype = _first_existing_doctype(doctype_candidates)
     if not doctype:
-        return {"doctype": None, "created": 0, "skipped": 2}
+        return {"doctype": None, "created": 0, "updated": 0, "skipped": len(rows), "message": "DocType missing"}
 
-    rows = [
-        {
-            "slug": "welcome-semester-2026",
-            "title": "Welcome Semester 2026",
-            "summary": "AAU starts the new semester with orientation activities.",
-            "content": "AAU University welcomes students with orientation sessions and campus tours.",
-            "publish_date": nowdate(),
-            "is_published": 1,
-            "display_order": 1,
-            "title_ar": "انطلاق الفصل الدراسي 2026",
-            "title_en": "Welcome Semester 2026",
-            "description_ar": "تبدأ الجامعة الفصل الجديد بأنشطة تعريفية.",
-            "description_en": "AAU starts the new semester with orientation activities.",
-            "content_ar": "تستقبل الجامعة الطلاب بفعاليات تعريفية وجولات داخل الحرم.",
-            "content_en": "AAU welcomes students with orientation sessions and campus tours.",
-            "date": nowdate(),
-            "is_featured": 1,
-        },
-        {
-            "slug": "aau-library-hours",
-            "title": "Library Extended Hours",
-            "summary": "Main library now opens extended evening hours.",
-            "content": "The university library is now open until 9 PM on weekdays.",
-            "publish_date": add_days(nowdate(), -1),
-            "is_published": 1,
-            "display_order": 2,
-            "title_ar": "تمديد ساعات عمل المكتبة",
-            "title_en": "Library Extended Hours",
-            "description_ar": "المكتبة الرئيسية أصبحت تعمل لفترة مسائية أطول.",
-            "description_en": "Main library now opens extended evening hours.",
-            "content_ar": "المكتبة الجامعية تعمل حتى الساعة 9 مساءً خلال أيام الأسبوع.",
-            "content_en": "The university library is now open until 9 PM on weekdays.",
-            "date": add_days(nowdate(), -1),
-        },
-    ]
-    return _seed_many(doctype, rows, unique_fields=["slug", "title", "title_en", "title_ar"])
-
-
-def _seed_events() -> dict:
-    doctype = _first_existing_doctype(["Events", "Event"])
-    if not doctype:
-        return {"doctype": None, "created": 0, "skipped": 2}
-
-    rows = [
-        {
-            "slug": "orientation-day-2026",
-            "title": "Orientation Day 2026",
-            "description": "Orientation for new students.",
-            "date": add_days(nowdate(), 5),
-            "is_published": 1,
-            "display_order": 1,
-            "title_ar": "اليوم التعريفي 2026",
-            "title_en": "Orientation Day 2026",
-            "description_ar": "فعالية تعريفية للطلاب المستجدين.",
-            "description_en": "Orientation event for new students.",
-            "location_ar": "القاعة الرئيسية",
-            "location_en": "Main Hall",
-            "organizer_ar": "شؤون الطلاب",
-            "organizer_en": "Student Affairs",
-            "category": "academic",
-            "status": "upcoming",
-        },
-        {
-            "slug": "career-day-2026",
-            "title": "Career Day 2026",
-            "description": "Employers meet final-year students.",
-            "date": add_days(nowdate(), 12),
-            "is_published": 1,
-            "display_order": 2,
-            "title_ar": "يوم المهن 2026",
-            "title_en": "Career Day 2026",
-            "description_ar": "لقاء بين الشركات وطلاب السنة النهائية.",
-            "description_en": "Employers meet final-year students.",
-            "location_ar": "مركز الفعاليات",
-            "location_en": "Events Center",
-            "organizer_ar": "مكتب الخريجين",
-            "organizer_en": "Alumni Office",
-            "category": "academic",
-            "status": "upcoming",
-        },
-    ]
-    return _seed_many(doctype, rows, unique_fields=["slug", "title", "title_en", "title_ar"])
-
-
-def _seed_colleges() -> dict:
-    doctype = _first_existing_doctype(["Colleges", "College"])
-    if not doctype:
-        return {"doctype": None, "created": 0, "skipped": 2}
-
-    rows = [
-        {
-            "slug": "medicine",
-            "college_name": "College of Human Medicine",
-            "description": "Programs focused on clinical and medical sciences.",
-            "dean_name": "Dr. Ahmed Ali",
-            "is_active": 1,
-            "display_order": 1,
-            "name_ar": "كلية الطب البشري",
-            "name_en": "College of Human Medicine",
-            "description_ar": "برامج أكاديمية في العلوم الطبية والسريرية.",
-            "description_en": "Programs focused on clinical and medical sciences.",
-        },
-        {
-            "slug": "engineering-it",
-            "college_name": "College of Engineering and IT",
-            "description": "Modern engineering and information technology tracks.",
-            "dean_name": "Dr. Salma Hassan",
-            "is_active": 1,
-            "display_order": 2,
-            "name_ar": "كلية الهندسة وتقنية المعلومات",
-            "name_en": "College of Engineering and IT",
-            "description_ar": "مسارات حديثة في الهندسة وتقنية المعلومات.",
-            "description_en": "Modern engineering and information technology tracks.",
-        },
-    ]
-    return _seed_many(doctype, rows, unique_fields=["slug", "college_name", "name_en", "name_ar"])
-
-
-def _seed_faqs() -> dict:
-    doctype = _first_existing_doctype(["FAQs", "FAQ"])
-    if not doctype:
-        return {"doctype": None, "created": 0, "skipped": 2}
-
-    rows = [
-        {
-            "question": "How can I apply to AAU?",
-            "answer": "Apply through admissions office or the online portal.",
-            "category": "admission",
-            "is_published": 1,
-            "display_order": 1,
-            "question_ar": "كيف يمكنني التقديم في الجامعة؟",
-            "question_en": "How can I apply to AAU?",
-            "answer_ar": "يمكنك التقديم عبر مكتب القبول أو البوابة الإلكترونية.",
-            "answer_en": "Apply through admissions office or the online portal.",
-        },
-        {
-            "question": "Does AAU offer scholarships?",
-            "answer": "Yes, merit and need-based scholarships are available.",
-            "category": "scholarship",
-            "is_published": 1,
-            "display_order": 2,
-            "question_ar": "هل توفر الجامعة منحًا دراسية؟",
-            "question_en": "Does AAU offer scholarships?",
-            "answer_ar": "نعم، تتوفر منح دراسية تفوقية ودعم حسب الحالة.",
-            "answer_en": "Yes, merit and need-based scholarships are available.",
-        },
-    ]
-    return _seed_many(doctype, rows, unique_fields=["question", "question_en", "question_ar"])
-
-
-def _seed_many(doctype: str, rows: list[dict], unique_fields: list[str]) -> dict:
     created = 0
+    updated = 0
     skipped = 0
-    for row in rows:
-        if _insert_if_missing(doctype, row, unique_fields):
+
+    for index, row in enumerate(rows, start=1):
+        payload = mapper(row or {}, index)
+        action = _upsert_doc(doctype, payload, unique_fields=unique_fields)
+        if action == "created":
             created += 1
+        elif action == "updated":
+            updated += 1
         else:
             skipped += 1
-    return {"doctype": doctype, "created": created, "skipped": skipped}
+
+    return {
+        "section": section,
+        "doctype": doctype,
+        "created": created,
+        "updated": updated,
+        "skipped": skipped,
+    }
 
 
-def _insert_if_missing(doctype: str, payload: dict, unique_fields: list[str]) -> bool:
+def _upsert_doc(doctype: str, payload: dict, unique_fields: list[str]) -> str:
     meta = frappe.get_meta(doctype)
     allowed_fields = {df.fieldname for df in meta.fields if df.fieldname}
     values = _normalize_values(payload, allowed_fields)
 
-    filters = {
-        field: values[field]
-        for field in unique_fields
-        if field in values and values.get(field) not in (None, "")
-    }
-    if filters and frappe.db.exists(doctype, filters):
-        return False
+    if not values:
+        return "skipped"
+
+    existing_name = _find_existing_docname(doctype, values, allowed_fields, unique_fields)
+    if existing_name:
+        doc = frappe.get_doc(doctype, existing_name)
+        changed = False
+        for fieldname, value in values.items():
+            if doc.get(fieldname) != value:
+                doc.set(fieldname, value)
+                changed = True
+        if changed:
+            doc.save(ignore_permissions=True)
+            return "updated"
+        return "skipped"
 
     doc = frappe.get_doc({"doctype": doctype, **values})
     doc.insert(ignore_permissions=True)
-    return True
+    return "created"
+
+
+def _find_existing_docname(doctype: str, values: dict, allowed_fields: set[str], unique_fields: list[str]) -> str | None:
+    for fieldname in unique_fields:
+        if fieldname in allowed_fields and values.get(fieldname) not in (None, ""):
+            existing = frappe.db.get_value(doctype, {fieldname: values[fieldname]}, "name")
+            if existing:
+                return existing
+
+    fallback_fields = ["title", "event_title", "college_name", "page_title", "name"]
+    for fieldname in fallback_fields:
+        if fieldname in allowed_fields and values.get(fieldname) not in (None, ""):
+            existing = frappe.db.get_value(doctype, {fieldname: values[fieldname]}, "name")
+            if existing:
+                return existing
+
+    return None
 
 
 def _normalize_values(payload: dict, allowed_fields: set[str]) -> dict:
@@ -256,5 +190,113 @@ def _normalize_values(payload: dict, allowed_fields: set[str]) -> dict:
         values["content"] = payload.get("content") or payload.get("description") or payload.get("answer")
     if "publish_date" in allowed_fields and "publish_date" not in values:
         values["publish_date"] = payload.get("publish_date") or payload.get("date")
+    if "college_name" in allowed_fields and "college_name" not in values:
+        values["college_name"] = payload.get("college_name") or payload.get("name") or payload.get("name_en")
 
     return {key: value for key, value in values.items() if value not in (None, "")}
+
+
+def _map_news(row: dict, index: int) -> dict:
+    date_value = _to_iso_date(row.get("date"))
+    return {
+        "id": row.get("id"),
+        "slug": row.get("slug"),
+        "title": row.get("titleEn") or row.get("titleAr") or row.get("title"),
+        "title_en": row.get("titleEn"),
+        "title_ar": row.get("titleAr"),
+        "summary": row.get("descriptionEn") or row.get("descriptionAr") or row.get("summary"),
+        "description_en": row.get("descriptionEn"),
+        "description_ar": row.get("descriptionAr"),
+        "content": row.get("contentEn") or row.get("contentAr") or row.get("content"),
+        "content_en": row.get("contentEn"),
+        "content_ar": row.get("contentAr"),
+        "publish_date": date_value,
+        "date": date_value,
+        "image": row.get("image"),
+        "is_published": 1,
+        "is_featured": row.get("isFeatured", 0),
+        "display_order": index,
+        "views": row.get("views", 0),
+    }
+
+
+def _map_event(row: dict, index: int) -> dict:
+    return {
+        "id": row.get("id"),
+        "slug": row.get("slug"),
+        "event_title": row.get("titleEn") or row.get("titleAr") or row.get("title"),
+        "title": row.get("titleEn") or row.get("titleAr") or row.get("title"),
+        "title_en": row.get("titleEn"),
+        "title_ar": row.get("titleAr"),
+        "description": row.get("descriptionEn") or row.get("descriptionAr") or row.get("description"),
+        "description_en": row.get("descriptionEn"),
+        "description_ar": row.get("descriptionAr"),
+        "content": row.get("contentEn") or row.get("contentAr") or row.get("content"),
+        "content_en": row.get("contentEn"),
+        "content_ar": row.get("contentAr"),
+        "event_date": _to_iso_date(row.get("date")),
+        "date": _to_iso_date(row.get("date")),
+        "end_date": _to_iso_date(row.get("endDate")),
+        "location": row.get("locationEn") or row.get("locationAr") or row.get("location"),
+        "location_en": row.get("locationEn"),
+        "location_ar": row.get("locationAr"),
+        "organizer_en": row.get("organizerEn"),
+        "organizer_ar": row.get("organizerAr"),
+        "category": row.get("category"),
+        "status": row.get("status"),
+        "registration_required": row.get("registrationRequired", False),
+        "registration_link": row.get("registrationLink"),
+        "image": row.get("image"),
+        "is_published": 1,
+        "display_order": index,
+    }
+
+
+def _map_college(row: dict, index: int) -> dict:
+    return {
+        "id": row.get("id"),
+        "slug": row.get("slug"),
+        "college_name": row.get("nameEn") or row.get("nameAr") or row.get("name"),
+        "name": row.get("nameEn") or row.get("nameAr") or row.get("name"),
+        "name_en": row.get("nameEn"),
+        "name_ar": row.get("nameAr"),
+        "description": row.get("descriptionEn") or row.get("descriptionAr") or row.get("description"),
+        "description_en": row.get("descriptionEn"),
+        "description_ar": row.get("descriptionAr"),
+        "vision_en": row.get("visionEn"),
+        "vision_ar": row.get("visionAr"),
+        "mission_en": row.get("missionEn"),
+        "mission_ar": row.get("missionAr"),
+        "admission_requirements_en": row.get("admissionRequirementsEn"),
+        "admission_requirements_ar": row.get("admissionRequirementsAr"),
+        "icon": row.get("icon"),
+        "image": row.get("image"),
+        "is_active": 1,
+        "display_order": index,
+    }
+
+
+def _map_faq(row: dict, index: int) -> dict:
+    return {
+        "id": row.get("id"),
+        "slug": row.get("slug"),
+        "title": row.get("questionEn") or row.get("questionAr") or row.get("question"),
+        "question": row.get("questionEn") or row.get("questionAr") or row.get("question"),
+        "question_en": row.get("questionEn"),
+        "question_ar": row.get("questionAr"),
+        "content": row.get("answerEn") or row.get("answerAr") or row.get("answer"),
+        "answer_en": row.get("answerEn"),
+        "answer_ar": row.get("answerAr"),
+        "category": row.get("category"),
+        "is_published": 1,
+        "display_order": index,
+    }
+
+
+def _to_iso_date(value: str | None) -> str | None:
+    if not value:
+        return None
+    value = str(value)
+    if len(value) >= 10:
+        return value[:10]
+    return None
