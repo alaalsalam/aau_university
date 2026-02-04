@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import re
 
 import frappe
 
@@ -180,6 +181,92 @@ def get_home():
         }
 
 
+@frappe.whitelist(allow_guest=True)
+@api_endpoint
+def list_public_news(limit: int | None = None, page: int | None = None):
+    # WHY+WHAT: keep separate list/detail news endpoints so listing stays lightweight while detail fetches one record, which is low-risk and scales cleanly.
+    doctype = _first_existing_doctype(["News"])
+    if not doctype:
+        return {"items": [], "pagination": {"page": 1, "limit": 10, "total": 0, "has_more": False}}
+
+    form_dict = getattr(frappe.local, "form_dict", {}) or {}
+    parsed_limit = max(1, min(int(limit or form_dict.get("limit") or 10), 50))
+    parsed_page = max(1, int(page or form_dict.get("page") or 1))
+    offset = (parsed_page - 1) * parsed_limit
+
+    meta = frappe.get_meta(doctype)
+    db_fields = {
+        df.fieldname
+        for df in meta.fields
+        if df.fieldname and df.fieldtype not in {"Section Break", "Column Break", "Tab Break", "Fold", "HTML", "Button"}
+    }
+    filters = {"is_published": 1} if "is_published" in db_fields else {}
+    total = frappe.db.count(doctype, filters=filters)
+    order_by = "date desc, publish_date desc, modified desc"
+    if "display_order" in db_fields:
+        order_by = "display_order asc, date desc, publish_date desc, modified desc"
+
+    rows = frappe.get_all(
+        doctype,
+        fields=list(db_fields),
+        filters=filters,
+        order_by=order_by,
+        limit_start=offset,
+        limit_page_length=parsed_limit,
+        ignore_permissions=True,
+    )
+    items = [_serialize_news_item(row) for row in rows]
+    return {
+        "items": items,
+        "pagination": {
+            "page": parsed_page,
+            "limit": parsed_limit,
+            "total": total,
+            "has_more": offset + len(items) < total,
+        },
+    }
+
+
+@frappe.whitelist(allow_guest=True)
+@api_endpoint
+def get_public_news(slug: str):
+    doctype = _first_existing_doctype(["News"])
+    if not doctype:
+        raise frappe.DoesNotExistError("News not found")
+
+    meta = frappe.get_meta(doctype)
+    db_fields = {
+        df.fieldname
+        for df in meta.fields
+        if df.fieldname and df.fieldtype not in {"Section Break", "Column Break", "Tab Break", "Fold", "HTML", "Button"}
+    }
+    filters = {"slug": slug} if "slug" in db_fields else {"name": slug}
+    if "is_published" in db_fields:
+        filters["is_published"] = 1
+
+    row = frappe.db.get_value(doctype, filters, list(db_fields), as_dict=True)
+    if not row:
+        # WHY+WHAT: keep detail endpoint resilient for pre-existing rows that may not have slug populated by matching computed slug from title.
+        fallback_filters = {"is_published": 1} if "is_published" in db_fields else {}
+        candidates = frappe.get_all(
+            doctype,
+            fields=list(db_fields),
+            filters=fallback_filters,
+            ignore_permissions=True,
+            limit_page_length=200,
+            order_by="modified desc",
+        )
+        for candidate in candidates:
+            candidate_slug = _serialize_news_item(candidate).get("slug")
+            if candidate_slug == slug or candidate.get("name") == slug:
+                row = candidate
+                break
+    if not row:
+        raise frappe.DoesNotExistError("News not found")
+
+    return _serialize_news_item(row)
+
+
 def _get_home_sections() -> dict:
     if not frappe.db.exists("DocType", "Home Page"):
         return {"hero": {}, "stats": [], "about": {}, "partners": [], "testimonials": []}
@@ -342,3 +429,52 @@ def _build_link(entity_key: str, identifier: str | None) -> str:
     if not identifier:
         return ""
     return f"/{to_camel(entity_key)}/{identifier}"
+
+
+def _first_existing_doctype(candidates: list[str]) -> str | None:
+    for candidate in candidates:
+        if frappe.db.exists("DocType", candidate):
+            return candidate
+    return None
+
+
+def _serialize_news_item(row: dict) -> dict:
+    slug = row.get("slug") or _slugify_news_value(row.get("title_en") or row.get("title_ar") or row.get("title"))
+    title_ar = row.get("title_ar") or row.get("title")
+    title_en = row.get("title_en") or row.get("title")
+    description_ar = row.get("description_ar") or row.get("summary") or row.get("content") or ""
+    description_en = row.get("description_en") or row.get("summary") or row.get("content") or ""
+    content_ar = row.get("content_ar") or row.get("content") or description_ar
+    content_en = row.get("content_en") or row.get("content") or description_en
+    image = row.get("image") or row.get("featured_image")
+    date = row.get("date") or row.get("publish_date")
+    raw_tags = row.get("tags")
+    if isinstance(raw_tags, str):
+        tags = [part.strip() for part in raw_tags.split(",") if part.strip()]
+    elif isinstance(raw_tags, (list, tuple)):
+        tags = [str(part).strip() for part in raw_tags if str(part).strip()]
+    else:
+        tags = []
+
+    return {
+        "id": row.get("id") or row.get("name") or slug,
+        "slug": slug,
+        "titleAr": title_ar,
+        "titleEn": title_en,
+        "descriptionAr": description_ar,
+        "descriptionEn": description_en,
+        "contentAr": content_ar,
+        "contentEn": content_en,
+        "image": image,
+        "date": str(date)[:10] if date else None,
+        "tags": tags,
+        "views": int(row.get("views") or 0),
+    }
+
+
+def _slugify_news_value(value: str | None) -> str:
+    if not value:
+        return ""
+    slug = re.sub(r"[^\w\s-]", "", str(value).strip().lower())
+    slug = re.sub(r"[-\s]+", "-", slug)
+    return slug.strip("-")
