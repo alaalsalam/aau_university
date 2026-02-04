@@ -359,6 +359,93 @@ def get_public_event(slug: str):
     return _serialize_event_item(row)
 
 
+@frappe.whitelist(allow_guest=True)
+@api_endpoint
+def list_public_colleges(limit: int | None = None, page: int | None = None):
+    # WHY+WHAT: expose colleges via minimal guest list/detail endpoints, embedding programs only where current UI needs them to avoid extra endpoints.
+    doctype = _first_existing_doctype(["Colleges", "College"])
+    if not doctype:
+        return {"items": [], "pagination": {"page": 1, "limit": 10, "total": 0, "has_more": False}}
+
+    form_dict = getattr(frappe.local, "form_dict", {}) or {}
+    parsed_limit = max(1, min(int(limit or form_dict.get("limit") or 10), 50))
+    parsed_page = max(1, int(page or form_dict.get("page") or 1))
+    offset = (parsed_page - 1) * parsed_limit
+
+    meta = frappe.get_meta(doctype)
+    db_fields = {
+        df.fieldname
+        for df in meta.fields
+        if df.fieldname and df.fieldtype not in {"Section Break", "Column Break", "Tab Break", "Fold", "HTML", "Button"}
+    }
+    filters = {"is_active": 1} if "is_active" in db_fields else {}
+    total = frappe.db.count(doctype, filters=filters)
+    sort_parts = []
+    if "display_order" in db_fields:
+        sort_parts.append("display_order asc")
+    sort_parts.append("modified desc")
+    order_by = ", ".join(sort_parts)
+
+    rows = frappe.get_all(
+        doctype,
+        fields=list(db_fields),
+        filters=filters,
+        order_by=order_by,
+        limit_start=offset,
+        limit_page_length=parsed_limit,
+        ignore_permissions=True,
+    )
+    items = [_serialize_college_item(row) for row in rows]
+    return {
+        "items": items,
+        "pagination": {
+            "page": parsed_page,
+            "limit": parsed_limit,
+            "total": total,
+            "has_more": offset + len(items) < total,
+        },
+    }
+
+
+@frappe.whitelist(allow_guest=True)
+@api_endpoint
+def get_public_college(slug: str):
+    doctype = _first_existing_doctype(["Colleges", "College"])
+    if not doctype:
+        raise frappe.DoesNotExistError("College not found")
+
+    meta = frappe.get_meta(doctype)
+    db_fields = {
+        df.fieldname
+        for df in meta.fields
+        if df.fieldname and df.fieldtype not in {"Section Break", "Column Break", "Tab Break", "Fold", "HTML", "Button"}
+    }
+
+    filters = {"slug": slug} if "slug" in db_fields else {"name": slug}
+    if "is_active" in db_fields:
+        filters["is_active"] = 1
+
+    row = frappe.db.get_value(doctype, filters, list(db_fields), as_dict=True)
+    if not row:
+        fallback_filters = {"is_active": 1} if "is_active" in db_fields else {}
+        candidates = frappe.get_all(
+            doctype,
+            fields=list(db_fields),
+            filters=fallback_filters,
+            ignore_permissions=True,
+            limit_page_length=200,
+            order_by="modified desc",
+        )
+        for candidate in candidates:
+            candidate_slug = _serialize_college_item(candidate).get("slug")
+            if candidate_slug == slug or candidate.get("name") == slug:
+                row = candidate
+                break
+    if not row:
+        raise frappe.DoesNotExistError("College not found")
+    return _serialize_college_item(row)
+
+
 def _get_home_sections() -> dict:
     if not frappe.db.exists("DocType", "Home Page"):
         return {"hero": {}, "stats": [], "about": {}, "partners": [], "testimonials": []}
@@ -621,3 +708,74 @@ def _serialize_event_item(row: dict) -> dict:
         "image": row.get("image"),
         "tags": tags,
     }
+
+
+def _serialize_college_item(row: dict) -> dict:
+    programs = _parse_programs_json(row.get("programs_json"))
+    slug = row.get("slug") or _slugify_news_value(
+        row.get("name_en")
+        or row.get("name_ar")
+        or row.get("college_name")
+        or row.get("name")
+    )
+    name_ar = row.get("name_ar") or row.get("college_name") or row.get("name")
+    name_en = row.get("name_en") or row.get("college_name") or row.get("name")
+    description_ar = row.get("description_ar") or row.get("description") or ""
+    description_en = row.get("description_en") or row.get("description") or ""
+
+    return {
+        "id": row.get("id") or slug or row.get("name"),
+        "slug": slug,
+        "nameAr": name_ar,
+        "nameEn": name_en,
+        "descriptionAr": description_ar,
+        "descriptionEn": description_en,
+        "visionAr": row.get("vision_ar") or "",
+        "visionEn": row.get("vision_en") or "",
+        "missionAr": row.get("mission_ar") or "",
+        "missionEn": row.get("mission_en") or "",
+        "goalsAr": row.get("goals_ar") or "",
+        "goalsEn": row.get("goals_en") or "",
+        "admissionRequirementsAr": row.get("admission_requirements_ar") or "",
+        "admissionRequirementsEn": row.get("admission_requirements_en") or "",
+        "icon": row.get("icon"),
+        "image": row.get("image"),
+        "programs": programs,
+    }
+
+
+def _parse_programs_json(raw: str | None) -> list[dict]:
+    if not raw:
+        return []
+    try:
+        parsed = json.loads(raw)
+    except Exception:
+        return []
+    if not isinstance(parsed, list):
+        return []
+    output = []
+    for item in parsed:
+        if not isinstance(item, dict):
+            continue
+        output.append(
+            {
+                "id": item.get("id"),
+                "nameAr": item.get("nameAr"),
+                "nameEn": item.get("nameEn"),
+                "departmentAr": item.get("departmentAr") or "",
+                "departmentEn": item.get("departmentEn") or "",
+                "admissionRate": int(item.get("admissionRate") or 0),
+                "highSchoolType": item.get("highSchoolType") or "علمي",
+                "highSchoolTypeEn": item.get("highSchoolTypeEn") or "Scientific",
+                "studyYears": item.get("studyYears") or "",
+                "image": item.get("image"),
+                "descriptionAr": item.get("descriptionAr") or "",
+                "descriptionEn": item.get("descriptionEn") or "",
+                "objectives": item.get("objectives") if isinstance(item.get("objectives"), list) else [],
+                "studyPlan": item.get("studyPlan") if isinstance(item.get("studyPlan"), list) else [],
+                "careerProspectsAr": item.get("careerProspectsAr") if isinstance(item.get("careerProspectsAr"), list) else [],
+                "careerProspectsEn": item.get("careerProspectsEn") if isinstance(item.get("careerProspectsEn"), list) else [],
+                "facultyMembers": item.get("facultyMembers") if isinstance(item.get("facultyMembers"), list) else [],
+            }
+        )
+    return output
