@@ -9,7 +9,7 @@ import frappe
 SEED_FILE = Path(__file__).resolve().parents[1] / "seed" / "data" / "colleges.json"
 
 
-def seed_colleges(site: str | None = None):
+def seed_colleges(site: str | None = None, cleanup: bool = False):
     connected_here = _connect_if_needed(site)
     try:
         rows = _load_colleges_seed_data()
@@ -30,6 +30,12 @@ def seed_colleges(site: str | None = None):
             else:
                 skipped += 1
 
+        unpublished = 0
+        if _to_bool(cleanup):
+            # WHY+WHAT: keep production colleges aligned with git-versioned canonical slugs by safely unpublishing non-canonical rows (no deletes).
+            canonical_slugs = {row.get("slug") for row in rows if isinstance(row, dict) and row.get("slug")}
+            unpublished = _cleanup_non_canonical_colleges(doctype, canonical_slugs)
+
         frappe.db.commit()
         return {
             "ok": True,
@@ -38,6 +44,7 @@ def seed_colleges(site: str | None = None):
                 "created": created,
                 "updated": updated,
                 "skipped": skipped,
+                "unpublished": unpublished,
                 "total": len(rows),
             },
         }
@@ -68,6 +75,48 @@ def _first_existing_doctype(candidates: list[str]) -> str | None:
         if frappe.db.exists("DocType", doctype):
             return doctype
     return None
+
+
+def _to_bool(value) -> bool:
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, str):
+        return value.strip().lower() in {"1", "true", "yes", "y", "on"}
+    return bool(value)
+
+
+def _cleanup_non_canonical_colleges(doctype: str, canonical_slugs: set[str]) -> int:
+    if not canonical_slugs:
+        return 0
+
+    meta = frappe.get_meta(doctype)
+    fieldnames = {df.fieldname for df in meta.fields if df.fieldname}
+    if "slug" not in fieldnames:
+        return 0
+
+    status_field = None
+    inactive_value = None
+    if "published" in fieldnames:
+        status_field = "published"
+        inactive_value = 0
+    elif "is_active" in fieldnames:
+        status_field = "is_active"
+        inactive_value = 0
+    elif "disabled" in fieldnames:
+        status_field = "disabled"
+        inactive_value = 1
+    if not status_field:
+        return 0
+
+    names_to_unpublish = frappe.get_all(
+        doctype,
+        filters={"slug": ("not in", list(canonical_slugs)), status_field: ("!=", inactive_value)},
+        pluck="name",
+        ignore_permissions=True,
+    )
+    for name in names_to_unpublish:
+        frappe.db.set_value(doctype, name, status_field, inactive_value, update_modified=False)
+    return len(names_to_unpublish)
 
 
 def _upsert_college(doctype: str, payload: dict) -> str:
