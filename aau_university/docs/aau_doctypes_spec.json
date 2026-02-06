@@ -1,0 +1,3711 @@
+{
+  "meta": {
+    "project": "AAU",
+    "app": "aau_university",
+    "source_md": "/mnt/data/DATABASE_SCHEMA_AND_API.md",
+    "notes_ar": "تم توليد هذا الملف تلقائياً من DATABASE_SCHEMA_AND_API.md لإنشاء DocTypes في Frappe."
+  },
+  "doctypes": [
+    {
+      "name": "Colleges",
+      "label": "Colleges",
+      "module": "Content",
+      "istable": 0,
+      "issingle": 0,
+      "custom": 1,
+      "allow_rename": 1,
+      "engine": "InnoDB",
+      "track_changes": 1,
+      "sort_field": "modified",
+      "sort_order": "DESC",
+      "row_format": "Dynamic",
+      "grid_page_length": 50,
+      "rows_threshold_for_grid_search": 20,
+      "fields": [
+        {
+          "fieldname": "section_main",
+          "fieldtype": "Section Break",
+          "label": "البيانات الأساسية"
+        },
+        {
+          "fieldname": "id",
+          "fieldtype": "Data",
+          "label": "Id",
+          "description": "المعرف الفريد",
+          "reqd": 1,
+          "read_only": 1
+        },
+        {
+          "fieldname": "slug",
+          "fieldtype": "Data",
+          "label": "Slug",
+          "description": "الرابط الفريد للكلية",
+          "reqd": 1,
+          "unique": 1
+        },
+        {
+          "fieldname": "name_ar",
+          "fieldtype": "Data",
+          "label": "Name Ar",
+          "description": "اسم الكلية بالعربي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "name_en",
+          "fieldtype": "Data",
+          "label": "Name En",
+          "description": "اسم الكلية بالإنجليزي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "description_ar",
+          "fieldtype": "Long Text",
+          "label": "Description Ar",
+          "description": "وصف الكلية بالعربي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "description_en",
+          "fieldtype": "Long Text",
+          "label": "Description En",
+          "description": "وصف الكلية بالإنجليزي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "vision_ar",
+          "fieldtype": "Long Text",
+          "label": "Vision Ar",
+          "description": "رؤية الكلية بالعربي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "vision_en",
+          "fieldtype": "Long Text",
+          "label": "Vision En",
+          "description": "رؤية الكلية بالإنجليزي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "mission_ar",
+          "fieldtype": "Long Text",
+          "label": "Mission Ar",
+          "description": "رسالة الكلية بالعربي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "mission_en",
+          "fieldtype": "Long Text",
+          "label": "Mission En",
+          "description": "رسالة الكلية بالإنجليزي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "admission_requirements_ar",
+          "fieldtype": "Long Text",
+          "label": "Admission Requirements Ar",
+          "description": "متطلبات القبول بالعربي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "admission_requirements_en",
+          "fieldtype": "Long Text",
+          "label": "Admission Requirements En",
+          "description": "متطلبات القبول بالإنجليزي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "icon",
+          "fieldtype": "Data",
+          "label": "Icon",
+          "description": "اسم الأيقونة"
+        },
+        {
+          "fieldname": "image",
+          "fieldtype": "Data",
+          "label": "Image",
+          "description": "رابط صورة الكلية"
+        },
+        {
+          "fieldname": "order_index",
+          "fieldtype": "Int",
+          "label": "Order Index",
+          "description": "ترتيب العرض"
+        },
+        {
+          "fieldname": "is_active",
+          "fieldtype": "Check",
+          "label": "Is Active",
+          "description": "حالة النشر",
+          "reqd": 1
+        },
+        {
+          "fieldname": "created_at",
+          "fieldtype": "Datetime",
+          "label": "Created At",
+          "description": "تاريخ الإنشاء",
+          "reqd": 1,
+          "read_only": 1
+        },
+        {
+          "fieldname": "updated_at",
+          "fieldtype": "Datetime",
+          "label": "Updated At",
+          "description": "تاريخ التحديث",
+          "reqd": 1,
+          "read_only": 1
+        }
+      ],
+      "field_order": [
+        "section_main",
+        "id",
+        "slug",
+        "name_ar",
+        "name_en",
+        "description_ar",
+        "description_en",
+        "vision_ar",
+        "vision_en",
+        "mission_ar",
+        "mission_en",
+        "admission_requirements_ar",
+        "admission_requirements_en",
+        "icon",
+        "image",
+        "order_index",
+        "is_active",
+        "created_at",
+        "updated_at"
+      ],
+      "permissions": [
+        {
+          "role": "System Manager",
+          "read": 1,
+          "write": 1,
+          "create": 1,
+          "delete": 1,
+          "report": 1,
+          "export": 1,
+          "print": 1,
+          "email": 1,
+          "share": 1
+        }
+      ],
+      "actions": [],
+      "links": [],
+      "states": []
+    },
+    {
+      "name": "College Deans",
+      "label": "College Deans",
+      "module": "Content",
+      "istable": 0,
+      "issingle": 0,
+      "custom": 1,
+      "allow_rename": 1,
+      "engine": "InnoDB",
+      "track_changes": 1,
+      "sort_field": "modified",
+      "sort_order": "DESC",
+      "row_format": "Dynamic",
+      "grid_page_length": 50,
+      "rows_threshold_for_grid_search": 20,
+      "fields": [
+        {
+          "fieldname": "section_main",
+          "fieldtype": "Section Break",
+          "label": "البيانات الأساسية"
+        },
+        {
+          "fieldname": "id",
+          "fieldtype": "Data",
+          "label": "Id",
+          "description": "المعرف الفريد",
+          "reqd": 1,
+          "read_only": 1
+        },
+        {
+          "fieldname": "college_id",
+          "fieldtype": "Link",
+          "label": "College Id",
+          "description": "معرف الكلية (FK)",
+          "reqd": 1,
+          "options": "Colleges"
+        },
+        {
+          "fieldname": "name_ar",
+          "fieldtype": "Data",
+          "label": "Name Ar",
+          "description": "الاسم بالعربي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "name_en",
+          "fieldtype": "Data",
+          "label": "Name En",
+          "description": "الاسم بالإنجليزي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "title_ar",
+          "fieldtype": "Data",
+          "label": "Title Ar",
+          "description": "اللقب بالعربي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "title_en",
+          "fieldtype": "Data",
+          "label": "Title En",
+          "description": "اللقب بالإنجليزي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "image",
+          "fieldtype": "Data",
+          "label": "Image",
+          "description": "صورة العميد",
+          "reqd": 1
+        },
+        {
+          "fieldname": "email",
+          "fieldtype": "Data",
+          "label": "Email",
+          "description": "البريد الإلكتروني"
+        },
+        {
+          "fieldname": "phone",
+          "fieldtype": "Data",
+          "label": "Phone",
+          "description": "رقم الهاتف"
+        },
+        {
+          "fieldname": "bio_ar",
+          "fieldtype": "Long Text",
+          "label": "Bio Ar",
+          "description": "السيرة الذاتية بالعربي"
+        },
+        {
+          "fieldname": "bio_en",
+          "fieldtype": "Long Text",
+          "label": "Bio En",
+          "description": "السيرة الذاتية بالإنجليزي"
+        },
+        {
+          "fieldname": "message_ar",
+          "fieldtype": "Long Text",
+          "label": "Message Ar",
+          "description": "كلمة العميد بالعربي"
+        },
+        {
+          "fieldname": "message_en",
+          "fieldtype": "Long Text",
+          "label": "Message En",
+          "description": "كلمة العميد بالإنجليزي"
+        },
+        {
+          "fieldname": "is_active",
+          "fieldtype": "Check",
+          "label": "Is Active",
+          "description": "حالة النشر",
+          "reqd": 1
+        },
+        {
+          "fieldname": "created_at",
+          "fieldtype": "Datetime",
+          "label": "Created At",
+          "description": "تاريخ الإنشاء",
+          "reqd": 1,
+          "read_only": 1
+        }
+      ],
+      "field_order": [
+        "section_main",
+        "id",
+        "college_id",
+        "name_ar",
+        "name_en",
+        "title_ar",
+        "title_en",
+        "image",
+        "email",
+        "phone",
+        "bio_ar",
+        "bio_en",
+        "message_ar",
+        "message_en",
+        "is_active",
+        "created_at"
+      ],
+      "permissions": [
+        {
+          "role": "System Manager",
+          "read": 1,
+          "write": 1,
+          "create": 1,
+          "delete": 1,
+          "report": 1,
+          "export": 1,
+          "print": 1,
+          "email": 1,
+          "share": 1
+        }
+      ],
+      "actions": [],
+      "links": [],
+      "states": []
+    },
+    {
+      "name": "Academic Programs Career Prospects Ar Items",
+      "label": "Academic Programs Career Prospects Ar Items",
+      "module": "Academic",
+      "istable": 1,
+      "custom": 1,
+      "allow_rename": 0,
+      "fields": [
+        {
+          "fieldname": "value",
+          "fieldtype": "Data",
+          "label": "القيمة",
+          "description": "القيمة كما هي (عنصر واحد من القائمة)"
+        },
+        {
+          "fieldname": "order_index",
+          "fieldtype": "Int",
+          "label": "ترتيب العرض",
+          "description": "ترتيب ظهور العنصر"
+        }
+      ],
+      "field_order": [
+        "value",
+        "order_index"
+      ],
+      "permissions": [
+        {
+          "role": "System Manager",
+          "read": 1,
+          "write": 1,
+          "create": 1,
+          "delete": 1,
+          "report": 1,
+          "export": 1,
+          "print": 1,
+          "email": 1,
+          "share": 1
+        }
+      ],
+      "actions": [],
+      "links": [],
+      "states": []
+    },
+    {
+      "name": "Academic Programs Career Prospects En Items",
+      "label": "Academic Programs Career Prospects En Items",
+      "module": "Academic",
+      "istable": 1,
+      "custom": 1,
+      "allow_rename": 0,
+      "fields": [
+        {
+          "fieldname": "value",
+          "fieldtype": "Data",
+          "label": "القيمة",
+          "description": "القيمة كما هي (عنصر واحد من القائمة)"
+        },
+        {
+          "fieldname": "order_index",
+          "fieldtype": "Int",
+          "label": "ترتيب العرض",
+          "description": "ترتيب ظهور العنصر"
+        }
+      ],
+      "field_order": [
+        "value",
+        "order_index"
+      ],
+      "permissions": [
+        {
+          "role": "System Manager",
+          "read": 1,
+          "write": 1,
+          "create": 1,
+          "delete": 1,
+          "report": 1,
+          "export": 1,
+          "print": 1,
+          "email": 1,
+          "share": 1
+        }
+      ],
+      "actions": [],
+      "links": [],
+      "states": []
+    },
+    {
+      "name": "Academic Programs",
+      "label": "Academic Programs",
+      "module": "Academic",
+      "istable": 0,
+      "issingle": 0,
+      "custom": 1,
+      "allow_rename": 1,
+      "engine": "InnoDB",
+      "track_changes": 1,
+      "sort_field": "modified",
+      "sort_order": "DESC",
+      "row_format": "Dynamic",
+      "grid_page_length": 50,
+      "rows_threshold_for_grid_search": 20,
+      "fields": [
+        {
+          "fieldname": "section_main",
+          "fieldtype": "Section Break",
+          "label": "البيانات الأساسية"
+        },
+        {
+          "fieldname": "id",
+          "fieldtype": "Data",
+          "label": "Id",
+          "description": "المعرف الفريد",
+          "reqd": 1,
+          "read_only": 1
+        },
+        {
+          "fieldname": "college_id",
+          "fieldtype": "Link",
+          "label": "College Id",
+          "description": "معرف الكلية (FK)",
+          "reqd": 1,
+          "options": "Colleges"
+        },
+        {
+          "fieldname": "name_ar",
+          "fieldtype": "Data",
+          "label": "Name Ar",
+          "description": "اسم البرنامج بالعربي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "name_en",
+          "fieldtype": "Data",
+          "label": "Name En",
+          "description": "اسم البرنامج بالإنجليزي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "department_ar",
+          "fieldtype": "Data",
+          "label": "Department Ar",
+          "description": "القسم بالعربي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "department_en",
+          "fieldtype": "Data",
+          "label": "Department En",
+          "description": "القسم بالإنجليزي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "admission_rate",
+          "fieldtype": "Float",
+          "label": "Admission Rate",
+          "description": "نسبة القبول",
+          "reqd": 1
+        },
+        {
+          "fieldname": "high_school_type",
+          "fieldtype": "Select",
+          "label": "High School Type",
+          "description": "نوع الثانوية (علمي/ادبي/مختلط)",
+          "reqd": 1,
+          "options": "علمي\nادبي\nمختلط"
+        },
+        {
+          "fieldname": "study_years",
+          "fieldtype": "Data",
+          "label": "Study Years",
+          "description": "سنوات الدراسة",
+          "reqd": 1
+        },
+        {
+          "fieldname": "image",
+          "fieldtype": "Data",
+          "label": "Image",
+          "description": "صورة البرنامج"
+        },
+        {
+          "fieldname": "description_ar",
+          "fieldtype": "Long Text",
+          "label": "Description Ar",
+          "description": "وصف البرنامج بالعربي"
+        },
+        {
+          "fieldname": "description_en",
+          "fieldtype": "Long Text",
+          "label": "Description En",
+          "description": "وصف البرنامج بالإنجليزي"
+        },
+        {
+          "fieldname": "career_prospects_ar",
+          "fieldtype": "Table",
+          "label": "Career Prospects Ar",
+          "description": "فرص العمل بالعربي (مصفوفة)",
+          "options": "Academic Programs Career Prospects Ar Items",
+          "reqd": 0
+        },
+        {
+          "fieldname": "career_prospects_en",
+          "fieldtype": "Table",
+          "label": "Career Prospects En",
+          "description": "فرص العمل بالإنجليزي (مصفوفة)",
+          "options": "Academic Programs Career Prospects En Items",
+          "reqd": 0
+        },
+        {
+          "fieldname": "order_index",
+          "fieldtype": "Int",
+          "label": "Order Index",
+          "description": "ترتيب العرض"
+        },
+        {
+          "fieldname": "is_active",
+          "fieldtype": "Check",
+          "label": "Is Active",
+          "description": "حالة النشر",
+          "reqd": 1
+        },
+        {
+          "fieldname": "created_at",
+          "fieldtype": "Datetime",
+          "label": "Created At",
+          "description": "تاريخ الإنشاء",
+          "reqd": 1,
+          "read_only": 1
+        },
+        {
+          "fieldname": "updated_at",
+          "fieldtype": "Datetime",
+          "label": "Updated At",
+          "description": "تاريخ التحديث",
+          "reqd": 1,
+          "read_only": 1
+        }
+      ],
+      "field_order": [
+        "section_main",
+        "id",
+        "college_id",
+        "name_ar",
+        "name_en",
+        "department_ar",
+        "department_en",
+        "admission_rate",
+        "high_school_type",
+        "study_years",
+        "image",
+        "description_ar",
+        "description_en",
+        "career_prospects_ar",
+        "career_prospects_en",
+        "order_index",
+        "is_active",
+        "created_at",
+        "updated_at"
+      ],
+      "permissions": [
+        {
+          "role": "System Manager",
+          "read": 1,
+          "write": 1,
+          "create": 1,
+          "delete": 1,
+          "report": 1,
+          "export": 1,
+          "print": 1,
+          "email": 1,
+          "share": 1
+        }
+      ],
+      "actions": [],
+      "links": [],
+      "states": []
+    },
+    {
+      "name": "Program Objectives",
+      "label": "Program Objectives",
+      "module": "Academic",
+      "istable": 0,
+      "issingle": 0,
+      "custom": 1,
+      "allow_rename": 1,
+      "engine": "InnoDB",
+      "track_changes": 1,
+      "sort_field": "modified",
+      "sort_order": "DESC",
+      "row_format": "Dynamic",
+      "grid_page_length": 50,
+      "rows_threshold_for_grid_search": 20,
+      "fields": [
+        {
+          "fieldname": "section_main",
+          "fieldtype": "Section Break",
+          "label": "البيانات الأساسية"
+        },
+        {
+          "fieldname": "id",
+          "fieldtype": "Data",
+          "label": "Id",
+          "description": "المعرف الفريد",
+          "reqd": 1,
+          "read_only": 1
+        },
+        {
+          "fieldname": "program_id",
+          "fieldtype": "Link",
+          "label": "Program Id",
+          "description": "معرف البرنامج (FK)",
+          "reqd": 1,
+          "options": "Academic Programs"
+        },
+        {
+          "fieldname": "text_ar",
+          "fieldtype": "Long Text",
+          "label": "Text Ar",
+          "description": "الهدف بالعربي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "text_en",
+          "fieldtype": "Long Text",
+          "label": "Text En",
+          "description": "الهدف بالإنجليزي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "order_index",
+          "fieldtype": "Int",
+          "label": "Order Index",
+          "description": "ترتيب العرض"
+        }
+      ],
+      "field_order": [
+        "section_main",
+        "id",
+        "program_id",
+        "text_ar",
+        "text_en",
+        "order_index"
+      ],
+      "permissions": [
+        {
+          "role": "System Manager",
+          "read": 1,
+          "write": 1,
+          "create": 1,
+          "delete": 1,
+          "report": 1,
+          "export": 1,
+          "print": 1,
+          "email": 1,
+          "share": 1
+        }
+      ],
+      "actions": [],
+      "links": [],
+      "states": []
+    },
+    {
+      "name": "Study Plans",
+      "label": "Study Plans",
+      "module": "Academic",
+      "istable": 0,
+      "issingle": 0,
+      "custom": 1,
+      "allow_rename": 1,
+      "engine": "InnoDB",
+      "track_changes": 1,
+      "sort_field": "modified",
+      "sort_order": "DESC",
+      "row_format": "Dynamic",
+      "grid_page_length": 50,
+      "rows_threshold_for_grid_search": 20,
+      "fields": [
+        {
+          "fieldname": "section_main",
+          "fieldtype": "Section Break",
+          "label": "البيانات الأساسية"
+        },
+        {
+          "fieldname": "id",
+          "fieldtype": "Data",
+          "label": "Id",
+          "description": "المعرف الفريد",
+          "reqd": 1,
+          "read_only": 1
+        },
+        {
+          "fieldname": "program_id",
+          "fieldtype": "Link",
+          "label": "Program Id",
+          "description": "معرف البرنامج (FK)",
+          "reqd": 1,
+          "options": "Academic Programs"
+        },
+        {
+          "fieldname": "year_ar",
+          "fieldtype": "Data",
+          "label": "Year Ar",
+          "description": "السنة بالعربي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "year_en",
+          "fieldtype": "Data",
+          "label": "Year En",
+          "description": "السنة بالإنجليزي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "semester_ar",
+          "fieldtype": "Data",
+          "label": "Semester Ar",
+          "description": "الفصل بالعربي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "semester_en",
+          "fieldtype": "Data",
+          "label": "Semester En",
+          "description": "الفصل بالإنجليزي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "order_index",
+          "fieldtype": "Int",
+          "label": "Order Index",
+          "description": "ترتيب العرض"
+        }
+      ],
+      "field_order": [
+        "section_main",
+        "id",
+        "program_id",
+        "year_ar",
+        "year_en",
+        "semester_ar",
+        "semester_en",
+        "order_index"
+      ],
+      "permissions": [
+        {
+          "role": "System Manager",
+          "read": 1,
+          "write": 1,
+          "create": 1,
+          "delete": 1,
+          "report": 1,
+          "export": 1,
+          "print": 1,
+          "email": 1,
+          "share": 1
+        }
+      ],
+      "actions": [],
+      "links": [],
+      "states": []
+    },
+    {
+      "name": "Study Plan Courses",
+      "label": "Study Plan Courses",
+      "module": "Academic",
+      "istable": 0,
+      "issingle": 0,
+      "custom": 1,
+      "allow_rename": 1,
+      "engine": "InnoDB",
+      "track_changes": 1,
+      "sort_field": "modified",
+      "sort_order": "DESC",
+      "row_format": "Dynamic",
+      "grid_page_length": 50,
+      "rows_threshold_for_grid_search": 20,
+      "fields": [
+        {
+          "fieldname": "section_main",
+          "fieldtype": "Section Break",
+          "label": "البيانات الأساسية"
+        },
+        {
+          "fieldname": "id",
+          "fieldtype": "Data",
+          "label": "Id",
+          "description": "المعرف الفريد",
+          "reqd": 1,
+          "read_only": 1
+        },
+        {
+          "fieldname": "study_plan_id",
+          "fieldtype": "Link",
+          "label": "Study Plan Id",
+          "description": "معرف الخطة (FK)",
+          "reqd": 1,
+          "options": "Study Plans"
+        },
+        {
+          "fieldname": "name_ar",
+          "fieldtype": "Data",
+          "label": "Name Ar",
+          "description": "اسم المقرر بالعربي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "name_en",
+          "fieldtype": "Data",
+          "label": "Name En",
+          "description": "اسم المقرر بالإنجليزي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "credit_hours",
+          "fieldtype": "Int",
+          "label": "Credit Hours",
+          "description": "الساعات المعتمدة",
+          "reqd": 1
+        }
+      ],
+      "field_order": [
+        "section_main",
+        "id",
+        "study_plan_id",
+        "name_ar",
+        "name_en",
+        "credit_hours"
+      ],
+      "permissions": [
+        {
+          "role": "System Manager",
+          "read": 1,
+          "write": 1,
+          "create": 1,
+          "delete": 1,
+          "report": 1,
+          "export": 1,
+          "print": 1,
+          "email": 1,
+          "share": 1
+        }
+      ],
+      "actions": [],
+      "links": [],
+      "states": []
+    },
+    {
+      "name": "Faculty Members",
+      "label": "Faculty Members",
+      "module": "Content",
+      "istable": 0,
+      "issingle": 0,
+      "custom": 1,
+      "allow_rename": 1,
+      "engine": "InnoDB",
+      "track_changes": 1,
+      "sort_field": "modified",
+      "sort_order": "DESC",
+      "row_format": "Dynamic",
+      "grid_page_length": 50,
+      "rows_threshold_for_grid_search": 20,
+      "fields": [
+        {
+          "fieldname": "section_main",
+          "fieldtype": "Section Break",
+          "label": "البيانات الأساسية"
+        },
+        {
+          "fieldname": "id",
+          "fieldtype": "Data",
+          "label": "Id",
+          "description": "المعرف الفريد",
+          "reqd": 1,
+          "read_only": 1
+        },
+        {
+          "fieldname": "name_ar",
+          "fieldtype": "Data",
+          "label": "Name Ar",
+          "description": "الاسم بالعربي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "name_en",
+          "fieldtype": "Data",
+          "label": "Name En",
+          "description": "الاسم بالإنجليزي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "degree_ar",
+          "fieldtype": "Data",
+          "label": "Degree Ar",
+          "description": "الدرجة العلمية بالعربي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "degree_en",
+          "fieldtype": "Data",
+          "label": "Degree En",
+          "description": "الدرجة العلمية بالإنجليزي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "specialization_ar",
+          "fieldtype": "Data",
+          "label": "Specialization Ar",
+          "description": "التخصص بالعربي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "specialization_en",
+          "fieldtype": "Data",
+          "label": "Specialization En",
+          "description": "التخصص بالإنجليزي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "college_ar",
+          "fieldtype": "Data",
+          "label": "College Ar",
+          "description": "الكلية بالعربي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "college_en",
+          "fieldtype": "Data",
+          "label": "College En",
+          "description": "الكلية بالإنجليزي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "department_ar",
+          "fieldtype": "Data",
+          "label": "Department Ar",
+          "description": "القسم بالعربي"
+        },
+        {
+          "fieldname": "department_en",
+          "fieldtype": "Data",
+          "label": "Department En",
+          "description": "القسم بالإنجليزي"
+        },
+        {
+          "fieldname": "email",
+          "fieldtype": "Data",
+          "label": "Email",
+          "description": "البريد الإلكتروني"
+        },
+        {
+          "fieldname": "phone",
+          "fieldtype": "Data",
+          "label": "Phone",
+          "description": "رقم الهاتف"
+        },
+        {
+          "fieldname": "bio_ar",
+          "fieldtype": "Long Text",
+          "label": "Bio Ar",
+          "description": "السيرة الذاتية بالعربي"
+        },
+        {
+          "fieldname": "bio_en",
+          "fieldtype": "Long Text",
+          "label": "Bio En",
+          "description": "السيرة الذاتية بالإنجليزي"
+        },
+        {
+          "fieldname": "image",
+          "fieldtype": "Data",
+          "label": "Image",
+          "description": "صورة العضو"
+        },
+        {
+          "fieldname": "order_index",
+          "fieldtype": "Int",
+          "label": "Order Index",
+          "description": "ترتيب العرض"
+        },
+        {
+          "fieldname": "is_active",
+          "fieldtype": "Check",
+          "label": "Is Active",
+          "description": "حالة النشر",
+          "reqd": 1
+        },
+        {
+          "fieldname": "created_at",
+          "fieldtype": "Datetime",
+          "label": "Created At",
+          "description": "تاريخ الإنشاء",
+          "reqd": 1,
+          "read_only": 1
+        },
+        {
+          "fieldname": "updated_at",
+          "fieldtype": "Datetime",
+          "label": "Updated At",
+          "description": "تاريخ التحديث",
+          "reqd": 1,
+          "read_only": 1
+        }
+      ],
+      "field_order": [
+        "section_main",
+        "id",
+        "name_ar",
+        "name_en",
+        "degree_ar",
+        "degree_en",
+        "specialization_ar",
+        "specialization_en",
+        "college_ar",
+        "college_en",
+        "department_ar",
+        "department_en",
+        "email",
+        "phone",
+        "bio_ar",
+        "bio_en",
+        "image",
+        "order_index",
+        "is_active",
+        "created_at",
+        "updated_at"
+      ],
+      "permissions": [
+        {
+          "role": "System Manager",
+          "read": 1,
+          "write": 1,
+          "create": 1,
+          "delete": 1,
+          "report": 1,
+          "export": 1,
+          "print": 1,
+          "email": 1,
+          "share": 1
+        }
+      ],
+      "actions": [],
+      "links": [],
+      "states": []
+    },
+    {
+      "name": "Program Faculty",
+      "label": "Program Faculty",
+      "module": "Academic",
+      "istable": 0,
+      "issingle": 0,
+      "custom": 1,
+      "allow_rename": 1,
+      "engine": "InnoDB",
+      "track_changes": 1,
+      "sort_field": "modified",
+      "sort_order": "DESC",
+      "row_format": "Dynamic",
+      "grid_page_length": 50,
+      "rows_threshold_for_grid_search": 20,
+      "fields": [
+        {
+          "fieldname": "section_main",
+          "fieldtype": "Section Break",
+          "label": "البيانات الأساسية"
+        },
+        {
+          "fieldname": "id",
+          "fieldtype": "Data",
+          "label": "Id",
+          "description": "المعرف الفريد",
+          "reqd": 1,
+          "read_only": 1
+        },
+        {
+          "fieldname": "program_id",
+          "fieldtype": "Link",
+          "label": "Program Id",
+          "description": "معرف البرنامج (FK)",
+          "reqd": 1,
+          "options": "Academic Programs"
+        },
+        {
+          "fieldname": "name_ar",
+          "fieldtype": "Data",
+          "label": "Name Ar",
+          "description": "الاسم بالعربي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "name_en",
+          "fieldtype": "Data",
+          "label": "Name En",
+          "description": "الاسم بالإنجليزي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "title_ar",
+          "fieldtype": "Data",
+          "label": "Title Ar",
+          "description": "اللقب بالعربي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "title_en",
+          "fieldtype": "Data",
+          "label": "Title En",
+          "description": "اللقب بالإنجليزي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "image",
+          "fieldtype": "Data",
+          "label": "Image",
+          "description": "الصورة"
+        },
+        {
+          "fieldname": "email",
+          "fieldtype": "Data",
+          "label": "Email",
+          "description": "البريد الإلكتروني"
+        },
+        {
+          "fieldname": "specialization_ar",
+          "fieldtype": "Data",
+          "label": "Specialization Ar",
+          "description": "التخصص بالعربي"
+        },
+        {
+          "fieldname": "specialization_en",
+          "fieldtype": "Data",
+          "label": "Specialization En",
+          "description": "التخصص بالإنجليزي"
+        }
+      ],
+      "field_order": [
+        "section_main",
+        "id",
+        "program_id",
+        "name_ar",
+        "name_en",
+        "title_ar",
+        "title_en",
+        "image",
+        "email",
+        "specialization_ar",
+        "specialization_en"
+      ],
+      "permissions": [
+        {
+          "role": "System Manager",
+          "read": 1,
+          "write": 1,
+          "create": 1,
+          "delete": 1,
+          "report": 1,
+          "export": 1,
+          "print": 1,
+          "email": 1,
+          "share": 1
+        }
+      ],
+      "actions": [],
+      "links": [],
+      "states": []
+    },
+    {
+      "name": "News Tags Items",
+      "label": "News Tags Items",
+      "module": "Content",
+      "istable": 1,
+      "custom": 1,
+      "allow_rename": 0,
+      "fields": [
+        {
+          "fieldname": "value",
+          "fieldtype": "Data",
+          "label": "القيمة",
+          "description": "القيمة كما هي (عنصر واحد من القائمة)"
+        },
+        {
+          "fieldname": "order_index",
+          "fieldtype": "Int",
+          "label": "ترتيب العرض",
+          "description": "ترتيب ظهور العنصر"
+        }
+      ],
+      "field_order": [
+        "value",
+        "order_index"
+      ],
+      "permissions": [
+        {
+          "role": "System Manager",
+          "read": 1,
+          "write": 1,
+          "create": 1,
+          "delete": 1,
+          "report": 1,
+          "export": 1,
+          "print": 1,
+          "email": 1,
+          "share": 1
+        }
+      ],
+      "actions": [],
+      "links": [],
+      "states": []
+    },
+    {
+      "name": "News",
+      "label": "News",
+      "module": "Content",
+      "istable": 0,
+      "issingle": 0,
+      "custom": 1,
+      "allow_rename": 1,
+      "engine": "InnoDB",
+      "track_changes": 1,
+      "sort_field": "modified",
+      "sort_order": "DESC",
+      "row_format": "Dynamic",
+      "grid_page_length": 50,
+      "rows_threshold_for_grid_search": 20,
+      "fields": [
+        {
+          "fieldname": "section_main",
+          "fieldtype": "Section Break",
+          "label": "البيانات الأساسية"
+        },
+        {
+          "fieldname": "id",
+          "fieldtype": "Data",
+          "label": "Id",
+          "description": "المعرف الفريد",
+          "reqd": 1,
+          "read_only": 1
+        },
+        {
+          "fieldname": "slug",
+          "fieldtype": "Data",
+          "label": "Slug",
+          "description": "الرابط الفريد",
+          "reqd": 1,
+          "unique": 1
+        },
+        {
+          "fieldname": "title_ar",
+          "fieldtype": "Data",
+          "label": "Title Ar",
+          "description": "العنوان بالعربي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "title_en",
+          "fieldtype": "Data",
+          "label": "Title En",
+          "description": "العنوان بالإنجليزي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "description_ar",
+          "fieldtype": "Long Text",
+          "label": "Description Ar",
+          "description": "الوصف المختصر بالعربي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "description_en",
+          "fieldtype": "Long Text",
+          "label": "Description En",
+          "description": "الوصف المختصر بالإنجليزي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "content_ar",
+          "fieldtype": "Long Text",
+          "label": "Content Ar",
+          "description": "المحتوى الكامل بالعربي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "content_en",
+          "fieldtype": "Long Text",
+          "label": "Content En",
+          "description": "المحتوى الكامل بالإنجليزي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "image",
+          "fieldtype": "Data",
+          "label": "Image",
+          "description": "الصورة الرئيسية"
+        },
+        {
+          "fieldname": "date",
+          "fieldtype": "Date",
+          "label": "Date",
+          "description": "تاريخ النشر",
+          "reqd": 1
+        },
+        {
+          "fieldname": "views",
+          "fieldtype": "Int",
+          "label": "Views",
+          "description": "عدد المشاهدات",
+          "reqd": 1
+        },
+        {
+          "fieldname": "tags",
+          "fieldtype": "Table",
+          "label": "Tags",
+          "description": "الوسوم (مصفوفة)",
+          "options": "News Tags Items",
+          "reqd": 0
+        },
+        {
+          "fieldname": "is_featured",
+          "fieldtype": "Check",
+          "label": "Is Featured",
+          "description": "خبر مميز"
+        },
+        {
+          "fieldname": "is_published",
+          "fieldtype": "Check",
+          "label": "Is Published",
+          "description": "حالة النشر",
+          "reqd": 1
+        },
+        {
+          "fieldname": "created_at",
+          "fieldtype": "Datetime",
+          "label": "Created At",
+          "description": "تاريخ الإنشاء",
+          "reqd": 1,
+          "read_only": 1
+        },
+        {
+          "fieldname": "updated_at",
+          "fieldtype": "Datetime",
+          "label": "Updated At",
+          "description": "تاريخ التحديث",
+          "reqd": 1,
+          "read_only": 1
+        }
+      ],
+      "field_order": [
+        "section_main",
+        "id",
+        "slug",
+        "title_ar",
+        "title_en",
+        "description_ar",
+        "description_en",
+        "content_ar",
+        "content_en",
+        "image",
+        "date",
+        "views",
+        "tags",
+        "is_featured",
+        "is_published",
+        "created_at",
+        "updated_at"
+      ],
+      "permissions": [
+        {
+          "role": "System Manager",
+          "read": 1,
+          "write": 1,
+          "create": 1,
+          "delete": 1,
+          "report": 1,
+          "export": 1,
+          "print": 1,
+          "email": 1,
+          "share": 1
+        }
+      ],
+      "actions": [],
+      "links": [],
+      "states": []
+    },
+    {
+      "name": "Events",
+      "label": "Events",
+      "module": "Content",
+      "istable": 0,
+      "issingle": 0,
+      "custom": 1,
+      "allow_rename": 1,
+      "engine": "InnoDB",
+      "track_changes": 1,
+      "sort_field": "modified",
+      "sort_order": "DESC",
+      "row_format": "Dynamic",
+      "grid_page_length": 50,
+      "rows_threshold_for_grid_search": 20,
+      "fields": [
+        {
+          "fieldname": "section_main",
+          "fieldtype": "Section Break",
+          "label": "البيانات الأساسية"
+        },
+        {
+          "fieldname": "id",
+          "fieldtype": "Data",
+          "label": "Id",
+          "description": "المعرف الفريد",
+          "reqd": 1,
+          "read_only": 1
+        },
+        {
+          "fieldname": "slug",
+          "fieldtype": "Data",
+          "label": "Slug",
+          "description": "الرابط الفريد",
+          "reqd": 1,
+          "unique": 1
+        },
+        {
+          "fieldname": "title_ar",
+          "fieldtype": "Data",
+          "label": "Title Ar",
+          "description": "العنوان بالعربي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "title_en",
+          "fieldtype": "Data",
+          "label": "Title En",
+          "description": "العنوان بالإنجليزي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "description_ar",
+          "fieldtype": "Long Text",
+          "label": "Description Ar",
+          "description": "الوصف بالعربي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "description_en",
+          "fieldtype": "Long Text",
+          "label": "Description En",
+          "description": "الوصف بالإنجليزي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "content_ar",
+          "fieldtype": "Long Text",
+          "label": "Content Ar",
+          "description": "المحتوى التفصيلي بالعربي"
+        },
+        {
+          "fieldname": "content_en",
+          "fieldtype": "Long Text",
+          "label": "Content En",
+          "description": "المحتوى التفصيلي بالإنجليزي"
+        },
+        {
+          "fieldname": "date",
+          "fieldtype": "Date",
+          "label": "Date",
+          "description": "تاريخ البداية",
+          "reqd": 1
+        },
+        {
+          "fieldname": "end_date",
+          "fieldtype": "Date",
+          "label": "End Date",
+          "description": "تاريخ النهاية"
+        },
+        {
+          "fieldname": "location_ar",
+          "fieldtype": "Data",
+          "label": "Location Ar",
+          "description": "المكان بالعربي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "location_en",
+          "fieldtype": "Data",
+          "label": "Location En",
+          "description": "المكان بالإنجليزي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "organizer_ar",
+          "fieldtype": "Data",
+          "label": "Organizer Ar",
+          "description": "الجهة المنظمة بالعربي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "organizer_en",
+          "fieldtype": "Data",
+          "label": "Organizer En",
+          "description": "الجهة المنظمة بالإنجليزي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "category",
+          "fieldtype": "Select",
+          "label": "Category",
+          "description": "التصنيف (academic/cultural/sports/social/other)",
+          "reqd": 1,
+          "options": "academic\ncultural\nsports\nsocial\nother"
+        },
+        {
+          "fieldname": "status",
+          "fieldtype": "Select",
+          "label": "Status",
+          "description": "الحالة (upcoming/ongoing/completed)",
+          "reqd": 1,
+          "options": "upcoming\nongoing\ncompleted"
+        },
+        {
+          "fieldname": "registration_required",
+          "fieldtype": "Check",
+          "label": "Registration Required",
+          "description": "يتطلب تسجيل",
+          "reqd": 1
+        },
+        {
+          "fieldname": "registration_link",
+          "fieldtype": "Data",
+          "label": "Registration Link",
+          "description": "رابط التسجيل"
+        },
+        {
+          "fieldname": "image",
+          "fieldtype": "Data",
+          "label": "Image",
+          "description": "الصورة"
+        },
+        {
+          "fieldname": "is_published",
+          "fieldtype": "Check",
+          "label": "Is Published",
+          "description": "حالة النشر",
+          "reqd": 1
+        },
+        {
+          "fieldname": "created_at",
+          "fieldtype": "Datetime",
+          "label": "Created At",
+          "description": "تاريخ الإنشاء",
+          "reqd": 1,
+          "read_only": 1
+        },
+        {
+          "fieldname": "updated_at",
+          "fieldtype": "Datetime",
+          "label": "Updated At",
+          "description": "تاريخ التحديث",
+          "reqd": 1,
+          "read_only": 1
+        }
+      ],
+      "field_order": [
+        "section_main",
+        "id",
+        "slug",
+        "title_ar",
+        "title_en",
+        "description_ar",
+        "description_en",
+        "content_ar",
+        "content_en",
+        "date",
+        "end_date",
+        "location_ar",
+        "location_en",
+        "organizer_ar",
+        "organizer_en",
+        "category",
+        "status",
+        "registration_required",
+        "registration_link",
+        "image",
+        "is_published",
+        "created_at",
+        "updated_at"
+      ],
+      "permissions": [
+        {
+          "role": "System Manager",
+          "read": 1,
+          "write": 1,
+          "create": 1,
+          "delete": 1,
+          "report": 1,
+          "export": 1,
+          "print": 1,
+          "email": 1,
+          "share": 1
+        }
+      ],
+      "actions": [],
+      "links": [],
+      "states": []
+    },
+    {
+      "name": "Centers",
+      "label": "Centers",
+      "module": "Content",
+      "istable": 0,
+      "issingle": 0,
+      "custom": 1,
+      "allow_rename": 1,
+      "engine": "InnoDB",
+      "track_changes": 1,
+      "sort_field": "modified",
+      "sort_order": "DESC",
+      "row_format": "Dynamic",
+      "grid_page_length": 50,
+      "rows_threshold_for_grid_search": 20,
+      "fields": [
+        {
+          "fieldname": "section_main",
+          "fieldtype": "Section Break",
+          "label": "البيانات الأساسية"
+        },
+        {
+          "fieldname": "id",
+          "fieldtype": "Data",
+          "label": "Id",
+          "description": "المعرف الفريد",
+          "reqd": 1,
+          "read_only": 1
+        },
+        {
+          "fieldname": "title_ar",
+          "fieldtype": "Data",
+          "label": "Title Ar",
+          "description": "العنوان بالعربي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "title_en",
+          "fieldtype": "Data",
+          "label": "Title En",
+          "description": "العنوان بالإنجليزي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "desc_ar",
+          "fieldtype": "Long Text",
+          "label": "Desc Ar",
+          "description": "الوصف بالعربي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "desc_en",
+          "fieldtype": "Long Text",
+          "label": "Desc En",
+          "description": "الوصف بالإنجليزي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "image",
+          "fieldtype": "Data",
+          "label": "Image",
+          "description": "الصورة"
+        },
+        {
+          "fieldname": "location",
+          "fieldtype": "Data",
+          "label": "Location",
+          "description": "الموقع"
+        },
+        {
+          "fieldname": "phone",
+          "fieldtype": "Data",
+          "label": "Phone",
+          "description": "رقم الهاتف"
+        },
+        {
+          "fieldname": "email",
+          "fieldtype": "Data",
+          "label": "Email",
+          "description": "البريد الإلكتروني"
+        },
+        {
+          "fieldname": "order_index",
+          "fieldtype": "Int",
+          "label": "Order Index",
+          "description": "ترتيب العرض"
+        },
+        {
+          "fieldname": "is_active",
+          "fieldtype": "Check",
+          "label": "Is Active",
+          "description": "حالة النشر",
+          "reqd": 1
+        },
+        {
+          "fieldname": "created_at",
+          "fieldtype": "Datetime",
+          "label": "Created At",
+          "description": "تاريخ الإنشاء",
+          "reqd": 1,
+          "read_only": 1
+        },
+        {
+          "fieldname": "updated_at",
+          "fieldtype": "Datetime",
+          "label": "Updated At",
+          "description": "تاريخ التحديث",
+          "reqd": 1,
+          "read_only": 1
+        }
+      ],
+      "field_order": [
+        "section_main",
+        "id",
+        "title_ar",
+        "title_en",
+        "desc_ar",
+        "desc_en",
+        "image",
+        "location",
+        "phone",
+        "email",
+        "order_index",
+        "is_active",
+        "created_at",
+        "updated_at"
+      ],
+      "permissions": [
+        {
+          "role": "System Manager",
+          "read": 1,
+          "write": 1,
+          "create": 1,
+          "delete": 1,
+          "report": 1,
+          "export": 1,
+          "print": 1,
+          "email": 1,
+          "share": 1
+        }
+      ],
+      "actions": [],
+      "links": [],
+      "states": []
+    },
+    {
+      "name": "Center Services",
+      "label": "Center Services",
+      "module": "Content",
+      "istable": 0,
+      "issingle": 0,
+      "custom": 1,
+      "allow_rename": 1,
+      "engine": "InnoDB",
+      "track_changes": 1,
+      "sort_field": "modified",
+      "sort_order": "DESC",
+      "row_format": "Dynamic",
+      "grid_page_length": 50,
+      "rows_threshold_for_grid_search": 20,
+      "fields": [
+        {
+          "fieldname": "section_main",
+          "fieldtype": "Section Break",
+          "label": "البيانات الأساسية"
+        },
+        {
+          "fieldname": "id",
+          "fieldtype": "Data",
+          "label": "Id",
+          "description": "المعرف الفريد",
+          "reqd": 1,
+          "read_only": 1
+        },
+        {
+          "fieldname": "center_id",
+          "fieldtype": "Link",
+          "label": "Center Id",
+          "description": "معرف المركز (FK)",
+          "reqd": 1,
+          "options": "Centers"
+        },
+        {
+          "fieldname": "text_ar",
+          "fieldtype": "Data",
+          "label": "Text Ar",
+          "description": "الخدمة بالعربي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "text_en",
+          "fieldtype": "Data",
+          "label": "Text En",
+          "description": "الخدمة بالإنجليزي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "order_index",
+          "fieldtype": "Int",
+          "label": "Order Index",
+          "description": "ترتيب العرض"
+        }
+      ],
+      "field_order": [
+        "section_main",
+        "id",
+        "center_id",
+        "text_ar",
+        "text_en",
+        "order_index"
+      ],
+      "permissions": [
+        {
+          "role": "System Manager",
+          "read": 1,
+          "write": 1,
+          "create": 1,
+          "delete": 1,
+          "report": 1,
+          "export": 1,
+          "print": 1,
+          "email": 1,
+          "share": 1
+        }
+      ],
+      "actions": [],
+      "links": [],
+      "states": []
+    },
+    {
+      "name": "Center Programs",
+      "label": "Center Programs",
+      "module": "Content",
+      "istable": 0,
+      "issingle": 0,
+      "custom": 1,
+      "allow_rename": 1,
+      "engine": "InnoDB",
+      "track_changes": 1,
+      "sort_field": "modified",
+      "sort_order": "DESC",
+      "row_format": "Dynamic",
+      "grid_page_length": 50,
+      "rows_threshold_for_grid_search": 20,
+      "fields": [
+        {
+          "fieldname": "section_main",
+          "fieldtype": "Section Break",
+          "label": "البيانات الأساسية"
+        },
+        {
+          "fieldname": "id",
+          "fieldtype": "Data",
+          "label": "Id",
+          "description": "المعرف الفريد",
+          "reqd": 1,
+          "read_only": 1
+        },
+        {
+          "fieldname": "center_id",
+          "fieldtype": "Link",
+          "label": "Center Id",
+          "description": "معرف المركز (FK)",
+          "reqd": 1,
+          "options": "Centers"
+        },
+        {
+          "fieldname": "text_ar",
+          "fieldtype": "Data",
+          "label": "Text Ar",
+          "description": "البرنامج بالعربي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "text_en",
+          "fieldtype": "Data",
+          "label": "Text En",
+          "description": "البرنامج بالإنجليزي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "order_index",
+          "fieldtype": "Int",
+          "label": "Order Index",
+          "description": "ترتيب العرض"
+        }
+      ],
+      "field_order": [
+        "section_main",
+        "id",
+        "center_id",
+        "text_ar",
+        "text_en",
+        "order_index"
+      ],
+      "permissions": [
+        {
+          "role": "System Manager",
+          "read": 1,
+          "write": 1,
+          "create": 1,
+          "delete": 1,
+          "report": 1,
+          "export": 1,
+          "print": 1,
+          "email": 1,
+          "share": 1
+        }
+      ],
+      "actions": [],
+      "links": [],
+      "states": []
+    },
+    {
+      "name": "Partners",
+      "label": "Partners",
+      "module": "Content",
+      "istable": 0,
+      "issingle": 0,
+      "custom": 1,
+      "allow_rename": 1,
+      "engine": "InnoDB",
+      "track_changes": 1,
+      "sort_field": "modified",
+      "sort_order": "DESC",
+      "row_format": "Dynamic",
+      "grid_page_length": 50,
+      "rows_threshold_for_grid_search": 20,
+      "fields": [
+        {
+          "fieldname": "section_main",
+          "fieldtype": "Section Break",
+          "label": "البيانات الأساسية"
+        },
+        {
+          "fieldname": "id",
+          "fieldtype": "Data",
+          "label": "Id",
+          "description": "المعرف الفريد",
+          "reqd": 1,
+          "read_only": 1
+        },
+        {
+          "fieldname": "name_ar",
+          "fieldtype": "Data",
+          "label": "Name Ar",
+          "description": "الاسم بالعربي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "name_en",
+          "fieldtype": "Data",
+          "label": "Name En",
+          "description": "الاسم بالإنجليزي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "logo",
+          "fieldtype": "Data",
+          "label": "Logo",
+          "description": "شعار الشريك",
+          "reqd": 1
+        },
+        {
+          "fieldname": "type",
+          "fieldtype": "Select",
+          "label": "Type",
+          "description": "النوع (local/international)",
+          "reqd": 1,
+          "options": "local\ninternational"
+        },
+        {
+          "fieldname": "website",
+          "fieldtype": "Data",
+          "label": "Website",
+          "description": "الموقع الإلكتروني"
+        },
+        {
+          "fieldname": "order_index",
+          "fieldtype": "Int",
+          "label": "Order Index",
+          "description": "ترتيب العرض"
+        },
+        {
+          "fieldname": "is_active",
+          "fieldtype": "Check",
+          "label": "Is Active",
+          "description": "حالة النشر",
+          "reqd": 1
+        },
+        {
+          "fieldname": "created_at",
+          "fieldtype": "Datetime",
+          "label": "Created At",
+          "description": "تاريخ الإنشاء",
+          "reqd": 1,
+          "read_only": 1
+        }
+      ],
+      "field_order": [
+        "section_main",
+        "id",
+        "name_ar",
+        "name_en",
+        "logo",
+        "type",
+        "website",
+        "order_index",
+        "is_active",
+        "created_at"
+      ],
+      "permissions": [
+        {
+          "role": "System Manager",
+          "read": 1,
+          "write": 1,
+          "create": 1,
+          "delete": 1,
+          "report": 1,
+          "export": 1,
+          "print": 1,
+          "email": 1,
+          "share": 1
+        }
+      ],
+      "actions": [],
+      "links": [],
+      "states": []
+    },
+    {
+      "name": "Offers",
+      "label": "Offers",
+      "module": "Content",
+      "istable": 0,
+      "issingle": 0,
+      "custom": 1,
+      "allow_rename": 1,
+      "engine": "InnoDB",
+      "track_changes": 1,
+      "sort_field": "modified",
+      "sort_order": "DESC",
+      "row_format": "Dynamic",
+      "grid_page_length": 50,
+      "rows_threshold_for_grid_search": 20,
+      "fields": [
+        {
+          "fieldname": "section_main",
+          "fieldtype": "Section Break",
+          "label": "البيانات الأساسية"
+        },
+        {
+          "fieldname": "id",
+          "fieldtype": "Data",
+          "label": "Id",
+          "description": "المعرف الفريد",
+          "reqd": 1,
+          "read_only": 1
+        },
+        {
+          "fieldname": "title_ar",
+          "fieldtype": "Data",
+          "label": "Title Ar",
+          "description": "العنوان بالعربي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "title_en",
+          "fieldtype": "Data",
+          "label": "Title En",
+          "description": "العنوان بالإنجليزي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "desc_ar",
+          "fieldtype": "Long Text",
+          "label": "Desc Ar",
+          "description": "الوصف بالعربي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "desc_en",
+          "fieldtype": "Long Text",
+          "label": "Desc En",
+          "description": "الوصف بالإنجليزي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "image",
+          "fieldtype": "Data",
+          "label": "Image",
+          "description": "الصورة"
+        },
+        {
+          "fieldname": "category",
+          "fieldtype": "Select",
+          "label": "Category",
+          "description": "التصنيف (academic/scholarship/training/other)",
+          "reqd": 1,
+          "options": "academic\nscholarship\ntraining\nother"
+        },
+        {
+          "fieldname": "valid_until",
+          "fieldtype": "Date",
+          "label": "Valid Until",
+          "description": "تاريخ الانتهاء"
+        },
+        {
+          "fieldname": "is_active",
+          "fieldtype": "Check",
+          "label": "Is Active",
+          "description": "حالة النشر",
+          "reqd": 1
+        },
+        {
+          "fieldname": "created_at",
+          "fieldtype": "Datetime",
+          "label": "Created At",
+          "description": "تاريخ الإنشاء",
+          "reqd": 1,
+          "read_only": 1
+        },
+        {
+          "fieldname": "updated_at",
+          "fieldtype": "Datetime",
+          "label": "Updated At",
+          "description": "تاريخ التحديث",
+          "reqd": 1,
+          "read_only": 1
+        }
+      ],
+      "field_order": [
+        "section_main",
+        "id",
+        "title_ar",
+        "title_en",
+        "desc_ar",
+        "desc_en",
+        "image",
+        "category",
+        "valid_until",
+        "is_active",
+        "created_at",
+        "updated_at"
+      ],
+      "permissions": [
+        {
+          "role": "System Manager",
+          "read": 1,
+          "write": 1,
+          "create": 1,
+          "delete": 1,
+          "report": 1,
+          "export": 1,
+          "print": 1,
+          "email": 1,
+          "share": 1
+        }
+      ],
+      "actions": [],
+      "links": [],
+      "states": []
+    },
+    {
+      "name": "FAQs",
+      "label": "FAQs",
+      "module": "Content",
+      "istable": 0,
+      "issingle": 0,
+      "custom": 1,
+      "allow_rename": 1,
+      "engine": "InnoDB",
+      "track_changes": 1,
+      "sort_field": "modified",
+      "sort_order": "DESC",
+      "row_format": "Dynamic",
+      "grid_page_length": 50,
+      "rows_threshold_for_grid_search": 20,
+      "fields": [
+        {
+          "fieldname": "section_main",
+          "fieldtype": "Section Break",
+          "label": "البيانات الأساسية"
+        },
+        {
+          "fieldname": "id",
+          "fieldtype": "Data",
+          "label": "Id",
+          "description": "المعرف الفريد",
+          "reqd": 1,
+          "read_only": 1
+        },
+        {
+          "fieldname": "question_ar",
+          "fieldtype": "Long Text",
+          "label": "Question Ar",
+          "description": "السؤال بالعربي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "question_en",
+          "fieldtype": "Long Text",
+          "label": "Question En",
+          "description": "السؤال بالإنجليزي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "answer_ar",
+          "fieldtype": "Long Text",
+          "label": "Answer Ar",
+          "description": "الإجابة بالعربي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "answer_en",
+          "fieldtype": "Long Text",
+          "label": "Answer En",
+          "description": "الإجابة بالإنجليزي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "category",
+          "fieldtype": "Data",
+          "label": "Category",
+          "description": "التصنيف"
+        },
+        {
+          "fieldname": "order_index",
+          "fieldtype": "Int",
+          "label": "Order Index",
+          "description": "ترتيب العرض"
+        },
+        {
+          "fieldname": "is_active",
+          "fieldtype": "Check",
+          "label": "Is Active",
+          "description": "حالة النشر",
+          "reqd": 1
+        },
+        {
+          "fieldname": "created_at",
+          "fieldtype": "Datetime",
+          "label": "Created At",
+          "description": "تاريخ الإنشاء",
+          "reqd": 1,
+          "read_only": 1
+        }
+      ],
+      "field_order": [
+        "section_main",
+        "id",
+        "question_ar",
+        "question_en",
+        "answer_ar",
+        "answer_en",
+        "category",
+        "order_index",
+        "is_active",
+        "created_at"
+      ],
+      "permissions": [
+        {
+          "role": "System Manager",
+          "read": 1,
+          "write": 1,
+          "create": 1,
+          "delete": 1,
+          "report": 1,
+          "export": 1,
+          "print": 1,
+          "email": 1,
+          "share": 1
+        }
+      ],
+      "actions": [],
+      "links": [],
+      "states": []
+    },
+    {
+      "name": "Team Members",
+      "label": "Team Members",
+      "module": "Content",
+      "istable": 0,
+      "issingle": 0,
+      "custom": 1,
+      "allow_rename": 1,
+      "engine": "InnoDB",
+      "track_changes": 1,
+      "sort_field": "modified",
+      "sort_order": "DESC",
+      "row_format": "Dynamic",
+      "grid_page_length": 50,
+      "rows_threshold_for_grid_search": 20,
+      "fields": [
+        {
+          "fieldname": "section_main",
+          "fieldtype": "Section Break",
+          "label": "البيانات الأساسية"
+        },
+        {
+          "fieldname": "id",
+          "fieldtype": "Data",
+          "label": "Id",
+          "description": "المعرف الفريد",
+          "reqd": 1,
+          "read_only": 1
+        },
+        {
+          "fieldname": "name_ar",
+          "fieldtype": "Data",
+          "label": "Name Ar",
+          "description": "الاسم بالعربي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "name_en",
+          "fieldtype": "Data",
+          "label": "Name En",
+          "description": "الاسم بالإنجليزي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "position_ar",
+          "fieldtype": "Data",
+          "label": "Position Ar",
+          "description": "المنصب بالعربي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "position_en",
+          "fieldtype": "Data",
+          "label": "Position En",
+          "description": "المنصب بالإنجليزي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "email",
+          "fieldtype": "Data",
+          "label": "Email",
+          "description": "البريد الإلكتروني"
+        },
+        {
+          "fieldname": "phone",
+          "fieldtype": "Data",
+          "label": "Phone",
+          "description": "رقم الهاتف"
+        },
+        {
+          "fieldname": "bio_ar",
+          "fieldtype": "Long Text",
+          "label": "Bio Ar",
+          "description": "السيرة الذاتية بالعربي"
+        },
+        {
+          "fieldname": "bio_en",
+          "fieldtype": "Long Text",
+          "label": "Bio En",
+          "description": "السيرة الذاتية بالإنجليزي"
+        },
+        {
+          "fieldname": "image",
+          "fieldtype": "Data",
+          "label": "Image",
+          "description": "الصورة"
+        },
+        {
+          "fieldname": "order_index",
+          "fieldtype": "Int",
+          "label": "Order Index",
+          "description": "ترتيب العرض"
+        },
+        {
+          "fieldname": "is_active",
+          "fieldtype": "Check",
+          "label": "Is Active",
+          "description": "حالة النشر",
+          "reqd": 1
+        },
+        {
+          "fieldname": "created_at",
+          "fieldtype": "Datetime",
+          "label": "Created At",
+          "description": "تاريخ الإنشاء",
+          "reqd": 1,
+          "read_only": 1
+        }
+      ],
+      "field_order": [
+        "section_main",
+        "id",
+        "name_ar",
+        "name_en",
+        "position_ar",
+        "position_en",
+        "email",
+        "phone",
+        "bio_ar",
+        "bio_en",
+        "image",
+        "order_index",
+        "is_active",
+        "created_at"
+      ],
+      "permissions": [
+        {
+          "role": "System Manager",
+          "read": 1,
+          "write": 1,
+          "create": 1,
+          "delete": 1,
+          "report": 1,
+          "export": 1,
+          "print": 1,
+          "email": 1,
+          "share": 1
+        }
+      ],
+      "actions": [],
+      "links": [],
+      "states": []
+    },
+    {
+      "name": "Projects Students Items",
+      "label": "Projects Students Items",
+      "module": "Content",
+      "istable": 1,
+      "custom": 1,
+      "allow_rename": 0,
+      "fields": [
+        {
+          "fieldname": "value",
+          "fieldtype": "Data",
+          "label": "القيمة",
+          "description": "القيمة كما هي (عنصر واحد من القائمة)"
+        },
+        {
+          "fieldname": "order_index",
+          "fieldtype": "Int",
+          "label": "ترتيب العرض",
+          "description": "ترتيب ظهور العنصر"
+        }
+      ],
+      "field_order": [
+        "value",
+        "order_index"
+      ],
+      "permissions": [
+        {
+          "role": "System Manager",
+          "read": 1,
+          "write": 1,
+          "create": 1,
+          "delete": 1,
+          "report": 1,
+          "export": 1,
+          "print": 1,
+          "email": 1,
+          "share": 1
+        }
+      ],
+      "actions": [],
+      "links": [],
+      "states": []
+    },
+    {
+      "name": "Projects Images Items",
+      "label": "Projects Images Items",
+      "module": "Content",
+      "istable": 1,
+      "custom": 1,
+      "allow_rename": 0,
+      "fields": [
+        {
+          "fieldname": "value",
+          "fieldtype": "Data",
+          "label": "القيمة",
+          "description": "القيمة كما هي (عنصر واحد من القائمة)"
+        },
+        {
+          "fieldname": "order_index",
+          "fieldtype": "Int",
+          "label": "ترتيب العرض",
+          "description": "ترتيب ظهور العنصر"
+        }
+      ],
+      "field_order": [
+        "value",
+        "order_index"
+      ],
+      "permissions": [
+        {
+          "role": "System Manager",
+          "read": 1,
+          "write": 1,
+          "create": 1,
+          "delete": 1,
+          "report": 1,
+          "export": 1,
+          "print": 1,
+          "email": 1,
+          "share": 1
+        }
+      ],
+      "actions": [],
+      "links": [],
+      "states": []
+    },
+    {
+      "name": "Projects",
+      "label": "Projects",
+      "module": "Content",
+      "istable": 0,
+      "issingle": 0,
+      "custom": 1,
+      "allow_rename": 1,
+      "engine": "InnoDB",
+      "track_changes": 1,
+      "sort_field": "modified",
+      "sort_order": "DESC",
+      "row_format": "Dynamic",
+      "grid_page_length": 50,
+      "rows_threshold_for_grid_search": 20,
+      "fields": [
+        {
+          "fieldname": "section_main",
+          "fieldtype": "Section Break",
+          "label": "البيانات الأساسية"
+        },
+        {
+          "fieldname": "id",
+          "fieldtype": "Data",
+          "label": "Id",
+          "description": "المعرف الفريد",
+          "reqd": 1,
+          "read_only": 1
+        },
+        {
+          "fieldname": "slug",
+          "fieldtype": "Data",
+          "label": "Slug",
+          "description": "الرابط الفريد",
+          "reqd": 1,
+          "unique": 1
+        },
+        {
+          "fieldname": "title_ar",
+          "fieldtype": "Data",
+          "label": "Title Ar",
+          "description": "العنوان بالعربي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "title_en",
+          "fieldtype": "Data",
+          "label": "Title En",
+          "description": "العنوان بالإنجليزي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "desc_ar",
+          "fieldtype": "Long Text",
+          "label": "Desc Ar",
+          "description": "الوصف بالعربي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "desc_en",
+          "fieldtype": "Long Text",
+          "label": "Desc En",
+          "description": "الوصف بالإنجليزي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "details_ar",
+          "fieldtype": "Long Text",
+          "label": "Details Ar",
+          "description": "التفاصيل بالعربي"
+        },
+        {
+          "fieldname": "details_en",
+          "fieldtype": "Long Text",
+          "label": "Details En",
+          "description": "التفاصيل بالإنجليزي"
+        },
+        {
+          "fieldname": "students",
+          "fieldtype": "Table",
+          "label": "Students",
+          "description": "أسماء الطلاب (مصفوفة)",
+          "options": "Projects Students Items",
+          "reqd": 1
+        },
+        {
+          "fieldname": "progress",
+          "fieldtype": "Int",
+          "label": "Progress",
+          "description": "نسبة التقدم (0-100)"
+        },
+        {
+          "fieldname": "year",
+          "fieldtype": "Int",
+          "label": "Year",
+          "description": "السنة"
+        },
+        {
+          "fieldname": "status",
+          "fieldtype": "Select",
+          "label": "Status",
+          "description": "الحالة (current/completed)",
+          "reqd": 1,
+          "options": "current\ncompleted"
+        },
+        {
+          "fieldname": "images",
+          "fieldtype": "Table",
+          "label": "Images",
+          "description": "صور المشروع (مصفوفة)",
+          "options": "Projects Images Items",
+          "reqd": 0
+        },
+        {
+          "fieldname": "start_date",
+          "fieldtype": "Date",
+          "label": "Start Date",
+          "description": "تاريخ البداية"
+        },
+        {
+          "fieldname": "end_date",
+          "fieldtype": "Date",
+          "label": "End Date",
+          "description": "تاريخ النهاية"
+        },
+        {
+          "fieldname": "is_published",
+          "fieldtype": "Check",
+          "label": "Is Published",
+          "description": "حالة النشر",
+          "reqd": 1
+        },
+        {
+          "fieldname": "created_at",
+          "fieldtype": "Datetime",
+          "label": "Created At",
+          "description": "تاريخ الإنشاء",
+          "reqd": 1,
+          "read_only": 1
+        },
+        {
+          "fieldname": "updated_at",
+          "fieldtype": "Datetime",
+          "label": "Updated At",
+          "description": "تاريخ التحديث",
+          "reqd": 1,
+          "read_only": 1
+        }
+      ],
+      "field_order": [
+        "section_main",
+        "id",
+        "slug",
+        "title_ar",
+        "title_en",
+        "desc_ar",
+        "desc_en",
+        "details_ar",
+        "details_en",
+        "students",
+        "progress",
+        "year",
+        "status",
+        "images",
+        "start_date",
+        "end_date",
+        "is_published",
+        "created_at",
+        "updated_at"
+      ],
+      "permissions": [
+        {
+          "role": "System Manager",
+          "read": 1,
+          "write": 1,
+          "create": 1,
+          "delete": 1,
+          "report": 1,
+          "export": 1,
+          "print": 1,
+          "email": 1,
+          "share": 1
+        }
+      ],
+      "actions": [],
+      "links": [],
+      "states": []
+    },
+    {
+      "name": "Campus Life",
+      "label": "Campus Life",
+      "module": "Content",
+      "istable": 0,
+      "issingle": 0,
+      "custom": 1,
+      "allow_rename": 1,
+      "engine": "InnoDB",
+      "track_changes": 1,
+      "sort_field": "modified",
+      "sort_order": "DESC",
+      "row_format": "Dynamic",
+      "grid_page_length": 50,
+      "rows_threshold_for_grid_search": 20,
+      "fields": [
+        {
+          "fieldname": "section_main",
+          "fieldtype": "Section Break",
+          "label": "البيانات الأساسية"
+        },
+        {
+          "fieldname": "id",
+          "fieldtype": "Data",
+          "label": "Id",
+          "description": "المعرف الفريد",
+          "reqd": 1,
+          "read_only": 1
+        },
+        {
+          "fieldname": "title_ar",
+          "fieldtype": "Data",
+          "label": "Title Ar",
+          "description": "العنوان بالعربي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "title_en",
+          "fieldtype": "Data",
+          "label": "Title En",
+          "description": "العنوان بالإنجليزي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "description_ar",
+          "fieldtype": "Long Text",
+          "label": "Description Ar",
+          "description": "الوصف بالعربي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "description_en",
+          "fieldtype": "Long Text",
+          "label": "Description En",
+          "description": "الوصف بالإنجليزي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "category",
+          "fieldtype": "Select",
+          "label": "Category",
+          "description": "التصنيف (facilities/activities/campus)",
+          "reqd": 1,
+          "options": "facilities\nactivities\ncampus"
+        },
+        {
+          "fieldname": "image",
+          "fieldtype": "Data",
+          "label": "Image",
+          "description": "الصورة"
+        },
+        {
+          "fieldname": "order_index",
+          "fieldtype": "Int",
+          "label": "Order Index",
+          "description": "ترتيب العرض"
+        },
+        {
+          "fieldname": "is_active",
+          "fieldtype": "Check",
+          "label": "Is Active",
+          "description": "حالة النشر",
+          "reqd": 1
+        },
+        {
+          "fieldname": "created_at",
+          "fieldtype": "Datetime",
+          "label": "Created At",
+          "description": "تاريخ الإنشاء",
+          "reqd": 1,
+          "read_only": 1
+        }
+      ],
+      "field_order": [
+        "section_main",
+        "id",
+        "title_ar",
+        "title_en",
+        "description_ar",
+        "description_en",
+        "category",
+        "image",
+        "order_index",
+        "is_active",
+        "created_at"
+      ],
+      "permissions": [
+        {
+          "role": "System Manager",
+          "read": 1,
+          "write": 1,
+          "create": 1,
+          "delete": 1,
+          "report": 1,
+          "export": 1,
+          "print": 1,
+          "email": 1,
+          "share": 1
+        }
+      ],
+      "actions": [],
+      "links": [],
+      "states": []
+    },
+    {
+      "name": "Blog Posts Tags Items",
+      "label": "Blog Posts Tags Items",
+      "module": "Content",
+      "istable": 1,
+      "custom": 1,
+      "allow_rename": 0,
+      "fields": [
+        {
+          "fieldname": "value",
+          "fieldtype": "Data",
+          "label": "القيمة",
+          "description": "القيمة كما هي (عنصر واحد من القائمة)"
+        },
+        {
+          "fieldname": "order_index",
+          "fieldtype": "Int",
+          "label": "ترتيب العرض",
+          "description": "ترتيب ظهور العنصر"
+        }
+      ],
+      "field_order": [
+        "value",
+        "order_index"
+      ],
+      "permissions": [
+        {
+          "role": "System Manager",
+          "read": 1,
+          "write": 1,
+          "create": 1,
+          "delete": 1,
+          "report": 1,
+          "export": 1,
+          "print": 1,
+          "email": 1,
+          "share": 1
+        }
+      ],
+      "actions": [],
+      "links": [],
+      "states": []
+    },
+    {
+      "name": "Blog Posts",
+      "label": "Blog Posts",
+      "module": "Content",
+      "istable": 0,
+      "issingle": 0,
+      "custom": 1,
+      "allow_rename": 1,
+      "engine": "InnoDB",
+      "track_changes": 1,
+      "sort_field": "modified",
+      "sort_order": "DESC",
+      "row_format": "Dynamic",
+      "grid_page_length": 50,
+      "rows_threshold_for_grid_search": 20,
+      "fields": [
+        {
+          "fieldname": "section_main",
+          "fieldtype": "Section Break",
+          "label": "البيانات الأساسية"
+        },
+        {
+          "fieldname": "id",
+          "fieldtype": "Data",
+          "label": "Id",
+          "description": "المعرف الفريد",
+          "reqd": 1,
+          "read_only": 1
+        },
+        {
+          "fieldname": "slug",
+          "fieldtype": "Data",
+          "label": "Slug",
+          "description": "الرابط الفريد",
+          "reqd": 1,
+          "unique": 1
+        },
+        {
+          "fieldname": "title_ar",
+          "fieldtype": "Data",
+          "label": "Title Ar",
+          "description": "العنوان بالعربي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "title_en",
+          "fieldtype": "Data",
+          "label": "Title En",
+          "description": "العنوان بالإنجليزي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "excerpt_ar",
+          "fieldtype": "Long Text",
+          "label": "Excerpt Ar",
+          "description": "المقتطف بالعربي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "excerpt_en",
+          "fieldtype": "Long Text",
+          "label": "Excerpt En",
+          "description": "المقتطف بالإنجليزي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "content_ar",
+          "fieldtype": "Long Text",
+          "label": "Content Ar",
+          "description": "المحتوى بالعربي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "content_en",
+          "fieldtype": "Long Text",
+          "label": "Content En",
+          "description": "المحتوى بالإنجليزي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "author_ar",
+          "fieldtype": "Data",
+          "label": "Author Ar",
+          "description": "الكاتب بالعربي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "author_en",
+          "fieldtype": "Data",
+          "label": "Author En",
+          "description": "الكاتب بالإنجليزي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "category",
+          "fieldtype": "Data",
+          "label": "Category",
+          "description": "التصنيف",
+          "reqd": 1
+        },
+        {
+          "fieldname": "tags",
+          "fieldtype": "Table",
+          "label": "Tags",
+          "description": "الوسوم (مصفوفة)",
+          "options": "Blog Posts Tags Items",
+          "reqd": 0
+        },
+        {
+          "fieldname": "image",
+          "fieldtype": "Data",
+          "label": "Image",
+          "description": "الصورة الرئيسية"
+        },
+        {
+          "fieldname": "views",
+          "fieldtype": "Int",
+          "label": "Views",
+          "description": "عدد المشاهدات",
+          "reqd": 1
+        },
+        {
+          "fieldname": "is_published",
+          "fieldtype": "Check",
+          "label": "Is Published",
+          "description": "حالة النشر",
+          "reqd": 1
+        },
+        {
+          "fieldname": "published_at",
+          "fieldtype": "Datetime",
+          "label": "Published At",
+          "description": "تاريخ النشر"
+        },
+        {
+          "fieldname": "created_at",
+          "fieldtype": "Datetime",
+          "label": "Created At",
+          "description": "تاريخ الإنشاء",
+          "reqd": 1,
+          "read_only": 1
+        },
+        {
+          "fieldname": "updated_at",
+          "fieldtype": "Datetime",
+          "label": "Updated At",
+          "description": "تاريخ التحديث",
+          "reqd": 1,
+          "read_only": 1
+        }
+      ],
+      "field_order": [
+        "section_main",
+        "id",
+        "slug",
+        "title_ar",
+        "title_en",
+        "excerpt_ar",
+        "excerpt_en",
+        "content_ar",
+        "content_en",
+        "author_ar",
+        "author_en",
+        "category",
+        "tags",
+        "image",
+        "views",
+        "is_published",
+        "published_at",
+        "created_at",
+        "updated_at"
+      ],
+      "permissions": [
+        {
+          "role": "System Manager",
+          "read": 1,
+          "write": 1,
+          "create": 1,
+          "delete": 1,
+          "report": 1,
+          "export": 1,
+          "print": 1,
+          "email": 1,
+          "share": 1
+        }
+      ],
+      "actions": [],
+      "links": [],
+      "states": []
+    },
+    {
+      "name": "Pages",
+      "label": "Pages",
+      "module": "CMS",
+      "istable": 0,
+      "issingle": 0,
+      "custom": 1,
+      "allow_rename": 1,
+      "engine": "InnoDB",
+      "track_changes": 1,
+      "sort_field": "modified",
+      "sort_order": "DESC",
+      "row_format": "Dynamic",
+      "grid_page_length": 50,
+      "rows_threshold_for_grid_search": 20,
+      "fields": [
+        {
+          "fieldname": "section_main",
+          "fieldtype": "Section Break",
+          "label": "البيانات الأساسية"
+        },
+        {
+          "fieldname": "id",
+          "fieldtype": "Data",
+          "label": "Id",
+          "description": "المعرف الفريد",
+          "reqd": 1,
+          "read_only": 1
+        },
+        {
+          "fieldname": "slug",
+          "fieldtype": "Data",
+          "label": "Slug",
+          "description": "المعرف الفريد (about/admission/campus-life)",
+          "reqd": 1,
+          "unique": 1
+        },
+        {
+          "fieldname": "title_ar",
+          "fieldtype": "Data",
+          "label": "Title Ar",
+          "description": "العنوان بالعربي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "title_en",
+          "fieldtype": "Data",
+          "label": "Title En",
+          "description": "العنوان بالإنجليزي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "content_ar",
+          "fieldtype": "Long Text",
+          "label": "Content Ar",
+          "description": "المحتوى بالعربي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "content_en",
+          "fieldtype": "Long Text",
+          "label": "Content En",
+          "description": "المحتوى بالإنجليزي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "meta_description_ar",
+          "fieldtype": "Long Text",
+          "label": "Meta Description Ar",
+          "description": "وصف SEO بالعربي"
+        },
+        {
+          "fieldname": "meta_description_en",
+          "fieldtype": "Long Text",
+          "label": "Meta Description En",
+          "description": "وصف SEO بالإنجليزي"
+        },
+        {
+          "fieldname": "hero_image",
+          "fieldtype": "Data",
+          "label": "Hero Image",
+          "description": "صورة الهيرو"
+        },
+        {
+          "fieldname": "updated_at",
+          "fieldtype": "Datetime",
+          "label": "Updated At",
+          "description": "تاريخ التحديث",
+          "reqd": 1,
+          "read_only": 1
+        }
+      ],
+      "field_order": [
+        "section_main",
+        "id",
+        "slug",
+        "title_ar",
+        "title_en",
+        "content_ar",
+        "content_en",
+        "meta_description_ar",
+        "meta_description_en",
+        "hero_image",
+        "updated_at"
+      ],
+      "permissions": [
+        {
+          "role": "System Manager",
+          "read": 1,
+          "write": 1,
+          "create": 1,
+          "delete": 1,
+          "report": 1,
+          "export": 1,
+          "print": 1,
+          "email": 1,
+          "share": 1
+        }
+      ],
+      "actions": [],
+      "links": [],
+      "states": []
+    },
+    {
+      "name": "Media Library",
+      "label": "Media Library",
+      "module": "CMS",
+      "istable": 0,
+      "issingle": 0,
+      "custom": 1,
+      "allow_rename": 1,
+      "engine": "InnoDB",
+      "track_changes": 1,
+      "sort_field": "modified",
+      "sort_order": "DESC",
+      "row_format": "Dynamic",
+      "grid_page_length": 50,
+      "rows_threshold_for_grid_search": 20,
+      "fields": [
+        {
+          "fieldname": "section_main",
+          "fieldtype": "Section Break",
+          "label": "البيانات الأساسية"
+        },
+        {
+          "fieldname": "id",
+          "fieldtype": "Data",
+          "label": "Id",
+          "description": "المعرف الفريد",
+          "reqd": 1,
+          "read_only": 1
+        },
+        {
+          "fieldname": "file_name",
+          "fieldtype": "Data",
+          "label": "File Name",
+          "description": "اسم الملف",
+          "reqd": 1
+        },
+        {
+          "fieldname": "file_path",
+          "fieldtype": "Data",
+          "label": "File Path",
+          "description": "مسار الملف",
+          "reqd": 1
+        },
+        {
+          "fieldname": "file_type",
+          "fieldtype": "Data",
+          "label": "File Type",
+          "description": "نوع الملف (image/video/document)",
+          "reqd": 1
+        },
+        {
+          "fieldname": "file_size",
+          "fieldtype": "Int",
+          "label": "File Size",
+          "description": "حجم الملف (bytes)",
+          "reqd": 1
+        },
+        {
+          "fieldname": "alt_ar",
+          "fieldtype": "Data",
+          "label": "Alt Ar",
+          "description": "النص البديل بالعربي"
+        },
+        {
+          "fieldname": "alt_en",
+          "fieldtype": "Data",
+          "label": "Alt En",
+          "description": "النص البديل بالإنجليزي"
+        },
+        {
+          "fieldname": "folder",
+          "fieldtype": "Data",
+          "label": "Folder",
+          "description": "المجلد"
+        },
+        {
+          "fieldname": "uploaded_by",
+          "fieldtype": "Data",
+          "label": "Uploaded By",
+          "description": "معرف المستخدم",
+          "reqd": 1
+        },
+        {
+          "fieldname": "created_at",
+          "fieldtype": "Datetime",
+          "label": "Created At",
+          "description": "تاريخ الرفع",
+          "reqd": 1,
+          "read_only": 1
+        }
+      ],
+      "field_order": [
+        "section_main",
+        "id",
+        "file_name",
+        "file_path",
+        "file_type",
+        "file_size",
+        "alt_ar",
+        "alt_en",
+        "folder",
+        "uploaded_by",
+        "created_at"
+      ],
+      "permissions": [
+        {
+          "role": "System Manager",
+          "read": 1,
+          "write": 1,
+          "create": 1,
+          "delete": 1,
+          "report": 1,
+          "export": 1,
+          "print": 1,
+          "email": 1,
+          "share": 1
+        }
+      ],
+      "actions": [],
+      "links": [],
+      "states": []
+    },
+    {
+      "name": "Website Settings",
+      "label": "Website Settings",
+      "module": "CMS",
+      "istable": 0,
+      "issingle": 0,
+      "custom": 1,
+      "allow_rename": 1,
+      "engine": "InnoDB",
+      "track_changes": 1,
+      "sort_field": "modified",
+      "sort_order": "DESC",
+      "row_format": "Dynamic",
+      "grid_page_length": 50,
+      "rows_threshold_for_grid_search": 20,
+      "fields": [
+        {
+          "fieldname": "section_main",
+          "fieldtype": "Section Break",
+          "label": "البيانات الأساسية"
+        },
+        {
+          "fieldname": "id",
+          "fieldtype": "Data",
+          "label": "Id",
+          "description": "المعرف الفريد",
+          "reqd": 1,
+          "read_only": 1
+        },
+        {
+          "fieldname": "key",
+          "fieldtype": "Data",
+          "label": "Key",
+          "description": "مفتاح الإعداد",
+          "reqd": 1
+        },
+        {
+          "fieldname": "value_ar",
+          "fieldtype": "Long Text",
+          "label": "Value Ar",
+          "description": "القيمة بالعربي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "value_en",
+          "fieldtype": "Long Text",
+          "label": "Value En",
+          "description": "القيمة بالإنجليزي",
+          "reqd": 1
+        },
+        {
+          "fieldname": "type",
+          "fieldtype": "Data",
+          "label": "Type",
+          "description": "نوع القيمة (text/image/json)",
+          "reqd": 1
+        },
+        {
+          "fieldname": "category",
+          "fieldtype": "Data",
+          "label": "Category",
+          "description": "التصنيف (general/contact/social)",
+          "reqd": 1
+        },
+        {
+          "fieldname": "updated_at",
+          "fieldtype": "Datetime",
+          "label": "Updated At",
+          "description": "تاريخ التحديث",
+          "reqd": 1,
+          "read_only": 1
+        }
+      ],
+      "field_order": [
+        "section_main",
+        "id",
+        "key",
+        "value_ar",
+        "value_en",
+        "type",
+        "category",
+        "updated_at"
+      ],
+      "permissions": [
+        {
+          "role": "System Manager",
+          "read": 1,
+          "write": 1,
+          "create": 1,
+          "delete": 1,
+          "report": 1,
+          "export": 1,
+          "print": 1,
+          "email": 1,
+          "share": 1
+        }
+      ],
+      "actions": [],
+      "links": [],
+      "states": []
+    },
+    {
+      "name": "Contact Messages",
+      "label": "Contact Messages",
+      "module": "Public",
+      "istable": 0,
+      "issingle": 0,
+      "custom": 1,
+      "allow_rename": 1,
+      "engine": "InnoDB",
+      "track_changes": 1,
+      "sort_field": "modified",
+      "sort_order": "DESC",
+      "row_format": "Dynamic",
+      "grid_page_length": 50,
+      "rows_threshold_for_grid_search": 20,
+      "fields": [
+        {
+          "fieldname": "section_main",
+          "fieldtype": "Section Break",
+          "label": "البيانات الأساسية"
+        },
+        {
+          "fieldname": "id",
+          "fieldtype": "Data",
+          "label": "Id",
+          "description": "المعرف الفريد",
+          "reqd": 1,
+          "read_only": 1
+        },
+        {
+          "fieldname": "name",
+          "fieldtype": "Data",
+          "label": "Name",
+          "description": "الاسم",
+          "reqd": 1
+        },
+        {
+          "fieldname": "email",
+          "fieldtype": "Data",
+          "label": "Email",
+          "description": "البريد الإلكتروني",
+          "reqd": 1
+        },
+        {
+          "fieldname": "phone",
+          "fieldtype": "Data",
+          "label": "Phone",
+          "description": "رقم الهاتف"
+        },
+        {
+          "fieldname": "subject",
+          "fieldtype": "Data",
+          "label": "Subject",
+          "description": "الموضوع",
+          "reqd": 1
+        },
+        {
+          "fieldname": "message",
+          "fieldtype": "Long Text",
+          "label": "Message",
+          "description": "الرسالة",
+          "reqd": 1
+        },
+        {
+          "fieldname": "status",
+          "fieldtype": "Select",
+          "label": "Status",
+          "description": "الحالة (new/read/replied/archived)",
+          "reqd": 1,
+          "options": "new\nread\nreplied\narchived"
+        },
+        {
+          "fieldname": "replied_at",
+          "fieldtype": "Datetime",
+          "label": "Replied At",
+          "description": "تاريخ الرد"
+        },
+        {
+          "fieldname": "created_at",
+          "fieldtype": "Datetime",
+          "label": "Created At",
+          "description": "تاريخ الإرسال",
+          "reqd": 1,
+          "read_only": 1
+        }
+      ],
+      "field_order": [
+        "section_main",
+        "id",
+        "name",
+        "email",
+        "phone",
+        "subject",
+        "message",
+        "status",
+        "replied_at",
+        "created_at"
+      ],
+      "permissions": [
+        {
+          "role": "System Manager",
+          "read": 1,
+          "write": 1,
+          "create": 1,
+          "delete": 1,
+          "report": 1,
+          "export": 1,
+          "print": 1,
+          "email": 1,
+          "share": 1
+        }
+      ],
+      "actions": [],
+      "links": [],
+      "states": []
+    },
+    {
+      "name": "Join Requests",
+      "label": "Join Requests",
+      "module": "Public",
+      "istable": 0,
+      "issingle": 0,
+      "custom": 1,
+      "allow_rename": 1,
+      "engine": "InnoDB",
+      "track_changes": 1,
+      "sort_field": "modified",
+      "sort_order": "DESC",
+      "row_format": "Dynamic",
+      "grid_page_length": 50,
+      "rows_threshold_for_grid_search": 20,
+      "fields": [
+        {
+          "fieldname": "section_main",
+          "fieldtype": "Section Break",
+          "label": "البيانات الأساسية"
+        },
+        {
+          "fieldname": "id",
+          "fieldtype": "Data",
+          "label": "Id",
+          "description": "المعرف الفريد",
+          "reqd": 1,
+          "read_only": 1
+        },
+        {
+          "fieldname": "type",
+          "fieldtype": "Select",
+          "label": "Type",
+          "description": "النوع (student/employee)",
+          "reqd": 1,
+          "options": "student\nemployee"
+        },
+        {
+          "fieldname": "name",
+          "fieldtype": "Data",
+          "label": "Name",
+          "description": "الاسم الكامل",
+          "reqd": 1
+        },
+        {
+          "fieldname": "email",
+          "fieldtype": "Data",
+          "label": "Email",
+          "description": "البريد الإلكتروني",
+          "reqd": 1
+        },
+        {
+          "fieldname": "phone",
+          "fieldtype": "Data",
+          "label": "Phone",
+          "description": "رقم الهاتف",
+          "reqd": 1
+        },
+        {
+          "fieldname": "specialty",
+          "fieldtype": "Data",
+          "label": "Specialty",
+          "description": "التخصص",
+          "reqd": 1
+        },
+        {
+          "fieldname": "experience",
+          "fieldtype": "Long Text",
+          "label": "Experience",
+          "description": "الخبرة (للموظفين)"
+        },
+        {
+          "fieldname": "cv_file",
+          "fieldtype": "Data",
+          "label": "Cv File",
+          "description": "رابط السيرة الذاتية"
+        },
+        {
+          "fieldname": "message",
+          "fieldtype": "Long Text",
+          "label": "Message",
+          "description": "رسالة إضافية"
+        },
+        {
+          "fieldname": "status",
+          "fieldtype": "Select",
+          "label": "Status",
+          "description": "الحالة (pending/reviewed/accepted/rejected)",
+          "reqd": 1,
+          "options": "pending\nreviewed\naccepted\nrejected"
+        },
+        {
+          "fieldname": "reviewed_at",
+          "fieldtype": "Datetime",
+          "label": "Reviewed At",
+          "description": "تاريخ المراجعة"
+        },
+        {
+          "fieldname": "created_at",
+          "fieldtype": "Datetime",
+          "label": "Created At",
+          "description": "تاريخ الطلب",
+          "reqd": 1,
+          "read_only": 1
+        }
+      ],
+      "field_order": [
+        "section_main",
+        "id",
+        "type",
+        "name",
+        "email",
+        "phone",
+        "specialty",
+        "experience",
+        "cv_file",
+        "message",
+        "status",
+        "reviewed_at",
+        "created_at"
+      ],
+      "permissions": [
+        {
+          "role": "System Manager",
+          "read": 1,
+          "write": 1,
+          "create": 1,
+          "delete": 1,
+          "report": 1,
+          "export": 1,
+          "print": 1,
+          "email": 1,
+          "share": 1
+        }
+      ],
+      "actions": [],
+      "links": [],
+      "states": []
+    }
+  ]
+}

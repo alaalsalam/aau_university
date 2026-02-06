@@ -1,0 +1,75 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-01-11 22:27:28.822314",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "title",
+  "description",
+  "image",
+  "is_published",
+  "main_section"
+ ],
+ "fields": [
+  {
+   "description": "\u0639\u0646\u0648\u0627\u0646 \u0627\u0644\u0642\u0633\u0645",
+   "fieldname": "title",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Title",
+   "reqd": 1
+  },
+  {
+   "description": "\u0648\u0635\u0641 \u0639\u0646 \u0627\u0644\u062c\u0627\u0645\u0639\u0629",
+   "fieldname": "description",
+   "fieldtype": "Long Text",
+   "label": "Description"
+  },
+  {
+   "description": "\u0635\u0648\u0631\u0629 \u062a\u0639\u0631\u064a\u0641\u064a\u0629",
+   "fieldname": "image",
+   "fieldtype": "Attach Image",
+   "label": "Image"
+  },
+  {
+   "default": "0",
+   "description": "\u062d\u0627\u0644\u0629 \u0627\u0644\u0646\u0634\u0631",
+   "fieldname": "is_published",
+   "fieldtype": "Check",
+   "label": "Is Published"
+  },
+  {
+   "fieldname": "main_section",
+   "fieldtype": "Section Break",
+   "label": "Main Section"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-01-15 21:09:32.284779",
+ "modified_by": "Administrator",
+ "module": "AAU",
+ "name": "About University",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

@@ -84,7 +84,8 @@ app_license = "mit"
 
 # before_install = "aau_university.install.before_install"
 # after_install = "aau_university.install.after_install"
-
+# after_migrate = "aau_university.setup.after_migrate.run"
+# after_migrate = "aau_university.setup.aau_doctypes_installer.after_migrate"
 # Uninstallation
 # ------------
 
@@ -136,6 +137,11 @@ app_license = "mit"
 # Document Events
 # ---------------
 # Hook on document methods and events
+doc_events = {
+    "Task": {
+        "on_update": "aau_university.aau_tasks.task_doctype_importer.on_task_update"
+    }
+}
 
 # doc_events = {
 # 	"*": {
@@ -196,8 +202,17 @@ app_license = "mit"
 
 # Request Events
 # ----------------
-# before_request = ["aau_university.utils.before_request"]
+before_request = ["aau_university.api.v1.routes.ensure_routes"]
 # after_request = ["aau_university.utils.after_request"]
+
+try:
+    # WHY+WHAT: eagerly register API URL rules while loading hooks so /api/aau/* paths are available for live HTTP requests without relying on late lazy registration.
+    from aau_university.api.v1.routes import ensure_routes as _ensure_aau_api_routes
+
+    _ensure_aau_api_routes()
+except Exception:
+    # Keep startup resilient; before_request hook still attempts registration per request.
+    pass
 
 # Job Events
 # ----------
@@ -241,4 +256,3 @@ app_license = "mit"
 # default_log_clearing_doctypes = {
 # 	"Logging DocType Name": 30  # days to retain logs
 # }
-

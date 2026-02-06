@@ -1,0 +1,80 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-01-10 22:21:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_slider",
+  "title",
+  "subtitle",
+  "image",
+  "link",
+  "order",
+  "is_active"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_slider",
+   "fieldtype": "Section Break",
+   "label": "بيانات السلايدر"
+  },
+  {
+   "fieldname": "title",
+   "fieldtype": "Data",
+   "label": "العنوان"
+  },
+  {
+   "fieldname": "subtitle",
+   "fieldtype": "Small Text",
+   "label": "العنوان الفرعي"
+  },
+  {
+   "fieldname": "image",
+   "fieldtype": "Attach Image",
+   "label": "الصورة"
+  },
+  {
+   "fieldname": "link",
+   "fieldtype": "Data",
+   "label": "الرابط"
+  },
+  {
+   "fieldname": "order",
+   "fieldtype": "Int",
+   "label": "ترتيب الظهور",
+   "description": "ترتيب العنصر داخل السلايدر"
+  },
+  {
+   "fieldname": "is_active",
+   "fieldtype": "Check",
+   "label": "مفعل"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-01-10 22:21:00.000000",
+ "modified_by": "Administrator",
+ "module": "AAU",
+ "name": "Slider",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "print": 1,
+   "email": 1,
+   "export": 1,
+   "share": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

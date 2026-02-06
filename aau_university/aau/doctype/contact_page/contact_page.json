@@ -1,0 +1,71 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2026-01-10 22:16:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_contact",
+  "address",
+  "phone",
+  "email",
+  "map_location"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_contact",
+   "fieldtype": "Section Break",
+   "label": "بيانات التواصل"
+  },
+  {
+   "fieldname": "address",
+   "fieldtype": "Small Text",
+   "label": "العنوان",
+   "description": "العنوان الرسمي للجامعة"
+  },
+  {
+   "fieldname": "phone",
+   "fieldtype": "Data",
+   "label": "رقم الهاتف",
+   "description": "رقم التواصل الرسمي"
+  },
+  {
+   "fieldname": "email",
+   "fieldtype": "Data",
+   "label": "البريد الإلكتروني",
+   "description": "البريد الإلكتروني الرسمي"
+  },
+  {
+   "fieldname": "map_location",
+   "fieldtype": "Data",
+   "label": "رابط الموقع على الخريطة",
+   "description": "رابط Google Maps أو ما شابه"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-01-10 22:16:00.000000",
+ "modified_by": "Administrator",
+ "module": "AAU",
+ "name": "Contact Page",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "print": 1,
+   "email": 1,
+   "export": 1,
+   "share": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

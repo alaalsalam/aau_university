@@ -1,0 +1,72 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2026-01-10 22:24:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_review",
+  "student",
+  "course",
+  "reason",
+  "status"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_review",
+   "fieldtype": "Section Break",
+   "label": "طلب مراجعة درجة"
+  },
+  {
+   "fieldname": "student",
+   "fieldtype": "Link",
+   "label": "الطالب",
+   "options": "Student",
+   "reqd": 1
+  },
+  {
+   "fieldname": "course",
+   "fieldtype": "Link",
+   "label": "المقرر",
+   "options": "Course",
+   "reqd": 1
+  },
+  {
+   "fieldname": "reason",
+   "fieldtype": "Long Text",
+   "label": "سبب الطلب"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "حالة الطلب",
+   "options": "جديد\nقيد المراجعة\nمقبول\nمرفوض"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-01-10 22:24:00.000000",
+ "modified_by": "Administrator",
+ "module": "AAU",
+ "name": "Grade Review Request",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "print": 1,
+   "email": 1,
+   "export": 1,
+   "share": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
