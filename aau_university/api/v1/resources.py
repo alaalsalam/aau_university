@@ -31,9 +31,60 @@ def _get_meta(doctype: str):
     return frappe.get_meta(doctype)
 
 
-def _get_fieldnames(doctype: str) -> list[str]:
+_SYSTEM_FIELDNAMES = {
+    "name",
+    "owner",
+    "creation",
+    "modified",
+    "modified_by",
+    "docstatus",
+    "idx",
+    "parent",
+    "parentfield",
+    "parenttype",
+    "lft",
+    "rgt",
+}
+
+
+def _get_query_fieldnames(doctype: str) -> list[str]:
+    # WHY+WHAT: `frappe.get_all(fields=...)` must only receive real DB columns. Selecting
+    # layout/table fields (Section Break / HTML / Table, etc.) causes SQL "Unknown column" 500s.
     meta = _get_meta(doctype)
-    return [df.fieldname for df in meta.fields if df.fieldname]
+    get_valid_columns = getattr(meta, "get_valid_columns", None)
+    if callable(get_valid_columns):
+        columns = [c for c in get_valid_columns() if c and c not in _SYSTEM_FIELDNAMES]
+        return columns
+
+    # Fallback for older meta implementations: exclude non-column fieldtypes.
+    non_column_fieldtypes = {
+        "Section Break",
+        "Column Break",
+        "Tab Break",
+        "Fold",
+        "HTML",
+        "Button",
+        "Heading",
+        "Read Only",
+        "Table",
+        "Table MultiSelect",
+        "Image",
+    }
+    columns = [
+        df.fieldname
+        for df in meta.fields
+        if df.fieldname and df.fieldtype not in non_column_fieldtypes and df.fieldname not in _SYSTEM_FIELDNAMES
+    ]
+    return columns
+
+
+def _get_payload_fieldnames(doctype: str) -> list[str]:
+    # WHY+WHAT: allow API create/update payloads to include table fields (child tables),
+    # while keeping list queries restricted to DB columns only.
+    meta = _get_meta(doctype)
+    columns = _get_query_fieldnames(doctype)
+    table_fields = [df.fieldname for df in meta.get_table_fields() if df.fieldname]
+    return columns + [f for f in table_fields if f not in columns]
 
 
 def _prepare_child_tables(meta, payload: dict) -> dict:
@@ -63,10 +114,10 @@ def list_entities(entity_key: str, search_fields: list[str] | None = None, publi
     config = _get_entity_config(entity_key)
     doctype = config["doctype"]
     meta = _get_meta(doctype)
-    fieldnames = _get_fieldnames(doctype)
+    query_fieldnames = _get_query_fieldnames(doctype)
     table_fields = get_table_field_map(meta)
 
-    filters = build_filters(fieldnames)
+    filters = build_filters(query_fieldnames)
     or_filters = []
     query = frappe.form_dict.get("q")
     if query and search_fields:
@@ -79,13 +130,26 @@ def list_entities(entity_key: str, search_fields: list[str] | None = None, publi
         doctype,
         filters=filters,
         or_filters=or_filters,
-        fields=fieldnames,
+        fields=query_fieldnames,
         limit_start=pagination["offset"],
         limit_page_length=pagination["limit"],
         order_by=order_by,
         ignore_permissions=public,
     )
-    total = frappe.db.count(doctype, filters=filters, or_filters=or_filters)
+    # WHY+WHAT: `frappe.db.count` doesn't support `or_filters` on some Frappe versions, so
+    # use a safe aggregate query when OR-search is present.
+    if or_filters:
+        total_row = frappe.get_all(
+            doctype,
+            filters=filters,
+            or_filters=or_filters,
+            fields=["count(name) as total"],
+            ignore_permissions=public,
+            limit_page_length=1,
+        )
+        total = int((total_row[0] or {}).get("total") or 0) if total_row else 0
+    else:
+        total = frappe.db.count(doctype, filters=filters)
 
     data = [serialize_doc(row, table_fields) for row in rows]
     meta_out = {
@@ -101,7 +165,6 @@ def get_entity(entity_key: str, identifier: str, by: str = "id", public: bool = 
     config = _get_entity_config(entity_key)
     doctype = config["doctype"]
     meta = _get_meta(doctype)
-    fieldnames = _get_fieldnames(doctype)
     table_fields = get_table_field_map(meta)
 
     fieldname = config.get("slug_field") if by == "slug" else config.get("id_field", "id")
@@ -132,15 +195,15 @@ def create_entity(entity_key: str, payload: dict, public: bool = False):
     config = _get_entity_config(entity_key)
     doctype = config["doctype"]
     meta = _get_meta(doctype)
-    fieldnames = _get_fieldnames(doctype)
+    payload_fieldnames = _get_payload_fieldnames(doctype)
     table_fields = get_table_field_map(meta)
 
-    data = normalize_payload(payload, fieldnames)
+    data = normalize_payload(payload, payload_fieldnames)
     if config.get("id_field"):
         data[config["id_field"]] = ensure_uuid(data.get(config["id_field"]))
-    if "created_at" in fieldnames:
+    if "created_at" in payload_fieldnames:
         data.setdefault("created_at", now_ts())
-    if "updated_at" in fieldnames:
+    if "updated_at" in payload_fieldnames:
         data["updated_at"] = now_ts()
 
     data = _prepare_child_tables(meta, data)
@@ -154,15 +217,15 @@ def update_entity(entity_key: str, identifier: str, payload: dict, by: str = "id
     config = _get_entity_config(entity_key)
     doctype = config["doctype"]
     meta = _get_meta(doctype)
-    fieldnames = _get_fieldnames(doctype)
+    payload_fieldnames = _get_payload_fieldnames(doctype)
     table_fields = get_table_field_map(meta)
 
     fieldname = config.get("slug_field") if by == "slug" else config.get("id_field", "id")
     doc_name = _resolve_doc_name(doctype, fieldname, identifier)
     doc = frappe.get_doc(doctype, doc_name)
 
-    data = normalize_payload(payload, fieldnames)
-    if "updated_at" in fieldnames:
+    data = normalize_payload(payload, payload_fieldnames)
+    if "updated_at" in payload_fieldnames:
         data["updated_at"] = now_ts()
     data = _prepare_child_tables(meta, data)
     doc.update(data)
@@ -175,13 +238,13 @@ def update_entity_by_field(entity_key: str, fieldname: str, value: str, payload:
     config = _get_entity_config(entity_key)
     doctype = config["doctype"]
     meta = _get_meta(doctype)
-    fieldnames = _get_fieldnames(doctype)
+    payload_fieldnames = _get_payload_fieldnames(doctype)
     table_fields = get_table_field_map(meta)
 
     doc_name = _resolve_doc_name(doctype, fieldname, value)
     doc = frappe.get_doc(doctype, doc_name)
-    data = normalize_payload(payload, fieldnames)
-    if "updated_at" in fieldnames:
+    data = normalize_payload(payload, payload_fieldnames)
+    if "updated_at" in payload_fieldnames:
         data["updated_at"] = now_ts()
     data = _prepare_child_tables(meta, data)
     doc.update(data)
@@ -238,7 +301,7 @@ def upload_media():
     saved = save_file(fileobj.filename, fileobj.stream.read(), None, None, None)
     doctype = ENTITY_CONFIG["media"]["doctype"]
     meta = _get_meta(doctype)
-    fieldnames = _get_fieldnames(doctype)
+    payload_fieldnames = _get_payload_fieldnames(doctype)
     table_fields = get_table_field_map(meta)
 
     doc = frappe.get_doc(
