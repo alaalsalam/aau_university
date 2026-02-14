@@ -109,3 +109,7 @@ bench --site edu.yemenfrappe.com execute aau_university.utils.seed_menus.seed_me
 bench restart
 ```
 
+If `bench restart` is unavailable (e.g. no supervisor/systemd permissions), reload Gunicorn master process:
+```bash
+pgrep -f "gunicorn.*frappe\\.app:application" | head -n 1 | xargs -r kill -HUP
+```
