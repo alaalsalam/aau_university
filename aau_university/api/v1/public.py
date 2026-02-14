@@ -766,6 +766,30 @@ def _list_home_events(limit: int) -> list[dict]:
     ]
 
 
+def _home_minimal_programs(programs: list) -> list[dict]:
+    # WHY+WHAT: Home only needs program counts, but we return a small stable shape that matches the
+    # frontend `AcademicProgram` required keys (without heavy optional blobs).
+    output = []
+    for program in programs or []:
+        if not isinstance(program, dict):
+            continue
+        output.append(
+            {
+                "id": program.get("id"),
+                "nameAr": program.get("nameAr") or "",
+                "nameEn": program.get("nameEn") or "",
+                "departmentAr": program.get("departmentAr") or "",
+                "departmentEn": program.get("departmentEn") or "",
+                "admissionRate": int(program.get("admissionRate") or 0),
+                "highSchoolType": program.get("highSchoolType") or "علمي",
+                "highSchoolTypeEn": program.get("highSchoolTypeEn") or "Scientific",
+                "studyYears": str(program.get("studyYears") or ""),
+                "image": program.get("image"),
+            }
+        )
+    return output
+
+
 def _list_home_colleges(limit: int) -> list[dict]:
     doctype = _first_existing_doctype(["Colleges", "College"])
     if not doctype:
@@ -821,7 +845,7 @@ def _list_home_colleges(limit: int) -> list[dict]:
             "descriptionEn": item.get("descriptionEn"),
             "icon": item.get("icon"),
             "image": item.get("image"),
-            "programs": item.get("programs") or [],
+            "programs": _home_minimal_programs(item.get("programs") or []),
         }
         for item in items
     ]
