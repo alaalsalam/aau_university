@@ -152,10 +152,11 @@ def get_home():
             "about": home_sections["about"],
             "partners": home_sections["partners"],
             "testimonials": home_sections["testimonials"],
-            "news": _list_home_section("news", limit=4, filters={"is_published": 1}),
-            "events": _list_home_section("events", limit=4, filters={"is_published": 1}),
-            "colleges": _list_home_section("colleges", limit=6, filters={"is_active": 1}),
-            "faqs": _list_home_section("faqs", limit=6, filters={"is_published": 1}),
+            # WHY+WHAT: return minimal, frontend-shaped payloads for list sections (avoid raw DocType column spillover).
+            "news": _list_home_news(limit=4),
+            "events": _list_home_events(limit=4),
+            "colleges": _list_home_colleges(limit=6),
+            "faqs": _list_home_faqs(limit=6),
             "meta": {
                 "generated_at": now_ts(),
                 "source": _home_source(),
@@ -564,6 +565,8 @@ def _get_home_sections() -> dict:
     about.setdefault("titleEn", row.get("about_title") or "About the University")
     about.setdefault("descriptionAr", row.get("about_description") or "")
     about.setdefault("descriptionEn", row.get("about_description") or "")
+    # WHY+WHAT: include about image from Home Page JSON so the frontend can fully de-hardcode home imagery.
+    about.setdefault("image", extra.get("about", {}).get("image"))
 
     partners = extra.get("partners", []) if isinstance(extra.get("partners"), list) else []
     testimonials = extra.get("testimonials", []) if isinstance(extra.get("testimonials"), list) else []
@@ -590,6 +593,281 @@ def _list_home_section(entity_key: str, limit: int, filters: dict | None = None)
         "faqs": ["FAQs", "FAQ"],
     }.get(entity_key, [])
     return _list_home_doctype(candidates=candidates, limit=limit, filters=filters)
+
+
+def _selectable_fields(doctype: str) -> set[str]:
+    # WHY+WHAT: use only real DB columns (plus `name`) for home list queries; avoids layout/table fields.
+    meta = frappe.get_meta(doctype)
+    get_valid_columns = getattr(meta, "get_valid_columns", None)
+    if callable(get_valid_columns):
+        columns = set(get_valid_columns())
+    else:
+        non_column_fieldtypes = {
+            "Section Break",
+            "Column Break",
+            "Tab Break",
+            "Fold",
+            "HTML",
+            "Button",
+            "Heading",
+            "Read Only",
+            "Table",
+            "Table MultiSelect",
+            "Image",
+        }
+        columns = {df.fieldname for df in meta.fields if df.fieldname and df.fieldtype not in non_column_fieldtypes}
+    columns.add("name")
+    return columns
+
+
+def _list_home_news(limit: int) -> list[dict]:
+    doctype = _first_existing_doctype(["News"])
+    if not doctype:
+        return []
+
+    available = _selectable_fields(doctype)
+    desired = [
+        "name",
+        "slug",
+        "title",
+        "title_ar",
+        "title_en",
+        "description_ar",
+        "description_en",
+        "summary",
+        "content",
+        "content_ar",
+        "content_en",
+        "image",
+        "featured_image",
+        "date",
+        "publish_date",
+        "tags",
+        "views",
+        "display_order",
+        "is_published",
+    ]
+    fields = [field for field in desired if field in available]
+
+    filters = {"is_published": 1} if "is_published" in available else {}
+    order_by = "date desc, publish_date desc, modified desc"
+    if "display_order" in available:
+        order_by = "display_order asc, date desc, publish_date desc, modified desc"
+
+    rows = frappe.get_all(
+        doctype,
+        fields=fields,
+        filters=filters,
+        order_by=order_by,
+        limit_page_length=limit,
+        ignore_permissions=True,
+    )
+    items = [_serialize_news_item(row) for row in rows]
+    # WHY+WHAT: keep home payload minimal (only what Home UI consumes) while allowing richer list/detail endpoints elsewhere.
+    return [
+        {
+            "id": item.get("id"),
+            "slug": item.get("slug"),
+            "titleAr": item.get("titleAr"),
+            "titleEn": item.get("titleEn"),
+            "descriptionAr": item.get("descriptionAr"),
+            "descriptionEn": item.get("descriptionEn"),
+            "image": item.get("image"),
+            "date": item.get("date"),
+            "tags": item.get("tags") or [],
+            "views": item.get("views") or 0,
+        }
+        for item in items
+    ]
+
+
+def _list_home_events(limit: int) -> list[dict]:
+    doctype = _first_existing_doctype(["Events", "Event"])
+    if not doctype:
+        return []
+
+    available = _selectable_fields(doctype)
+    desired = [
+        "name",
+        "slug",
+        "title",
+        "event_title",
+        "title_ar",
+        "title_en",
+        "description",
+        "description_ar",
+        "description_en",
+        "content",
+        "content_ar",
+        "content_en",
+        "image",
+        "date",
+        "event_date",
+        "end_date",
+        "location",
+        "location_ar",
+        "location_en",
+        "organizer",
+        "organizer_ar",
+        "organizer_en",
+        "category",
+        "status",
+        "registration_required",
+        "registration_link",
+        "tags",
+        "display_order",
+        "is_published",
+    ]
+    fields = [field for field in desired if field in available]
+
+    filters = {"is_published": 1} if "is_published" in available else {}
+    sort_parts = []
+    if "display_order" in available:
+        sort_parts.append("display_order asc")
+    if "date" in available:
+        sort_parts.append("date desc")
+    if "event_date" in available:
+        sort_parts.append("event_date desc")
+    sort_parts.append("modified desc")
+    order_by = ", ".join(sort_parts)
+
+    rows = frappe.get_all(
+        doctype,
+        fields=fields,
+        filters=filters,
+        order_by=order_by,
+        limit_page_length=limit,
+        ignore_permissions=True,
+    )
+    items = [_serialize_event_item(row) for row in rows]
+    # WHY+WHAT: keep home payload minimal (only what Home UI consumes).
+    return [
+        {
+            "id": item.get("id"),
+            "slug": item.get("slug"),
+            "titleAr": item.get("titleAr"),
+            "titleEn": item.get("titleEn"),
+            "descriptionAr": item.get("descriptionAr"),
+            "descriptionEn": item.get("descriptionEn"),
+            "date": item.get("date"),
+            "endDate": item.get("endDate"),
+            "locationAr": item.get("locationAr"),
+            "locationEn": item.get("locationEn"),
+            "organizerAr": item.get("organizerAr"),
+            "organizerEn": item.get("organizerEn"),
+            "category": item.get("category"),
+            "status": item.get("status"),
+            "registrationRequired": item.get("registrationRequired"),
+            "registrationLink": item.get("registrationLink"),
+            "image": item.get("image"),
+            "tags": item.get("tags") or [],
+        }
+        for item in items
+    ]
+
+
+def _list_home_colleges(limit: int) -> list[dict]:
+    doctype = _first_existing_doctype(["Colleges", "College"])
+    if not doctype:
+        return []
+
+    available = _selectable_fields(doctype)
+    desired = [
+        "name",
+        "slug",
+        "college_name",
+        "colleges_name",
+        "name_ar",
+        "name_en",
+        "description",
+        "description_ar",
+        "description_en",
+        "vision_ar",
+        "vision_en",
+        "mission_ar",
+        "mission_en",
+        "goals_ar",
+        "goals_en",
+        "admission_requirements_ar",
+        "admission_requirements_en",
+        "icon",
+        "image",
+        "programs_json",
+        "display_order",
+        "is_active",
+    ]
+    fields = [field for field in desired if field in available]
+
+    filters = {"is_active": 1} if "is_active" in available else {}
+    order_by = "display_order asc, modified desc" if "display_order" in available else "modified desc"
+
+    rows = frappe.get_all(
+        doctype,
+        fields=fields,
+        filters=filters,
+        order_by=order_by,
+        limit_page_length=limit,
+        ignore_permissions=True,
+    )
+    items = [_serialize_college_item(row) for row in rows]
+    # WHY+WHAT: keep home payload minimal (only fields needed for home cards + program counts).
+    return [
+        {
+            "id": item.get("id"),
+            "slug": item.get("slug"),
+            "nameAr": item.get("nameAr"),
+            "nameEn": item.get("nameEn"),
+            "descriptionAr": item.get("descriptionAr"),
+            "descriptionEn": item.get("descriptionEn"),
+            "icon": item.get("icon"),
+            "image": item.get("image"),
+            "programs": item.get("programs") or [],
+        }
+        for item in items
+    ]
+
+
+def _list_home_faqs(limit: int) -> list[dict]:
+    doctype = _first_existing_doctype(["FAQs", "FAQ"])
+    if not doctype:
+        return []
+
+    available = _selectable_fields(doctype)
+    desired = [
+        "name",
+        "id",
+        "slug",
+        "title",
+        "question",
+        "question_ar",
+        "question_en",
+        "answer",
+        "answer_ar",
+        "answer_en",
+        "content",
+        "category",
+        "display_order",
+        "is_published",
+        "published",
+    ]
+    fields = [field for field in desired if field in available]
+
+    filters: dict = {}
+    if "is_published" in available:
+        filters["is_published"] = 1
+    elif "published" in available:
+        filters["published"] = 1
+    order_by = "display_order asc, modified desc" if "display_order" in available else "modified desc"
+
+    rows = frappe.get_all(
+        doctype,
+        fields=fields,
+        filters=filters,
+        order_by=order_by,
+        limit_page_length=limit,
+        ignore_permissions=True,
+    )
+    return [_serialize_faq_item(row) for row in rows]
 
 
 def _home_source() -> str:
@@ -698,6 +976,24 @@ def _serialize_news_item(row: dict) -> dict:
         "date": str(date)[:10] if date else None,
         "tags": tags,
         "views": int(row.get("views") or 0),
+    }
+
+
+def _serialize_faq_item(row: dict) -> dict:
+    question_ar = row.get("question_ar") or row.get("question") or row.get("title") or ""
+    question_en = row.get("question_en") or row.get("question") or row.get("title") or ""
+    answer_ar = row.get("answer_ar") or row.get("answer") or row.get("content") or ""
+    answer_en = row.get("answer_en") or row.get("answer") or row.get("content") or ""
+    category = row.get("category")
+    fallback_id = _slugify_news_value(question_en or question_ar)
+
+    return {
+        "id": row.get("id") or row.get("name") or fallback_id,
+        "questionAr": question_ar,
+        "questionEn": question_en,
+        "answerAr": answer_ar,
+        "answerEn": answer_en,
+        "category": category,
     }
 
 
