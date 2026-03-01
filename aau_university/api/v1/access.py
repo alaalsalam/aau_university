@@ -3,8 +3,23 @@ from __future__ import annotations
 
 import frappe
 
-from .registry import ADMIN_ROLES
+from .registry import ADMIN_ROLES, ENTITY_ROLE_PERMISSIONS, SUPER_ADMIN_ROLES
 from .utils import ApiError, api_endpoint, require_roles
+
+
+def _build_entity_permissions(user_roles: set[str]) -> dict:
+    if user_roles.intersection(SUPER_ADMIN_ROLES):
+        return {key: {"read": True, "write": True} for key in ENTITY_ROLE_PERMISSIONS.keys()}
+
+    permissions = {}
+    for entity_key, policy in ENTITY_ROLE_PERMISSIONS.items():
+        read_roles = set(policy.get("read") or [])
+        write_roles = set(policy.get("write") or read_roles)
+        permissions[entity_key] = {
+            "read": bool(user_roles.intersection(read_roles)),
+            "write": bool(user_roles.intersection(write_roles)),
+        }
+    return permissions
 
 
 @frappe.whitelist(allow_guest=True)
@@ -19,16 +34,20 @@ def get_current_access():
             "roles": [],
             "adminRoles": [],
             "canAccessAdmin": False,
+            "entityPermissions": {},
         }
 
     roles = frappe.get_roles(user)
+    user_roles = set(roles)
     admin_roles = sorted([role for role in roles if role in ADMIN_ROLES])
+    entity_permissions = _build_entity_permissions(user_roles)
     return {
         "authenticated": True,
         "user": user,
         "roles": roles,
         "adminRoles": admin_roles,
         "canAccessAdmin": bool(admin_roles),
+        "entityPermissions": entity_permissions,
     }
 
 
