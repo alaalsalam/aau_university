@@ -1,48 +1,70 @@
-# AAU API Runbook
+# AAU Stabilization Runbook
 
-## Install/apply
-```
-bench --site <site> install-app aau_university
-bench --site <site> migrate
-```
-
-## Migrations
-```
-bench --site <site> migrate
-```
-
-## Smoke test
-```
-bench --site <site> console
-from aau_university.api.v1.utils import smoke_test
-smoke_test()
+## 1) Apply changes
+```bash
+cd ~/frappe-bench
+bench --site edu.yemenfrappe.com migrate
+bench --site edu.yemenfrappe.com clear-cache
+bench --site edu.yemenfrappe.com clear-website-cache
+# If API workers are managed by supervisor/systemd, restart them to load Python changes:
+# sudo supervisorctl restart all
+# or: sudo systemctl restart frappe-bench-web frappe-bench-workers
 ```
 
-## Audit fixer verification
-```
-bench --site <site> console
+## 2) Run audit/fixer manually
+```bash
+bench --site edu.yemenfrappe.com console
 from aau_university.setup.aau_screen_audit_fix import run
-report = run(update_existing=True, dry_run=True)
-report.get("missing_doctypes")
-frappe.get_all("DocType", filters={"module": ["!=", "AAU"]}, fields=["name", "module"])
+run(update_existing=True, dry_run=True)
+run(update_existing=True, dry_run=False)
 ```
 
-## API curl samples (10 endpoints)
-```
-curl -s https://<host>/api/news
-curl -s https://<host>/api/news/featured
-curl -s https://<host>/api/news/latest?limit=5
-curl -s https://<host>/api/events
-curl -s https://<host>/api/colleges
-curl -s https://<host>/api/programs
-curl -s https://<host>/api/faculty
-curl -s https://<host>/api/projects
-curl -s https://<host>/api/blog
-curl -s https://<host>/api/search?q=engineering
+## 3) Verify no legacy screens + module normalization
+```bash
+bench --site edu.yemenfrappe.com console
+import frappe
+legacy = ["About Page","Contact Page","Academic Calendar","Course Section","Course Withdrawal Request","Grade Review Request","Final Result"]
+print(frappe.get_all("DocType", filters={"name": ["in", legacy]}, fields=["name","module"]))
+print(frappe.get_all("Workspace", filters={"name": ["in", ["AAU","AAU Content Hub"]]}, fields=["name","is_hidden"]))
 ```
 
-## Guest access (safe enablement)
+## 4) Verify website API reads structured fields (not JSON blob by default)
+```bash
+bench --site edu.yemenfrappe.com execute aau_university.api.v1.public.get_home
+# Ensure site_config does not enable JSON fallback:
+# "AAU_ENABLE_JSON_FALLBACK": 0
 ```
-# Guest access is controlled per endpoint via allow_guest=True decorators.
-# Review roles in api/v1/registry.py and adjust ADMIN_ROLES if needed.
+
+## 5) Patch rerun (if required)
+```bash
+bench --site edu.yemenfrappe.com console
+import frappe
+frappe.db.delete("Patch Log", {"patch": "aau_university.patches.v1_0_run_screen_audit_fix"})
+frappe.db.delete("Patch Log", {"patch": "aau_university.patches.v1_1_migrate_json_content_to_fields"})
+frappe.db.delete("Patch Log", {"patch": "aau_university.patches.v1_2_cleanup_unused_screens_and_workspace"})
+frappe.db.commit()
 ```
+
+## 6) Verify Phase-1 CMS DocTypes and modules
+```bash
+bench --site edu.yemenfrappe.com console
+import frappe
+targets = ["Centers","Offers","Projects","Team Members","Blog Posts","FAQ","Contact Us Messages","Join Requests"]
+print(frappe.get_all("DocType", filters={"name": ["in", targets]}, fields=["name","module"], order_by="name asc"))
+print(frappe.get_all("DocType", filters={"name": ["in", targets], "module": ["!=", "AAU"]}, fields=["name","module"]))
+```
+
+## 7) Verify fixed public APIs
+```bash
+curl -sS https://edu.yemenfrappe.com/api/centers
+curl -sS https://edu.yemenfrappe.com/api/offers
+curl -sS https://edu.yemenfrappe.com/api/projects
+curl -sS https://edu.yemenfrappe.com/api/team
+curl -sS https://edu.yemenfrappe.com/api/blog
+curl -sS https://edu.yemenfrappe.com/api/faq
+curl -sS https://edu.yemenfrappe.com/api/aau/profile
+```
+
+## Renamed DocTypes (valid technical names)
+- `University Vision and Mission` (was `University Vision & Mission`)
+- `Research and Publications` (was `Research & Publications`)

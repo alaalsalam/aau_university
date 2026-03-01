@@ -87,7 +87,6 @@ def _seed_home_page(seed_payload: dict) -> dict:
         "testimonials": seed_payload.get("testimonials", []),
     }
 
-    # WHY+WHAT: persist structured home sections JSON in Home Page so /api/aau/home can serve the non-list sections from database-backed seed content.
     payload = {
         "page_title": "AAU University Home",
         "hero_title": seed_payload.get("hero", {}).get("titlePrimaryEn", "Welcome to AAU University"),
@@ -101,9 +100,10 @@ def _seed_home_page(seed_payload: dict) -> dict:
         "students_count": _to_int(seed_payload.get("stats", [{}])[0].get("number")),
         "programs_count": _to_int(seed_payload.get("stats", [{}, {}, {}])[2].get("number")),
         "graduates_count": 0,
-        "home_sections_json": json.dumps(home_sections_payload, ensure_ascii=False),
         "is_published": 1,
     }
+    if _json_fallback_enabled():
+        payload["home_sections_json"] = json.dumps(home_sections_payload, ensure_ascii=False)
     action = _upsert_doc(doctype, payload, unique_fields=["page_title", "name"])
     return {
         "doctype": doctype,
@@ -325,3 +325,8 @@ def _to_int(value: str | int | None) -> int:
         return value
     digits = "".join(char for char in str(value) if char.isdigit())
     return int(digits) if digits else 0
+
+
+def _json_fallback_enabled() -> bool:
+    raw = frappe.conf.get("AAU_ENABLE_JSON_FALLBACK", 0)
+    return str(raw).strip().lower() not in {"0", "false", "no"}

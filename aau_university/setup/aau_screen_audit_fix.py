@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import annotations
 
+import re
+
 import frappe
 
 LOG_PREFIX = "[AAU SCREEN AUDIT]"
@@ -28,11 +30,14 @@ def run(update_existing: bool = True, dry_run: bool = False):
             report["missing_doctypes"].append(doctype_name)
             if update_existing:
                 if dry_run:
-                    report["actions"].append(f"WOULD_CREATE DocType: {doctype_name}")
+                    action = f"WOULD_CREATE DocType: {doctype_name}"
+                    report["actions"].append(action)
                     report["would_create_count"] += 1
+                    _log(action)
                 else:
                     _create_doctype(doctype_name, expected_module, required_fields, report)
                     report["created_count"] += 1
+                    _log(f"CREATED DocType: {doctype_name}")
             continue
 
         doc = frappe.get_doc("DocType", doctype_name)
@@ -54,8 +59,10 @@ def run(update_existing: bool = True, dry_run: bool = False):
         if update_existing:
             if dry_run:
                 if field_changes or (doc.module != expected_module):
-                    report["actions"].append(f"WOULD_UPDATE DocType: {doctype_name}")
+                    action = f"WOULD_UPDATE DocType: {doctype_name}"
+                    report["actions"].append(action)
                     report["would_update_count"] += 1
+                    _log(action)
             else:
                 if _apply_field_changes(doc, field_changes):
                     doc_changed = True
@@ -69,11 +76,15 @@ def run(update_existing: bool = True, dry_run: bool = False):
                 if doc_changed:
                     doc.save(ignore_permissions=True)
                     frappe.db.commit()
-                    report["actions"].append(f"UPDATED DocType: {doctype_name}")
+                    action = f"UPDATED DocType: {doctype_name}"
+                    report["actions"].append(action)
                     report["updated_count"] += 1
+                    _log(action)
                 else:
-                    report["actions"].append(f"SKIPPED DocType: {doctype_name}")
+                    action = f"SKIPPED DocType: {doctype_name}"
+                    report["actions"].append(action)
                     report["skipped_count"] += 1
+                    _log(action)
 
     _print_report(report)
     _log("COMPLETED")
@@ -96,7 +107,7 @@ def _init_report() -> dict:
 
 def _doctype_specs() -> dict:
     default_fields = _default_fields()
-    specs = {
+    raw_specs = {
         "Home Page": {
             "module": MODULE_NAME,
             "fields": [
@@ -116,7 +127,7 @@ def _doctype_specs() -> dict:
                 _field("Is Published", "Check", "حالة النشر"),
             ],
         },
-        "University Vision & Mission": {
+        "University Vision and Mission": {
             "module": MODULE_NAME,
             "fields": [
                 _field("Vision", "Long Text", "رؤية الجامعة"),
@@ -162,8 +173,55 @@ def _doctype_specs() -> dict:
         },
         "Announcements": {"module": MODULE_NAME, "fields": default_fields},
         "University Centers": {"module": MODULE_NAME, "fields": default_fields},
+        "Centers": {
+            "module": MODULE_NAME,
+            "fields": [
+                _field("ID", "Data", "المعرف الفريد", fieldname="id"),
+                _field("Title Ar", "Data", "عنوان المركز بالعربية", reqd=1),
+                _field("Title En", "Data", "عنوان المركز بالإنجليزية"),
+                _field("Desc Ar", "Long Text", "وصف المركز بالعربية"),
+                _field("Desc En", "Long Text", "وصف المركز بالإنجليزية"),
+                _field("Services", "Long Text", "الخدمات المقدمة"),
+                _field("Programs", "Long Text", "البرامج التابعة"),
+                _field("Image", "Attach Image", "صورة المركز"),
+                _field("Location", "Data", "الموقع"),
+                _field("Phone", "Data", "رقم الهاتف"),
+                _field("Email", "Data", "البريد الإلكتروني"),
+                _field("Is Published", "Check", "منشور"),
+                _field("Display Order", "Int", "ترتيب العرض"),
+            ],
+        },
         "Center Services": {"module": MODULE_NAME, "fields": default_fields},
         "Partners": {"module": MODULE_NAME, "fields": default_fields},
+        "Offers": {
+            "module": MODULE_NAME,
+            "fields": [
+                _field("ID", "Data", "المعرف الفريد", fieldname="id"),
+                _field("Title Ar", "Data", "عنوان العرض بالعربية", reqd=1),
+                _field("Title En", "Data", "عنوان العرض بالإنجليزية"),
+                _field("Desc Ar", "Long Text", "وصف مختصر بالعربية"),
+                _field("Desc En", "Long Text", "وصف مختصر بالإنجليزية"),
+                _field("Details Ar", "Long Text", "تفاصيل العرض بالعربية"),
+                _field("Details En", "Long Text", "تفاصيل العرض بالإنجليزية"),
+                _field("Category", "Data", "فئة العرض"),
+                _field("Image", "Attach Image", "صورة العرض"),
+                _field("Valid Until", "Date", "صالح حتى"),
+                _field("Target Audience Ar", "Long Text", "الفئة المستهدفة بالعربية"),
+                _field("Target Audience En", "Long Text", "الفئة المستهدفة بالإنجليزية"),
+                _field("Benefits Ar", "Long Text", "المزايا بالعربية"),
+                _field("Benefits En", "Long Text", "المزايا بالإنجليزية"),
+                _field("Duration Ar", "Data", "المدة بالعربية"),
+                _field("Duration En", "Data", "المدة بالإنجليزية"),
+                _field("Location Ar", "Data", "الموقع بالعربية"),
+                _field("Location En", "Data", "الموقع بالإنجليزية"),
+                _field("Requirements Ar", "Long Text", "المتطلبات بالعربية"),
+                _field("Requirements En", "Long Text", "المتطلبات بالإنجليزية"),
+                _field("Apply Link", "Data", "رابط التقديم"),
+                _field("Is Active", "Check", "مفعل"),
+                _field("Is Published", "Check", "منشور"),
+                _field("Display Order", "Int", "ترتيب العرض"),
+            ],
+        },
         "Testimonials": {"module": MODULE_NAME, "fields": default_fields},
         "Colleges": {
             "module": MODULE_NAME,
@@ -241,21 +299,126 @@ def _doctype_specs() -> dict:
         },
         "Admission Requirements": {"module": MODULE_NAME, "fields": default_fields},
         "Registration Guide": {"module": MODULE_NAME, "fields": default_fields},
-        "Research & Publications": {"module": MODULE_NAME, "fields": default_fields},
+        "Research and Publications": {"module": MODULE_NAME, "fields": default_fields},
         "Student Activities": {"module": MODULE_NAME, "fields": default_fields},
         "Campus Life": {"module": MODULE_NAME, "fields": default_fields},
         "Contact Us Messages": {
             "module": MODULE_NAME,
             "fields": [
-                _field("Sender Name", "Data", "اسم المرسل", reqd=1),
-                _field("Email", "Data", "البريد الإلكتروني"),
-                _field("Subject", "Data", "عنوان الرسالة"),
+                _field("ID", "Data", "المعرف الفريد", reqd=1, fieldname="id"),
+                _field("Name", "Data", "اسم المرسل", reqd=1, fieldname="sender_name"),
+                _field("Email", "Data", "البريد الإلكتروني", reqd=1),
+                _field("Phone", "Data", "رقم الهاتف"),
+                _field("Subject", "Data", "عنوان الرسالة", reqd=1),
                 _field("Message", "Long Text", "نص الرسالة", reqd=1),
-                _field("Received Date", "Datetime", "تاريخ الاستلام"),
+                _field("Status", "Select", "حالة الرسالة", reqd=1, options="new\nread\nreplied\narchived"),
+                _field("Replied At", "Datetime", "تاريخ الرد"),
+                _field("Created At", "Datetime", "تاريخ الإرسال", reqd=1),
             ],
         },
-        "Join Requests": {"module": MODULE_NAME, "fields": default_fields},
-        "FAQ": {"module": MODULE_NAME, "fields": default_fields},
+        "Join Requests": {
+            "module": MODULE_NAME,
+            "fields": [
+                _field("Title", "Data", "عنوان داخلي"),
+                _field("ID", "Data", "المعرف الفريد", reqd=1, fieldname="id"),
+                _field("Type", "Select", "نوع الطلب", reqd=1, options="student\nemployee"),
+                _field("Name", "Data", "الاسم الكامل", reqd=1, fieldname="full_name"),
+                _field("Email", "Data", "البريد الإلكتروني", reqd=1),
+                _field("Phone", "Data", "رقم الهاتف", reqd=1),
+                _field("Specialty", "Data", "التخصص", reqd=1),
+                _field("Experience", "Long Text", "الخبرة"),
+                _field("Cv File", "Attach", "السيرة الذاتية"),
+                _field("Message", "Long Text", "رسالة إضافية"),
+                _field(
+                    "Status",
+                    "Select",
+                    "حالة الطلب",
+                    reqd=1,
+                    options="pending\nreviewed\naccepted\nrejected",
+                ),
+                _field("Reviewed At", "Datetime", "تاريخ المراجعة"),
+                _field("Created At", "Datetime", "تاريخ الإرسال", reqd=1),
+            ],
+        },
+        "FAQ": {
+            "module": MODULE_NAME,
+            "fields": [
+                _field("Title", "Data", "عنوان داخلي"),
+                _field("ID", "Data", "المعرف الفريد", fieldname="id"),
+                _field("Question Ar", "Data", "السؤال بالعربية", reqd=1),
+                _field("Question En", "Data", "السؤال بالإنجليزية"),
+                _field("Answer Ar", "Long Text", "الإجابة بالعربية", reqd=1),
+                _field("Answer En", "Long Text", "الإجابة بالإنجليزية"),
+                _field("Category", "Data", "التصنيف"),
+                _field("Is Published", "Check", "منشور"),
+                _field("Display Order", "Int", "ترتيب العرض"),
+            ],
+        },
+        "Team Members": {
+            "module": MODULE_NAME,
+            "fields": [
+                _field("ID", "Data", "المعرف الفريد", fieldname="id"),
+                _field("Name Ar", "Data", "الاسم بالعربية", reqd=1),
+                _field("Name En", "Data", "الاسم بالإنجليزية"),
+                _field("Position Ar", "Data", "المسمى الوظيفي بالعربية"),
+                _field("Position En", "Data", "المسمى الوظيفي بالإنجليزية"),
+                _field("Bio Ar", "Long Text", "نبذة بالعربية"),
+                _field("Bio En", "Long Text", "نبذة بالإنجليزية"),
+                _field("Image", "Attach Image", "الصورة الشخصية"),
+                _field("Email", "Data", "البريد الإلكتروني"),
+                _field("Phone", "Data", "رقم الهاتف"),
+                _field("Is Published", "Check", "منشور"),
+                _field("Display Order", "Int", "ترتيب العرض"),
+            ],
+        },
+        "Projects": {
+            "module": MODULE_NAME,
+            "fields": [
+                _field("ID", "Data", "المعرف الفريد", fieldname="id"),
+                _field("Slug", "Data", "الرابط المختصر", reqd=1),
+                _field("Title Ar", "Data", "عنوان المشروع بالعربية", reqd=1),
+                _field("Title En", "Data", "عنوان المشروع بالإنجليزية"),
+                _field("Desc Ar", "Long Text", "وصف مختصر بالعربية"),
+                _field("Desc En", "Long Text", "وصف مختصر بالإنجليزية"),
+                _field("Details Ar", "Long Text", "تفاصيل المشروع بالعربية"),
+                _field("Details En", "Long Text", "تفاصيل المشروع بالإنجليزية"),
+                _field("Start Date", "Date", "تاريخ البداية"),
+                _field("End Date", "Date", "تاريخ النهاية"),
+                _field("Year", "Int", "السنة"),
+                _field("Progress", "Int", "نسبة الإنجاز"),
+                _field("Status", "Select", "الحالة", options="current\ncompleted\nplanned"),
+                _field("Is Published", "Check", "منشور"),
+                _field("Display Order", "Int", "ترتيب العرض"),
+            ],
+        },
+        "Blog Posts": {
+            "module": MODULE_NAME,
+            "fields": [
+                _field("ID", "Data", "المعرف الفريد", fieldname="id"),
+                _field("Slug", "Data", "الرابط المختصر", reqd=1),
+                _field("Title Ar", "Data", "عنوان المقال بالعربية", reqd=1),
+                _field("Title En", "Data", "عنوان المقال بالإنجليزية"),
+                _field("Excerpt Ar", "Long Text", "الملخص بالعربية"),
+                _field("Excerpt En", "Long Text", "الملخص بالإنجليزية"),
+                _field("Content Ar", "Long Text", "محتوى المقال بالعربية"),
+                _field("Content En", "Long Text", "محتوى المقال بالإنجليزية"),
+                _field("Author Name Ar", "Data", "اسم الكاتب بالعربية"),
+                _field("Author Name En", "Data", "اسم الكاتب بالإنجليزية"),
+                _field("Author Avatar", "Attach Image", "صورة الكاتب"),
+                _field("Author Role Ar", "Data", "وظيفة الكاتب بالعربية"),
+                _field("Author Role En", "Data", "وظيفة الكاتب بالإنجليزية"),
+                _field("Category", "Data", "الفئة"),
+                _field("Category Ar", "Data", "الفئة بالعربية"),
+                _field("Category En", "Data", "الفئة بالإنجليزية"),
+                _field("Image", "Attach Image", "صورة المقال"),
+                _field("Published At", "Date", "تاريخ النشر"),
+                _field("Read Time", "Int", "مدة القراءة بالدقائق"),
+                _field("Views", "Int", "عدد المشاهدات"),
+                _field("Tags", "Long Text", "الوسوم"),
+                _field("Is Published", "Check", "منشور"),
+                _field("Display Order", "Int", "ترتيب العرض"),
+            ],
+        },
         "Job Opportunities": {"module": MODULE_NAME, "fields": default_fields},
         "Media Library": {
             "module": MODULE_NAME,
@@ -291,9 +454,27 @@ def _doctype_specs() -> dict:
             ],
         },
     }
-    for spec in specs.values():
-        spec["module"] = MODULE_NAME
+    specs = {}
+    for raw_name, spec in raw_specs.items():
+        doctype_name = sanitize_doctype_name(raw_name)
+        if doctype_name in specs:
+            raise frappe.ValidationError(f"Duplicate sanitized DocType name: {doctype_name}")
+        normalized_spec = dict(spec)
+        normalized_spec["module"] = MODULE_NAME
+        normalized_spec["label"] = raw_name
+        specs[doctype_name] = normalized_spec
     return specs
+
+
+def sanitize_doctype_name(name: str) -> str:
+    value = (name or "").replace("&", " and ")
+    value = re.sub(r"[^A-Za-z0-9 _-]+", " ", value)
+    value = re.sub(r"\s+", " ", value).strip()
+    if not value:
+        value = "AAU DocType"
+    if not re.match(r"^[A-Za-z]", value):
+        value = f"D {value}"
+    return value
 
 
 def _default_fields() -> list[dict]:
@@ -347,11 +528,13 @@ def _ensure_module_defs(report: dict, dry_run: bool = False):
 
 
 def _create_doctype(name: str, module: str, required_fields: list[dict], report: dict):
+    doctype_name = sanitize_doctype_name(name)
     fields = _with_section_break(required_fields, existing_fields=[])
+    field_order = [f["fieldname"] for f in fields if f.get("fieldname")]
     doc = frappe.get_doc(
         {
             "doctype": "DocType",
-            "name": name,
+            "name": doctype_name,
             "module": module,
             "custom": 1,
             "allow_rename": 1,
@@ -359,13 +542,13 @@ def _create_doctype(name: str, module: str, required_fields: list[dict], report:
             "issingle": 0,
             "track_changes": 1,
             "fields": fields,
-            "field_order": [f["fieldname"] for f in fields],
             "permissions": [_system_manager_permission()],
         }
     )
+    doc.set("field_order", field_order)
     doc.insert(ignore_permissions=True)
     frappe.db.commit()
-    report["actions"].append(f"CREATED DocType: {name}")
+    report["actions"].append(f"CREATED DocType: {doctype_name}")
 
 
 def _audit_fields(doc, required_fields: list[dict]):
@@ -443,14 +626,14 @@ def _apply_field_changes(doc, changes) -> bool:
 
 
 def _ensure_field_order(doc) -> bool:
-    existing_order = getattr(doc, "field_order", None) or []
+    existing_order = _coerce_field_order(doc.get("field_order") or getattr(doc, "field_order", None))
     fields = doc.fields or []
     fieldnames = [df.fieldname for df in fields if getattr(df, "fieldname", None)]
     if not fieldnames:
         return False
 
     if not existing_order:
-        doc.field_order = fieldnames
+        doc.set("field_order", fieldnames)
         return True
 
     new_order = []
@@ -465,10 +648,26 @@ def _ensure_field_order(doc) -> bool:
             seen.add(fieldname)
 
     if new_order != existing_order:
-        doc.field_order = new_order
+        doc.set("field_order", new_order)
         return True
 
     return False
+
+
+def _coerce_field_order(value) -> list[str]:
+    if not value:
+        return []
+    if isinstance(value, (list, tuple)):
+        return [str(item).strip() for item in value if str(item).strip()]
+    if isinstance(value, str):
+        try:
+            parsed = frappe.parse_json(value)
+        except Exception:
+            parsed = None
+        if isinstance(parsed, list):
+            return [str(item).strip() for item in parsed if str(item).strip()]
+        return [part.strip() for part in re.split(r"[\n,]+", value) if part.strip()]
+    return []
 
 
 

@@ -1,0 +1,231 @@
+{
+ "charts": [],
+ "content": "[{\"id\":\"hub_header\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">AAU Content Hub</span>\",\"col\":12}},{\"id\":\"hub_site_core\",\"type\":\"card\",\"data\":{\"card_name\":\"المحتوى الأساسي للموقع\",\"col\":4}},{\"id\":\"hub_academic\",\"type\":\"card\",\"data\":{\"card_name\":\"المحتوى الأكاديمي\",\"col\":4}},{\"id\":\"hub_navigation\",\"type\":\"card\",\"data\":{\"card_name\":\"التنقل والصفحات\",\"col\":4}},{\"id\":\"hub_engagement\",\"type\":\"card\",\"data\":{\"card_name\":\"التفاعل والطلبات\",\"col\":6}},{\"id\":\"hub_settings\",\"type\":\"card\",\"data\":{\"card_name\":\"الإعدادات العامة\",\"col\":6}}]",
+ "creation": "2026-03-01 00:00:00.000000",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "website",
+ "idx": 0,
+ "indicator_color": "blue",
+ "is_hidden": 0,
+ "is_standard": 1,
+ "label": "AAU Content Hub",
+ "links": [
+  {
+   "hidden": 0,
+   "icon": "website",
+   "is_query_report": 0,
+   "label": "المحتوى الأساسي للموقع",
+   "link_count": 6,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "الصفحة الرئيسية",
+   "link_count": 0,
+   "link_to": "Home Page",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "الأخبار",
+   "link_count": 0,
+   "link_to": "News",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "الفعاليات",
+   "link_count": 0,
+   "link_to": "Events",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "الإعلانات",
+   "link_count": 0,
+   "link_to": "Announcement",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "عن الجامعة",
+   "link_count": 0,
+   "link_to": "About University",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "سلايدر الصفحة الرئيسية",
+   "link_count": 0,
+   "link_to": "Slider",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "icon": "education",
+   "is_query_report": 0,
+   "label": "المحتوى الأكاديمي",
+   "link_count": 2,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "الكليات",
+   "link_count": 0,
+   "link_to": "Colleges",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "البرامج الأكاديمية",
+   "link_count": 0,
+   "link_to": "Academic Programs",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "icon": "folder-open",
+   "is_query_report": 0,
+   "label": "التنقل والصفحات",
+   "link_count": 3,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "صفحات الموقع",
+   "link_count": 0,
+   "link_to": "AAU Page",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "قوائم التنقل",
+   "link_count": 0,
+   "link_to": "AAU Menu",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "الصفحات الثابتة",
+   "link_count": 0,
+   "link_to": "Static Page",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "icon": "mail",
+   "is_query_report": 0,
+   "label": "التفاعل والطلبات",
+   "link_count": 2,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "رسائل التواصل",
+   "link_count": 0,
+   "link_to": "Contact Us Messages",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "طلبات الانضمام",
+   "link_count": 0,
+   "link_to": "Join Requests",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "icon": "settings",
+   "is_query_report": 0,
+   "label": "الإعدادات العامة",
+   "link_count": 2,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "إعدادات الموقع",
+   "link_count": 0,
+   "link_to": "Website Settings",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "اللوحات والمؤشرات",
+   "link_count": 0,
+   "link_to": "Dashboard Metrics",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  }
+ ],
+ "modified": "2026-03-01 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "AAU",
+ "name": "AAU Content Hub",
+ "number_cards": [],
+ "owner": "Administrator",
+ "parent_page": "",
+ "public": 0,
+ "quick_lists": [],
+ "roles": [],
+ "sequence_id": 51.0,
+ "shortcuts": [],
+ "title": "AAU Content Hub"
+}

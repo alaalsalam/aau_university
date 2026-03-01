@@ -27,8 +27,32 @@ def _get_entity_config(entity_key: str) -> dict:
     return ENTITY_CONFIG[entity_key]
 
 
+def _resolve_doctype(config: dict) -> str:
+    candidates = config.get("doctype_candidates") or []
+    primary = config.get("doctype")
+    if primary:
+        candidates = [primary] + [candidate for candidate in candidates if candidate != primary]
+    for doctype in candidates:
+        if doctype and frappe.db.exists("DocType", doctype):
+            return doctype
+    if primary:
+        raise ApiError("NOT_FOUND", f"DocType {primary} is not available", status_code=404)
+    raise ApiError("NOT_FOUND", "Configured DocType is not available", status_code=404)
+
+
 def _get_meta(doctype: str):
     return frappe.get_meta(doctype)
+
+
+def _resolve_identifier_field(meta, config: dict, by: str = "id") -> str:
+    if by == "slug":
+        slug_field = config.get("slug_field")
+        if slug_field and meta.get_field(slug_field):
+            return slug_field
+    id_field = config.get("id_field", "id")
+    if id_field and meta.get_field(id_field):
+        return id_field
+    return "name"
 
 
 _SYSTEM_FIELDNAMES = {
@@ -112,7 +136,7 @@ def _resolve_doc_name(doctype: str, fieldname: str, value: str) -> str:
 
 def list_entities(entity_key: str, search_fields: list[str] | None = None, public: bool = True):
     config = _get_entity_config(entity_key)
-    doctype = config["doctype"]
+    doctype = _resolve_doctype(config)
     meta = _get_meta(doctype)
     query_fieldnames = _get_query_fieldnames(doctype)
     table_fields = get_table_field_map(meta)
@@ -163,11 +187,11 @@ def list_entities(entity_key: str, search_fields: list[str] | None = None, publi
 
 def get_entity(entity_key: str, identifier: str, by: str = "id", public: bool = True):
     config = _get_entity_config(entity_key)
-    doctype = config["doctype"]
+    doctype = _resolve_doctype(config)
     meta = _get_meta(doctype)
     table_fields = get_table_field_map(meta)
 
-    fieldname = config.get("slug_field") if by == "slug" else config.get("id_field", "id")
+    fieldname = _resolve_identifier_field(meta, config, by=by)
     doc_name = _resolve_doc_name(doctype, fieldname, identifier)
     doc = frappe.get_doc(doctype, doc_name)
 
@@ -179,7 +203,7 @@ def get_entity(entity_key: str, identifier: str, by: str = "id", public: bool = 
 
 def get_entity_by_field(entity_key: str, fieldname: str, value: str, public: bool = True):
     config = _get_entity_config(entity_key)
-    doctype = config["doctype"]
+    doctype = _resolve_doctype(config)
     meta = _get_meta(doctype)
     table_fields = get_table_field_map(meta)
     doc_name = _resolve_doc_name(doctype, fieldname, value)
@@ -193,14 +217,15 @@ def create_entity(entity_key: str, payload: dict, public: bool = False):
     if not public:
         require_roles(ADMIN_ROLES)
     config = _get_entity_config(entity_key)
-    doctype = config["doctype"]
+    doctype = _resolve_doctype(config)
     meta = _get_meta(doctype)
     payload_fieldnames = _get_payload_fieldnames(doctype)
     table_fields = get_table_field_map(meta)
 
     data = normalize_payload(payload, payload_fieldnames)
-    if config.get("id_field"):
-        data[config["id_field"]] = ensure_uuid(data.get(config["id_field"]))
+    id_field = config.get("id_field")
+    if id_field and id_field in payload_fieldnames:
+        data[id_field] = ensure_uuid(data.get(id_field))
     if "created_at" in payload_fieldnames:
         data.setdefault("created_at", now_ts())
     if "updated_at" in payload_fieldnames:
@@ -215,12 +240,12 @@ def create_entity(entity_key: str, payload: dict, public: bool = False):
 def update_entity(entity_key: str, identifier: str, payload: dict, by: str = "id"):
     require_roles(ADMIN_ROLES)
     config = _get_entity_config(entity_key)
-    doctype = config["doctype"]
+    doctype = _resolve_doctype(config)
     meta = _get_meta(doctype)
     payload_fieldnames = _get_payload_fieldnames(doctype)
     table_fields = get_table_field_map(meta)
 
-    fieldname = config.get("slug_field") if by == "slug" else config.get("id_field", "id")
+    fieldname = _resolve_identifier_field(meta, config, by=by)
     doc_name = _resolve_doc_name(doctype, fieldname, identifier)
     doc = frappe.get_doc(doctype, doc_name)
 
@@ -236,7 +261,7 @@ def update_entity(entity_key: str, identifier: str, payload: dict, by: str = "id
 def update_entity_by_field(entity_key: str, fieldname: str, value: str, payload: dict):
     require_roles(ADMIN_ROLES)
     config = _get_entity_config(entity_key)
-    doctype = config["doctype"]
+    doctype = _resolve_doctype(config)
     meta = _get_meta(doctype)
     payload_fieldnames = _get_payload_fieldnames(doctype)
     table_fields = get_table_field_map(meta)
@@ -255,8 +280,9 @@ def update_entity_by_field(entity_key: str, fieldname: str, value: str, payload:
 def delete_entity(entity_key: str, identifier: str, by: str = "id"):
     require_roles(ADMIN_ROLES)
     config = _get_entity_config(entity_key)
-    doctype = config["doctype"]
-    fieldname = config.get("slug_field") if by == "slug" else config.get("id_field", "id")
+    doctype = _resolve_doctype(config)
+    meta = _get_meta(doctype)
+    fieldname = _resolve_identifier_field(meta, config, by=by)
     doc_name = _resolve_doc_name(doctype, fieldname, identifier)
     frappe.delete_doc(doctype, doc_name, ignore_permissions=True)
     return {"deleted": True}
@@ -266,8 +292,9 @@ def increment_counter(entity_key: str, identifier: str, fieldname: str, public: 
     if not public:
         require_roles(ADMIN_ROLES)
     config = _get_entity_config(entity_key)
-    doctype = config["doctype"]
-    id_field = config.get("id_field", "id")
+    doctype = _resolve_doctype(config)
+    meta = _get_meta(doctype)
+    id_field = _resolve_identifier_field(meta, config, by="id")
     doc_name = _resolve_doc_name(doctype, id_field, identifier)
     doc = frappe.get_doc(doctype, doc_name)
     current = int(getattr(doc, fieldname, 0) or 0)
@@ -279,8 +306,9 @@ def increment_counter(entity_key: str, identifier: str, fieldname: str, public: 
 def update_status(entity_key: str, identifier: str, status_field: str, status_value: str):
     require_roles(ADMIN_ROLES)
     config = _get_entity_config(entity_key)
-    doctype = config["doctype"]
-    id_field = config.get("id_field", "id")
+    doctype = _resolve_doctype(config)
+    meta = _get_meta(doctype)
+    id_field = _resolve_identifier_field(meta, config, by="id")
     doc_name = _resolve_doc_name(doctype, id_field, identifier)
     doc = frappe.get_doc(doctype, doc_name)
     doc.set(status_field, status_value)
@@ -299,7 +327,7 @@ def upload_media():
 
     fileobj = next(iter(frappe.request.files.values()))
     saved = save_file(fileobj.filename, fileobj.stream.read(), None, None, None)
-    doctype = ENTITY_CONFIG["media"]["doctype"]
+    doctype = _resolve_doctype(ENTITY_CONFIG["media"])
     meta = _get_meta(doctype)
     payload_fieldnames = _get_payload_fieldnames(doctype)
     table_fields = get_table_field_map(meta)

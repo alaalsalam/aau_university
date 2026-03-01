@@ -24,9 +24,10 @@ import frappe
 
 
 APP_NAME = "aau_university"
+MODULE_NAME = "AAU"
 
 # AAU modules (Module Def records) used in your app
-AAU_MODULES = ["Content", "Academic", "Public", "CMS"]
+AAU_MODULES = [MODULE_NAME]
 
 # ---------------------------------------------------------------------
 # Screens Spec
@@ -38,7 +39,7 @@ SCREENS = [
     # ---------------- Content ----------------
     {
         "doctype_name": "Home Page",
-        "module": "Content",
+        "module": MODULE_NAME,
         "fields": [
             ("Page Title", "عنوان الصفحة الرئيسي", "Data", None, 1),
             ("Hero Description", "نص ترحيبي مختصر", "Small Text", None, 0),
@@ -49,7 +50,7 @@ SCREENS = [
     },
     {
         "doctype_name": "About University",
-        "module": "Content",
+        "module": MODULE_NAME,
         "fields": [
             ("Title", "عنوان القسم", "Data", None, 1),
             ("Description", "وصف عن الجامعة", "Long Text", None, 0),
@@ -58,8 +59,8 @@ SCREENS = [
         ],
     },
     {
-        "doctype_name": "University Vision & Mission",
-        "module": "Content",
+        "doctype_name": "University Vision and Mission",
+        "module": MODULE_NAME,
         "fields": [
             ("Vision", "رؤية الجامعة", "Long Text", None, 0),
             ("Mission", "رسالة الجامعة", "Long Text", None, 0),
@@ -69,7 +70,7 @@ SCREENS = [
     },
     {
         "doctype_name": "University Administration",
-        "module": "Content",
+        "module": MODULE_NAME,
         "fields": [
             ("Name", "اسم المسؤول/الإداري", "Data", None, 1),
             ("Position", "المنصب الإداري", "Data", None, 1),
@@ -81,7 +82,7 @@ SCREENS = [
     },
     {
         "doctype_name": "News",
-        "module": "Content",
+        "module": MODULE_NAME,
         "fields": [
             ("Title", "عنوان الخبر", "Data", None, 1),
             ("Summary", "ملخص الخبر", "Small Text", None, 0),
@@ -94,7 +95,7 @@ SCREENS = [
     },
     {
         "doctype_name": "Events",
-        "module": "Content",
+        "module": MODULE_NAME,
         "fields": [
             ("Event Title", "عنوان الفعالية", "Data", None, 1),
             ("Description", "وصف الفعالية", "Long Text", None, 0),
@@ -107,7 +108,7 @@ SCREENS = [
     },
     {
         "doctype_name": "Announcements",
-        "module": "Content",
+        "module": MODULE_NAME,
         "fields": [
             ("Title", "عنوان الإعلان", "Data", None, 1),
             ("Content", "محتوى الإعلان", "Long Text", None, 0),
@@ -118,7 +119,7 @@ SCREENS = [
     },
     {
         "doctype_name": "University Centers",
-        "module": "Content",
+        "module": MODULE_NAME,
         "fields": [
             ("Center Name", "اسم المركز", "Data", None, 1),
             ("Description", "وصف المركز", "Long Text", None, 0),
@@ -129,7 +130,7 @@ SCREENS = [
     },
     {
         "doctype_name": "Center Services",
-        "module": "Content",
+        "module": MODULE_NAME,
         "fields": [
             ("Service Name", "اسم الخدمة", "Data", None, 1),
             ("Center", "المركز التابع", "Link", "University Centers", 1),
@@ -140,7 +141,7 @@ SCREENS = [
     },
     {
         "doctype_name": "Partners",
-        "module": "Content",
+        "module": MODULE_NAME,
         "fields": [
             ("Partner Name", "اسم الشريك", "Data", None, 1),
             ("Website", "الموقع الإلكتروني", "Data", None, 0),
@@ -151,7 +152,7 @@ SCREENS = [
     },
     {
         "doctype_name": "Testimonials",
-        "module": "Content",
+        "module": MODULE_NAME,
         "fields": [
             ("Person Name", "اسم صاحب الشهادة", "Data", None, 1),
             ("Title", "الصفة/المسمى", "Data", None, 0),
@@ -165,7 +166,7 @@ SCREENS = [
     # ---------------- Academic ----------------
     {
         "doctype_name": "Colleges",
-        "module": "Academic",
+        "module": MODULE_NAME,
         "fields": [
             ("College Name", "اسم الكلية", "Data", None, 1),
             ("Description", "وصف الكلية", "Long Text", None, 0),
@@ -177,7 +178,7 @@ SCREENS = [
     },
     {
         "doctype_name": "Academic Departments",
-        "module": "Academic",
+        "module": MODULE_NAME,
         "fields": [
             ("Department Name", "اسم القسم", "Data", None, 1),
             ("College", "الكلية التابعة", "Link", "Colleges", 1),
@@ -187,7 +188,7 @@ SCREENS = [
     },
     {
         "doctype_name": "Academic Programs",
-        "module": "Academic",
+        "module": MODULE_NAME,
         "fields": [
             ("Program Name", "اسم البرنامج", "Data", None, 1),
             ("College", "الكلية التابعة", "Link", "Colleges", 1),
@@ -199,7 +200,7 @@ SCREENS = [
     },
     {
         "doctype_name": "Study Plans",
-        "module": "Academic",
+        "module": MODULE_NAME,
         "fields": [
             ("Plan Name", "اسم الخطة", "Data", None, 1),
             ("Academic Program", "البرنامج الأكاديمي", "Link", "Academic Programs", 1),
@@ -210,7 +211,7 @@ SCREENS = [
     },
     {
         "doctype_name": "Study Plan Courses",
-        "module": "Academic",
+        "module": MODULE_NAME,
         "fields": [
             ("Study Plan", "الخطة الدراسية", "Link", "Study Plans", 1),
             ("Course Name", "اسم المقرر", "Data", None, 1),
@@ -223,7 +224,7 @@ SCREENS = [
     },
     {
         "doctype_name": "Faculty Members",
-        "module": "Academic",
+        "module": MODULE_NAME,
         "fields": [
             ("Full Name", "الاسم الكامل", "Data", None, 1),
             ("Academic Title", "اللقب الأكاديمي", "Data", None, 0),
@@ -235,7 +236,7 @@ SCREENS = [
     },
     {
         "doctype_name": "Admission Requirements",
-        "module": "Academic",
+        "module": MODULE_NAME,
         "fields": [
             ("Title", "العنوان", "Data", None, 1),
             ("Content", "المحتوى", "Long Text", None, 1),
@@ -244,7 +245,7 @@ SCREENS = [
     },
     {
         "doctype_name": "Registration Guide",
-        "module": "Academic",
+        "module": MODULE_NAME,
         "fields": [
             ("Title", "العنوان", "Data", None, 1),
             ("Content", "المحتوى", "Long Text", None, 1),
@@ -252,8 +253,8 @@ SCREENS = [
         ],
     },
     {
-        "doctype_name": "Research & Publications",
-        "module": "Academic",
+        "doctype_name": "Research and Publications",
+        "module": MODULE_NAME,
         "fields": [
             ("Title", "العنوان", "Data", None, 1),
             ("Authors", "المؤلفون", "Data", None, 0),
@@ -267,7 +268,7 @@ SCREENS = [
     # ---------------- Public ----------------
     {
         "doctype_name": "Student Activities",
-        "module": "Public",
+        "module": MODULE_NAME,
         "fields": [
             ("Title", "عنوان النشاط", "Data", None, 1),
             ("Description", "وصف النشاط", "Long Text", None, 0),
@@ -278,7 +279,7 @@ SCREENS = [
     },
     {
         "doctype_name": "Campus Life",
-        "module": "Public",
+        "module": MODULE_NAME,
         "fields": [
             ("Title", "العنوان", "Data", None, 1),
             ("Content", "المحتوى", "Long Text", None, 0),
@@ -288,7 +289,7 @@ SCREENS = [
     },
     {
         "doctype_name": "Contact Us Messages",
-        "module": "Public",
+        "module": MODULE_NAME,
         "fields": [
             ("Sender Name", "اسم المرسل", "Data", None, 1),
             ("Email", "البريد الإلكتروني", "Data", None, 0),
@@ -299,7 +300,7 @@ SCREENS = [
     },
     {
         "doctype_name": "Join Requests",
-        "module": "Public",
+        "module": MODULE_NAME,
         "fields": [
             ("Full Name", "الاسم الكامل", "Data", None, 1),
             ("Email", "البريد الإلكتروني", "Data", None, 0),
@@ -311,7 +312,7 @@ SCREENS = [
     },
     {
         "doctype_name": "FAQ",
-        "module": "Public",
+        "module": MODULE_NAME,
         "fields": [
             ("Question", "السؤال", "Data", None, 1),
             ("Answer", "الإجابة", "Long Text", None, 1),
@@ -321,7 +322,7 @@ SCREENS = [
     },
     {
         "doctype_name": "Job Opportunities",
-        "module": "Public",
+        "module": MODULE_NAME,
         "fields": [
             ("Title", "المسمى الوظيفي", "Data", None, 1),
             ("Department", "القسم", "Data", None, 0),
@@ -334,7 +335,7 @@ SCREENS = [
     # ---------------- CMS ----------------
     {
         "doctype_name": "Media Library",
-        "module": "CMS",
+        "module": MODULE_NAME,
         "fields": [
             ("Media Title", "عنوان الوسائط", "Data", None, 1),
             ("Media Type", "نوع الوسائط", "Select", "Image\nVideo\nDocument", 0),
@@ -345,7 +346,7 @@ SCREENS = [
     },
     {
         "doctype_name": "Pages",
-        "module": "CMS",
+        "module": MODULE_NAME,
         "fields": [
             ("Page Title", "عنوان الصفحة", "Data", None, 1),
             ("Slug", "رابط الصفحة", "Data", None, 1),
@@ -357,7 +358,7 @@ SCREENS = [
     },
     {
         "doctype_name": "Menus",
-        "module": "CMS",
+        "module": MODULE_NAME,
         "fields": [
             ("Menu Title", "عنوان القائمة", "Data", None, 1),
             ("Is Published", "منشور", "Check", None, 0),
@@ -366,7 +367,7 @@ SCREENS = [
     },
     {
         "doctype_name": "Sliders",
-        "module": "CMS",
+        "module": MODULE_NAME,
         "fields": [
             ("Title", "العنوان", "Data", None, 0),
             ("Image", "الصورة", "Attach Image", None, 1),
@@ -377,7 +378,7 @@ SCREENS = [
     },
     {
         "doctype_name": "Website Settings",
-        "module": "CMS",
+        "module": MODULE_NAME,
         "fields": [
             ("Site Name", "اسم الموقع", "Data", None, 1),
             ("Logo", "شعار الموقع", "Attach Image", None, 0),
@@ -407,8 +408,8 @@ def run(update_existing: bool = True):
 
     for s in SCREENS:
         _create_or_update_doctype(
-            doctype_name=s["doctype_name"],
-            module=s["module"],
+            doctype_name=_sanitize_doctype_name(s["doctype_name"]),
+            module=MODULE_NAME,
             fields=s["fields"],
             update_existing=update_existing,
         )
@@ -511,6 +512,9 @@ def _create_or_update_doctype(doctype_name: str, module: str, fields: list, upda
     }
 
     if exists:
+        if frappe.db.get_value("DocType", doctype_name, "module") != module:
+            frappe.db.set_value("DocType", doctype_name, "module", module, update_modified=False)
+            frappe.clear_cache(doctype=doctype_name)
         dt = frappe.get_doc("DocType", doctype_name)
         # overwrite key parts to match spec
         dt.module = module
@@ -522,7 +526,7 @@ def _create_or_update_doctype(doctype_name: str, module: str, fields: list, upda
         for f in doc_fields:
             dt.append("fields", f)
 
-        dt.field_order = field_order
+        dt.set("field_order", field_order)
         dt.set("permissions", [])
         for p in _base_permissions():
             dt.append("permissions", p)
@@ -530,3 +534,14 @@ def _create_or_update_doctype(doctype_name: str, module: str, fields: list, upda
         dt.save(ignore_permissions=True)
     else:
         frappe.get_doc(payload).insert(ignore_permissions=True)
+
+
+def _sanitize_doctype_name(name: str) -> str:
+    value = (name or "").replace("&", " and ").strip()
+    value = re.sub(r"[^A-Za-z0-9 _-]+", " ", value)
+    value = re.sub(r"\s+", " ", value).strip()
+    if not value:
+        value = "AAU DocType"
+    if value[0].isdigit():
+        value = f"D {value}"
+    return value

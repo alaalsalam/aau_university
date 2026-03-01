@@ -497,6 +497,8 @@ def get_blog_post_by_slug(slug: str):
 @api_endpoint
 def list_blog_categories():
     """List blog categories."""
+    if not frappe.db.exists("DocType", "Blog Posts"):
+        return []
     rows = frappe.get_all(
         "Blog Posts",
         fields=["category"],

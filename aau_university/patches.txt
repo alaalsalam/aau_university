@@ -5,3 +5,5 @@
 [post_model_sync]
 # Patches added in this section will be executed after doctypes are migrated
 aau_university.patches.v1_0_run_screen_audit_fix
+aau_university.patches.v1_1_migrate_json_content_to_fields
+aau_university.patches.v1_2_cleanup_unused_screens_and_workspace

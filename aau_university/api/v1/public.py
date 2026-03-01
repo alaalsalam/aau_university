@@ -21,6 +21,14 @@ from .utils import api_endpoint, now_ts, require_roles, to_camel
 @api_endpoint
 def create_contact_message(**payload):
     """Create a contact message."""
+    payload = _merge_request_payload(payload)
+    if payload.get("name") and not payload.get("sender_name"):
+        payload["sender_name"] = payload.get("name")
+    if payload.get("full_name") and not payload.get("sender_name"):
+        payload["sender_name"] = payload.get("full_name")
+    if payload.get("sender_name") and not payload.get("name"):
+        payload["name"] = payload.get("sender_name")
+    payload.setdefault("status", "new")
     return create_entity("contact_messages", payload, public=True), 201
 
 
@@ -61,6 +69,16 @@ def delete_contact_message(message_id: str):
 @api_endpoint
 def create_join_request(**payload):
     """Create a join request."""
+    payload = _merge_request_payload(payload)
+    if payload.get("name") and not payload.get("full_name"):
+        payload["full_name"] = payload.get("name")
+    if payload.get("program") and not payload.get("specialty"):
+        payload["specialty"] = payload.get("program")
+    if payload.get("major") and not payload.get("specialty"):
+        payload["specialty"] = payload.get("major")
+    payload.setdefault("title", payload.get("full_name") or payload.get("name"))
+    payload.setdefault("status", "pending")
+    payload.setdefault("type", "student")
     return create_entity("join_requests", payload, public=True), 201
 
 
@@ -111,14 +129,20 @@ def search(q: str, type: str | None = None):
         doctype = SEARCH_TYPES.get(key)
         if not doctype:
             continue
+        if not frappe.db.exists("DocType", doctype):
+            continue
         meta = frappe.get_meta(doctype)
-        search_fields = [f for f in ["title_ar", "title_en", "description_ar", "description_en"] if meta.get_field(f)]
+        selectable = _selectable_fields(doctype)
+        search_fields = [f for f in ["title_ar", "title_en", "description_ar", "description_en"] if f in selectable]
         if not search_fields:
             continue
         or_filters = [[doctype, field, "like", f"%{q}%"] for field in search_fields]
+        fields = [field for field in ["id", "title_ar", "title_en", "description_ar", "description_en", "image", "slug"] if field in selectable]
+        if "name" not in fields:
+            fields.append("name")
         rows = frappe.get_all(
             doctype,
-            fields=["id", "title_ar", "title_en", "description_ar", "description_en", "image", "slug"],
+            fields=fields,
             or_filters=or_filters,
             limit=20,
             ignore_permissions=True,
@@ -127,7 +151,7 @@ def search(q: str, type: str | None = None):
         for row in rows:
             results.append(
                 {
-                    "id": row.get("id"),
+                    "id": row.get("id") or row.get("name"),
                     "type": key,
                     "titleAr": row.get("title_ar"),
                     "titleEn": row.get("title_en"),
@@ -497,6 +521,25 @@ def get_public_menu(key: str):
         raise
 
 
+@frappe.whitelist(allow_guest=True)
+@api_endpoint
+def get_site_profile():
+    settings = _get_website_settings_payload()
+    social_links = _get_social_links_from_menu()
+    return {
+        "siteName": settings.get("site_name") or settings.get("app_name") or "",
+        "siteNameAr": settings.get("site_name_ar") or settings.get("site_name") or "",
+        "siteDescriptionAr": settings.get("site_description_ar") or settings.get("about_short") or "",
+        "siteDescriptionEn": settings.get("site_description_en") or settings.get("about_short_en") or "",
+        "contactPhone": settings.get("contact_phone") or settings.get("phone") or "",
+        "contactEmail": settings.get("contact_email") or settings.get("email") or "",
+        "addressAr": settings.get("address_ar") or settings.get("address") or "",
+        "addressEn": settings.get("address_en") or settings.get("address") or "",
+        "mapLocation": settings.get("map_location") or "",
+        "socialLinks": social_links,
+    }
+
+
 def _get_home_sections() -> dict:
     if not frappe.db.exists("DocType", "Home Page"):
         return {"hero": {}, "stats": [], "about": {}, "partners": [], "testimonials": []}
@@ -515,7 +558,7 @@ def _get_home_sections() -> dict:
         "programs_count",
         "graduates_count",
     ]
-    if meta.get_field("home_sections_json"):
+    if _json_fallback_enabled() and meta.get_field("home_sections_json"):
         fields.append("home_sections_json")
     rows = frappe.get_all(
         "Home Page",
@@ -529,7 +572,9 @@ def _get_home_sections() -> dict:
         return {"hero": {}, "stats": [], "about": {}, "partners": [], "testimonials": []}
 
     row = rows[0]
-    extra = _parse_home_sections_json(row.get("home_sections_json"))
+    extra = {}
+    if _json_fallback_enabled():
+        extra = _parse_home_sections_json(row.get("home_sections_json"))
     hero = {
         "badgeAr": extra.get("hero", {}).get("badgeAr", "مرحباً بكم في جامعة الجيل الجديد"),
         "badgeEn": extra.get("hero", {}).get("badgeEn", "Welcome to AJ JEEL ALJADEED UNIVERSITY"),
@@ -816,10 +861,11 @@ def _list_home_colleges(limit: int) -> list[dict]:
         "admission_requirements_en",
         "icon",
         "image",
-        "programs_json",
         "display_order",
         "is_active",
     ]
+    if _json_fallback_enabled():
+        desired.append("programs_json")
     fields = [field for field in desired if field in available]
 
     filters = {"is_active": 1} if "is_active" in available else {}
@@ -969,14 +1015,116 @@ def _first_existing_doctype(candidates: list[str]) -> str | None:
     return None
 
 
+def _get_website_settings_payload() -> dict:
+    doctype = "Website Settings"
+    if not frappe.db.exists("DocType", doctype):
+        return {}
+    meta = frappe.get_meta(doctype)
+    candidate_fields = [
+        "site_name",
+        "site_name_ar",
+        "site_description_ar",
+        "site_description_en",
+        "about_short",
+        "about_short_en",
+        "app_name",
+        "contact_phone",
+        "phone",
+        "contact_email",
+        "email",
+        "address",
+        "address_ar",
+        "address_en",
+        "map_location",
+        "facebook",
+        "twitter",
+        "instagram",
+        "linkedin",
+    ]
+    available = [field for field in candidate_fields if meta.get_field(field)]
+    if not available:
+        return {}
+
+    if getattr(meta, "issingle", 0):
+        payload = {}
+        for fieldname in available:
+            payload[fieldname] = frappe.db.get_single_value(doctype, fieldname)
+        return payload
+
+    row = frappe.get_all(
+        doctype,
+        fields=["name"] + available,
+        order_by="modified desc",
+        limit_page_length=1,
+        ignore_permissions=True,
+    )
+    return row[0] if row else {}
+
+
+def _get_social_links_from_menu() -> list[dict]:
+    doctype = _first_existing_doctype(["AAU Menu"])
+    if not doctype:
+        return []
+    menu_name = frappe.db.get_value(doctype, {"key": "social"}, "name")
+    if not menu_name:
+        return []
+    doc = frappe.get_doc(doctype, menu_name)
+    links = []
+    for item in doc.get("items") or []:
+        label_ar = item.get("label_ar") or item.get("label") or ""
+        label_en = item.get("label_en") or item.get("label") or ""
+        url = item.get("url") or ""
+        if not url:
+            continue
+        links.append(
+            {
+                "labelAr": label_ar,
+                "labelEn": label_en,
+                "url": url,
+                "openInNewTab": int(item.get("open_in_new_tab") or 0) == 1,
+            }
+        )
+    return links
+
+
+def _merge_request_payload(payload: dict | None) -> frappe._dict:
+    merged = frappe._dict(payload or {})
+    form_dict = getattr(frappe.local, "form_dict", {}) or {}
+    for key, value in form_dict.items():
+        if key in {"cmd", "data"}:
+            continue
+        merged.setdefault(key, value)
+
+    request = getattr(frappe.local, "request", None)
+    if request:
+        try:
+            json_payload = request.get_json(silent=True)
+        except Exception:
+            json_payload = None
+        if isinstance(json_payload, dict):
+            for key, value in json_payload.items():
+                merged.setdefault(key, value)
+
+    data_payload = form_dict.get("data")
+    if data_payload and isinstance(data_payload, str):
+        try:
+            parsed = frappe.parse_json(data_payload)
+        except Exception:
+            parsed = None
+        if isinstance(parsed, dict):
+            for key, value in parsed.items():
+                merged.setdefault(key, value)
+    return merged
+
+
 def _serialize_news_item(row: dict) -> dict:
     slug = row.get("slug") or _slugify_news_value(row.get("title_en") or row.get("title_ar") or row.get("title"))
-    title_ar = row.get("title_ar") or row.get("title")
-    title_en = row.get("title_en") or row.get("title")
-    description_ar = row.get("description_ar") or row.get("summary") or row.get("content") or ""
-    description_en = row.get("description_en") or row.get("summary") or row.get("content") or ""
-    content_ar = row.get("content_ar") or row.get("content") or description_ar
-    content_en = row.get("content_en") or row.get("content") or description_en
+    title_ar = row.get("title_ar") or row.get("title") or ""
+    title_en = row.get("title_en") or row.get("title") or ""
+    description_ar = row.get("description_ar") or row.get("summary") or ""
+    description_en = row.get("description_en") or row.get("summary") or ""
+    content_ar = row.get("content_ar") or row.get("content") or ""
+    content_en = row.get("content_en") or row.get("content") or ""
     image = row.get("image") or row.get("featured_image")
     date = row.get("date") or row.get("publish_date")
     raw_tags = row.get("tags")
@@ -1006,8 +1154,8 @@ def _serialize_news_item(row: dict) -> dict:
 def _serialize_faq_item(row: dict) -> dict:
     question_ar = row.get("question_ar") or row.get("question") or row.get("title") or ""
     question_en = row.get("question_en") or row.get("question") or row.get("title") or ""
-    answer_ar = row.get("answer_ar") or row.get("answer") or row.get("content") or ""
-    answer_en = row.get("answer_en") or row.get("answer") or row.get("content") or ""
+    answer_ar = row.get("answer_ar") or row.get("answer") or ""
+    answer_en = row.get("answer_en") or row.get("answer") or ""
     category = row.get("category")
     fallback_id = _slugify_news_value(question_en or question_ar)
 
@@ -1038,10 +1186,10 @@ def _serialize_event_item(row: dict) -> dict:
     )
     title_ar = row.get("title_ar") or row.get("title") or row.get("event_title")
     title_en = row.get("title_en") or row.get("title") or row.get("event_title")
-    description_ar = row.get("description_ar") or row.get("description") or row.get("content") or ""
-    description_en = row.get("description_en") or row.get("description") or row.get("content") or ""
-    content_ar = row.get("content_ar") or row.get("content") or description_ar
-    content_en = row.get("content_en") or row.get("content") or description_en
+    description_ar = row.get("description_ar") or row.get("description") or ""
+    description_en = row.get("description_en") or row.get("description") or ""
+    content_ar = row.get("content_ar") or row.get("content") or ""
+    content_en = row.get("content_en") or row.get("content") or ""
     date = row.get("date") or row.get("event_date")
     end_date = row.get("end_date")
     location_ar = row.get("location_ar") or row.get("location")
@@ -1081,7 +1229,9 @@ def _serialize_event_item(row: dict) -> dict:
 
 
 def _serialize_college_item(row: dict) -> dict:
-    programs = _parse_programs_json(row.get("programs_json"))
+    programs = _get_college_programs_from_doctype(row)
+    if not programs and _json_fallback_enabled():
+        programs = _parse_programs_json(row.get("programs_json"))
     slug = row.get("slug") or _slugify_news_value(
         row.get("name_en")
         or row.get("name_ar")
@@ -1112,6 +1262,87 @@ def _serialize_college_item(row: dict) -> dict:
         "image": row.get("image"),
         "programs": programs,
     }
+
+
+def _get_college_programs_from_doctype(college_row: dict) -> list[dict]:
+    doctype = _first_existing_doctype(["Academic Programs"])
+    if not doctype:
+        return []
+
+    college_key = college_row.get("name")
+    if not college_key:
+        return []
+
+    cache_key = "_aau_college_programs_cache"
+    cache = getattr(frappe.local, cache_key, None)
+    if cache is None:
+        cache = {}
+        setattr(frappe.local, cache_key, cache)
+    if college_key in cache:
+        return cache[college_key]
+
+    available = _selectable_fields(doctype)
+    desired = [
+        "name",
+        "id",
+        "program_name",
+        "name_ar",
+        "name_en",
+        "department_ar",
+        "department_en",
+        "admission_rate",
+        "high_school_type",
+        "high_school_type_en",
+        "study_years",
+        "duration",
+        "description",
+        "description_ar",
+        "description_en",
+        "image",
+        "college",
+        "is_active",
+    ]
+    fields = [field for field in desired if field in available]
+    if not fields or "college" not in available:
+        cache[college_key] = []
+        return []
+
+    filters = {"college": college_key}
+    if "is_active" in available:
+        filters["is_active"] = 1
+
+    rows = frappe.get_all(
+        doctype,
+        fields=fields,
+        filters=filters,
+        order_by="modified desc",
+        ignore_permissions=True,
+    )
+    programs = []
+    for program in rows:
+        programs.append(
+            {
+                "id": program.get("id") or program.get("name"),
+                "nameAr": program.get("name_ar") or program.get("program_name") or "",
+                "nameEn": program.get("name_en") or program.get("program_name") or "",
+                "departmentAr": program.get("department_ar") or "",
+                "departmentEn": program.get("department_en") or "",
+                "admissionRate": int(program.get("admission_rate") or 0),
+                "highSchoolType": program.get("high_school_type") or "علمي",
+                "highSchoolTypeEn": program.get("high_school_type_en") or "Scientific",
+                "studyYears": str(program.get("study_years") or program.get("duration") or ""),
+                "image": program.get("image"),
+                "descriptionAr": program.get("description_ar") or program.get("description") or "",
+                "descriptionEn": program.get("description_en") or program.get("description") or "",
+                "objectives": [],
+                "studyPlan": [],
+                "careerProspectsAr": [],
+                "careerProspectsEn": [],
+                "facultyMembers": [],
+            }
+        )
+    cache[college_key] = programs
+    return programs
 
 
 def _parse_programs_json(raw: str | None) -> list[dict]:
@@ -1149,6 +1380,11 @@ def _parse_programs_json(raw: str | None) -> list[dict]:
             }
         )
     return output
+
+
+def _json_fallback_enabled() -> bool:
+    raw = frappe.conf.get("AAU_ENABLE_JSON_FALLBACK", 0)
+    return str(raw).strip().lower() not in {"0", "false", "no"}
 
 
 def _serialize_page_item(row: dict) -> dict:
