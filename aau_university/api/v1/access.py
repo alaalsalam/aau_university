@@ -7,6 +7,31 @@ from .registry import ADMIN_ROLES
 from .utils import ApiError, api_endpoint, require_roles
 
 
+@frappe.whitelist(allow_guest=True)
+@api_endpoint
+def get_current_access():
+    """Return authenticated user access flags for admin UI guards."""
+    user = frappe.session.user
+    if not user or user == "Guest":
+        return {
+            "authenticated": False,
+            "user": None,
+            "roles": [],
+            "adminRoles": [],
+            "canAccessAdmin": False,
+        }
+
+    roles = frappe.get_roles(user)
+    admin_roles = sorted([role for role in roles if role in ADMIN_ROLES])
+    return {
+        "authenticated": True,
+        "user": user,
+        "roles": roles,
+        "adminRoles": admin_roles,
+        "canAccessAdmin": bool(admin_roles),
+    }
+
+
 @frappe.whitelist()
 @api_endpoint
 def list_users():
