@@ -331,3 +331,43 @@ def rbac_smoke_test(content_user: str | None = None, super_admin_user: str | Non
         },
         "checks": checks,
     }
+
+
+def payload_validation_smoke_test() -> dict:
+    """Validate strict payload allowlist behavior for entity writes."""
+    from .resources import _assert_payload_keys, _get_entity_config, _get_payload_fieldnames, _resolve_doctype
+
+    entity_key = "news"
+    config = _get_entity_config(entity_key)
+    doctype = _resolve_doctype(config)
+    payload_fieldnames = _get_payload_fieldnames(doctype)
+
+    checks = []
+
+    try:
+        _assert_payload_keys(entity_key, {"titleAr": "x", "descriptionEn": "y"}, payload_fieldnames)
+        checks.append({"case": "camelCase_allowed", "passed": True})
+    except ApiError:
+        checks.append({"case": "camelCase_allowed", "passed": False})
+
+    unknown_blocked = False
+    details = None
+    try:
+        _assert_payload_keys(entity_key, {"titleAr": "x", "unknownFieldZZ": "bad"}, payload_fieldnames)
+    except ApiError as exc:
+        unknown_blocked = exc.code == "VALIDATION_ERROR"
+        details = exc.details
+
+    checks.append(
+        {
+            "case": "unknown_field_blocked",
+            "passed": unknown_blocked,
+            "details": details,
+        }
+    )
+
+    return {
+        "ok": all(item.get("passed") for item in checks),
+        "entity": entity_key,
+        "checks": checks,
+    }

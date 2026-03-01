@@ -18,6 +18,7 @@ from .utils import (
     parse_sort,
     require_roles,
     serialize_doc,
+    to_snake,
 )
 
 
@@ -106,6 +107,16 @@ _SYSTEM_FIELDNAMES = {
     "rgt",
 }
 
+_NON_FIELD_PAYLOAD_KEYS = {
+    "cmd",
+    "data",
+    "doctype",
+    "name",
+    "csrf_token",
+    "sid",
+    "_",
+}
+
 
 def _get_query_fieldnames(doctype: str) -> list[str]:
     # WHY+WHAT: `frappe.get_all(fields=...)` must only receive real DB columns. Selecting
@@ -145,6 +156,25 @@ def _get_payload_fieldnames(doctype: str) -> list[str]:
     columns = _get_query_fieldnames(doctype)
     table_fields = [df.fieldname for df in meta.get_table_fields() if df.fieldname]
     return columns + [f for f in table_fields if f not in columns]
+
+
+def _assert_payload_keys(entity_key: str, payload: dict, payload_fieldnames: list[str]):
+    allowed = set(payload_fieldnames)
+    unknown = []
+    for key in (payload or {}).keys():
+        key_str = str(key)
+        if key_str in _NON_FIELD_PAYLOAD_KEYS:
+            continue
+        normalized_key = key_str if key_str in allowed else to_snake(key_str)
+        if normalized_key not in allowed:
+            unknown.append(key_str)
+    if unknown:
+        raise ApiError(
+            "VALIDATION_ERROR",
+            "Payload contains unsupported fields",
+            details={"entity": entity_key, "fields": sorted(set(unknown))},
+            status_code=400,
+        )
 
 
 def _prepare_child_tables(meta, payload: dict) -> dict:
@@ -264,6 +294,7 @@ def create_entity(entity_key: str, payload: dict, public: bool = False):
     meta = _get_meta(doctype)
     payload_fieldnames = _get_payload_fieldnames(doctype)
     table_fields = get_table_field_map(meta)
+    _assert_payload_keys(entity_key, payload, payload_fieldnames)
 
     data = normalize_payload(payload, payload_fieldnames)
     id_field = config.get("id_field")
@@ -288,6 +319,7 @@ def update_entity(entity_key: str, identifier: str, payload: dict, by: str = "id
     meta = _get_meta(doctype)
     payload_fieldnames = _get_payload_fieldnames(doctype)
     table_fields = get_table_field_map(meta)
+    _assert_payload_keys(entity_key, payload, payload_fieldnames)
 
     fieldname = _resolve_identifier_field(meta, config, by=by)
     doc_name = _resolve_doc_name(doctype, fieldname, identifier)
@@ -310,6 +342,7 @@ def update_entity_by_field(entity_key: str, fieldname: str, value: str, payload:
     meta = _get_meta(doctype)
     payload_fieldnames = _get_payload_fieldnames(doctype)
     table_fields = get_table_field_map(meta)
+    _assert_payload_keys(entity_key, payload, payload_fieldnames)
 
     doc_name = _resolve_doc_name(doctype, fieldname, value)
     doc = frappe.get_doc(doctype, doc_name)

@@ -78,6 +78,11 @@ print(rbac_smoke_test())  # auto-detect users
 # print(rbac_smoke_test(content_user="content.manager@edu.yemenfrappe.com", super_admin_user="Administrator"))
 ```
 
+## 9) Payload allowlist verification (unknown fields must fail)
+```bash
+bench --site edu.yemenfrappe.com execute aau_university.api.v1.utils.payload_validation_smoke_test
+```
+
 ## Renamed DocTypes (valid technical names)
 - `University Vision and Mission` (was `University Vision & Mission`)
 - `Research and Publications` (was `Research & Publications`)
