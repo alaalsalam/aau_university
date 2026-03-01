@@ -225,5 +225,14 @@ def smoke_test() -> dict:
         "colleges": list_entities("colleges", public=True)["data"],
     }
     if results["news"]:
-        results["news_detail"] = get_entity("news", results["news"][0]["id"], by="id", public=True)
+        first_news = results["news"][0] or {}
+        identifier = first_news.get("id")
+        lookup_by = "id"
+        if not identifier and first_news.get("slug"):
+            identifier = first_news.get("slug")
+            lookup_by = "slug"
+        if identifier:
+            results["news_detail"] = get_entity("news", identifier, by=lookup_by, public=True)
+        else:
+            results["news_detail"] = None
     return results
