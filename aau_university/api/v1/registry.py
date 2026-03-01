@@ -82,3 +82,24 @@ ENTITY_ROLE_PERMISSIONS = {
     "contact_messages": {"read": SERVICE_MANAGER_ROLES, "write": SERVICE_MANAGER_ROLES},
     "join_requests": {"read": SERVICE_MANAGER_ROLES, "write": SERVICE_MANAGER_ROLES},
 }
+
+
+ENTITY_SUPERADMIN_ONLY_FIELDS = {
+    "news": {"status", "isPublished", "is_published", "publishDate", "publish_date"},
+    "events": {"status", "isPublished", "is_published", "publishDate", "publish_date"},
+    "blog_posts": {"status", "isPublished", "is_published", "publishDate", "publish_date"},
+    "offers": {"status", "isPublished", "is_published", "publishDate", "publish_date"},
+    "projects": {"status", "isPublished", "is_published", "publishDate", "publish_date"},
+    "centers": {"status", "isPublished", "is_published", "publishDate", "publish_date"},
+    "partners": {"status", "isPublished", "is_published", "publishDate", "publish_date"},
+    "team_members": {
+        "status",
+        "isPublished",
+        "is_published",
+        "publishDate",
+        "publish_date",
+        "displayOrder",
+        "display_order",
+        "order",
+    },
+}

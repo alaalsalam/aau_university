@@ -4,7 +4,7 @@ from __future__ import annotations
 import frappe
 from frappe.utils.file_manager import save_file
 
-from .registry import ENTITY_CONFIG, ENTITY_ROLE_PERMISSIONS, SUPER_ADMIN_ROLES
+from .registry import ENTITY_CONFIG, ENTITY_ROLE_PERMISSIONS, ENTITY_SUPERADMIN_ONLY_FIELDS, SUPER_ADMIN_ROLES
 from .utils import (
     ApiError,
     build_filters,
@@ -42,6 +42,25 @@ def _require_entity_permission(entity_key: str, mode: str):
         allowed = {"AAU Admin", "AUU Admin", "System Manager", "Administrator"}
 
     require_roles(allowed)
+
+
+def _is_super_admin() -> bool:
+    user_roles = set(frappe.get_roles(frappe.session.user))
+    return bool(user_roles.intersection(SUPER_ADMIN_ROLES))
+
+
+def _enforce_super_admin_field_restrictions(entity_key: str, payload: dict):
+    if _is_super_admin():
+        return
+    restricted_fields = ENTITY_SUPERADMIN_ONLY_FIELDS.get(entity_key) or set()
+    blocked_fields = sorted(field for field in payload.keys() if field in restricted_fields)
+    if blocked_fields:
+        raise ApiError(
+            "FORBIDDEN",
+            "You are not allowed to modify publishing/order fields for this entity",
+            details={"entity": entity_key, "fields": blocked_fields},
+            status_code=403,
+        )
 
 
 def _resolve_doctype(config: dict) -> str:
@@ -239,6 +258,7 @@ def get_entity_by_field(entity_key: str, fieldname: str, value: str, public: boo
 def create_entity(entity_key: str, payload: dict, public: bool = False):
     if not public:
         _require_entity_permission(entity_key, "write")
+        _enforce_super_admin_field_restrictions(entity_key, payload)
     config = _get_entity_config(entity_key)
     doctype = _resolve_doctype(config)
     meta = _get_meta(doctype)
@@ -262,6 +282,7 @@ def create_entity(entity_key: str, payload: dict, public: bool = False):
 
 def update_entity(entity_key: str, identifier: str, payload: dict, by: str = "id"):
     _require_entity_permission(entity_key, "write")
+    _enforce_super_admin_field_restrictions(entity_key, payload)
     config = _get_entity_config(entity_key)
     doctype = _resolve_doctype(config)
     meta = _get_meta(doctype)
@@ -283,6 +304,7 @@ def update_entity(entity_key: str, identifier: str, payload: dict, by: str = "id
 
 def update_entity_by_field(entity_key: str, fieldname: str, value: str, payload: dict):
     _require_entity_permission(entity_key, "write")
+    _enforce_super_admin_field_restrictions(entity_key, payload)
     config = _get_entity_config(entity_key)
     doctype = _resolve_doctype(config)
     meta = _get_meta(doctype)
@@ -328,6 +350,7 @@ def increment_counter(entity_key: str, identifier: str, fieldname: str, public: 
 
 def update_status(entity_key: str, identifier: str, status_field: str, status_value: str):
     _require_entity_permission(entity_key, "write")
+    _enforce_super_admin_field_restrictions(entity_key, {status_field: status_value})
     config = _get_entity_config(entity_key)
     doctype = _resolve_doctype(config)
     meta = _get_meta(doctype)
