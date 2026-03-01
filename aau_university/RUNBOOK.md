@@ -65,6 +65,19 @@ curl -sS https://edu.yemenfrappe.com/api/faq
 curl -sS https://edu.yemenfrappe.com/api/aau/profile
 ```
 
+## 8) RBAC verification (publish/order fields protected in backend)
+```bash
+bench --site edu.yemenfrappe.com execute aau_university.api.v1.utils.rbac_smoke_test
+```
+
+```bash
+bench --site edu.yemenfrappe.com console
+from aau_university.api.v1.utils import rbac_smoke_test
+print(rbac_smoke_test())  # auto-detect users
+# or explicit users:
+# print(rbac_smoke_test(content_user="content.manager@edu.yemenfrappe.com", super_admin_user="Administrator"))
+```
+
 ## Renamed DocTypes (valid technical names)
 - `University Vision and Mission` (was `University Vision & Mission`)
 - `Research and Publications` (was `Research & Publications`)

@@ -236,3 +236,98 @@ def smoke_test() -> dict:
         else:
             results["news_detail"] = None
     return results
+
+
+def _find_user_with_roles(required_roles: set[str], exclude_roles: set[str] | None = None) -> str | None:
+    exclude_roles = exclude_roles or set()
+    role_rows = frappe.get_all(
+        "Has Role",
+        filters={"role": ["in", list(required_roles)]},
+        fields=["parent"],
+        distinct=True,
+        ignore_permissions=True,
+    )
+    for row in role_rows:
+        user = row.get("parent")
+        if not user or user in {"Guest", "Administrator"}:
+            continue
+        if not frappe.db.get_value("User", user, "enabled"):
+            continue
+        user_roles = set(frappe.get_roles(user))
+        if not user_roles.intersection(required_roles):
+            continue
+        if user_roles.intersection(exclude_roles):
+            continue
+        return user
+    return None
+
+
+def rbac_smoke_test(content_user: str | None = None, super_admin_user: str | None = None) -> dict:
+    """RBAC smoke test for publish/order field restrictions (no DB writes)."""
+    from .registry import CONTENT_MANAGER_ROLES, ENTITY_SUPERADMIN_ONLY_FIELDS, SUPER_ADMIN_ROLES
+    from .resources import _enforce_super_admin_field_restrictions
+
+    original_user = frappe.session.user
+    checks: list[dict] = []
+    skipped: list[str] = []
+
+    if not super_admin_user:
+        super_admin_user = _find_user_with_roles(SUPER_ADMIN_ROLES) or "Administrator"
+    if not content_user:
+        content_user = _find_user_with_roles(CONTENT_MANAGER_ROLES, exclude_roles=SUPER_ADMIN_ROLES)
+
+    def run_case(user: str, entity_key: str, payload: dict, expect_blocked: bool, case: str):
+        frappe.set_user(user)
+        blocked = False
+        try:
+            _enforce_super_admin_field_restrictions(entity_key, payload)
+        except ApiError as exc:
+            if exc.code == "FORBIDDEN":
+                blocked = True
+            else:
+                raise
+        checks.append(
+            {
+                "case": case,
+                "user": user,
+                "entity": entity_key,
+                "payloadKeys": sorted(payload.keys()),
+                "expectedBlocked": expect_blocked,
+                "blocked": blocked,
+                "passed": blocked == expect_blocked,
+            }
+        )
+
+    try:
+        if content_user:
+            for entity_key, fields in ENTITY_SUPERADMIN_ONLY_FIELDS.items():
+                restricted_key = sorted(fields)[0]
+                run_case(content_user, entity_key, {restricted_key: "x"}, expect_blocked=True, case="content_restricted")
+                run_case(content_user, entity_key, {"titleAr": "Smoke Test"}, expect_blocked=False, case="content_allowed")
+        else:
+            skipped.append("No enabled content-manager user found for restriction checks")
+
+        if super_admin_user:
+            for entity_key, fields in ENTITY_SUPERADMIN_ONLY_FIELDS.items():
+                restricted_key = sorted(fields)[0]
+                run_case(super_admin_user, entity_key, {restricted_key: "x"}, expect_blocked=False, case="superadmin_allowed")
+        else:
+            skipped.append("No enabled super-admin user found for restriction checks")
+    finally:
+        frappe.set_user(original_user)
+
+    ok = all(row.get("passed") for row in checks) and not skipped
+    return {
+        "ok": ok,
+        "users": {
+            "contentManagerUser": content_user,
+            "superAdminUser": super_admin_user,
+        },
+        "summary": {
+            "totalChecks": len(checks),
+            "passedChecks": sum(1 for row in checks if row.get("passed")),
+            "failedChecks": sum(1 for row in checks if not row.get("passed")),
+            "skipped": skipped,
+        },
+        "checks": checks,
+    }
