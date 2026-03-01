@@ -527,15 +527,15 @@ def get_site_profile():
     settings = _get_website_settings_payload()
     social_links = _get_social_links_from_menu()
     return {
-        "siteName": settings.get("site_name") or settings.get("app_name") or "",
-        "siteNameAr": settings.get("site_name_ar") or settings.get("site_name") or "",
-        "siteDescriptionAr": settings.get("site_description_ar") or settings.get("about_short") or "",
-        "siteDescriptionEn": settings.get("site_description_en") or settings.get("about_short_en") or "",
-        "contactPhone": settings.get("contact_phone") or settings.get("phone") or "",
-        "contactEmail": settings.get("contact_email") or settings.get("email") or "",
-        "addressAr": settings.get("address_ar") or settings.get("address") or "",
-        "addressEn": settings.get("address_en") or settings.get("address") or "",
-        "mapLocation": settings.get("map_location") or "",
+        "siteName": _as_text(settings.get("site_name") or settings.get("app_name")),
+        "siteNameAr": _as_text(settings.get("site_name_ar") or settings.get("site_name")),
+        "siteDescriptionAr": _as_text(settings.get("site_description_ar") or settings.get("about_short")),
+        "siteDescriptionEn": _as_text(settings.get("site_description_en") or settings.get("about_short_en")),
+        "contactPhone": _as_text(settings.get("contact_phone") or settings.get("phone")),
+        "contactEmail": _as_text(settings.get("contact_email") or settings.get("email")),
+        "addressAr": _as_text(settings.get("address_ar") or settings.get("address")),
+        "addressEn": _as_text(settings.get("address_en") or settings.get("address")),
+        "mapLocation": _as_text(settings.get("map_location")),
         "socialLinks": social_links,
     }
 
@@ -576,23 +576,23 @@ def _get_home_sections() -> dict:
     if _json_fallback_enabled():
         extra = _parse_home_sections_json(row.get("home_sections_json"))
     hero = {
-        "badgeAr": extra.get("hero", {}).get("badgeAr", "مرحباً بكم في جامعة الجيل الجديد"),
-        "badgeEn": extra.get("hero", {}).get("badgeEn", "Welcome to AJ JEEL ALJADEED UNIVERSITY"),
-        "titlePrimaryAr": extra.get("hero", {}).get("titlePrimaryAr", row.get("hero_title") or "جامعة الجيل الجديد"),
-        "titlePrimaryEn": extra.get("hero", {}).get("titlePrimaryEn", row.get("hero_title") or "AJ JEEL ALJADEED"),
-        "titleSecondaryAr": extra.get("hero", {}).get("titleSecondaryAr", "الجامعة"),
-        "titleSecondaryEn": extra.get("hero", {}).get("titleSecondaryEn", "UNIVERSITY"),
-        "descriptionAr": extra.get("hero", {}).get("descriptionAr", row.get("hero_description") or row.get("hero_subtitle") or ""),
-        "descriptionEn": extra.get("hero", {}).get("descriptionEn", row.get("hero_description") or row.get("hero_subtitle") or ""),
-        "applyTextAr": extra.get("hero", {}).get("applyTextAr", row.get("hero_cta_text") or "التقديم الآن"),
-        "applyTextEn": extra.get("hero", {}).get("applyTextEn", row.get("hero_cta_text") or "Apply Now"),
-        "applyLink": extra.get("hero", {}).get("applyLink", row.get("hero_cta_link") or "/admission"),
-        "exploreTextAr": extra.get("hero", {}).get("exploreTextAr", "استكشف الكليات"),
-        "exploreTextEn": extra.get("hero", {}).get("exploreTextEn", "Explore Colleges"),
-        "exploreLink": extra.get("hero", {}).get("exploreLink", "/colleges"),
-        "discoverTextAr": extra.get("hero", {}).get("discoverTextAr", "اكتشف المزيد"),
-        "discoverTextEn": extra.get("hero", {}).get("discoverTextEn", "Discover More"),
-        "image": extra.get("hero", {}).get("image", row.get("hero_image")),
+        "badgeAr": _as_text(extra.get("hero", {}).get("badgeAr"), "مرحباً بكم في جامعة الجيل الجديد"),
+        "badgeEn": _as_text(extra.get("hero", {}).get("badgeEn"), "Welcome to AJ JEEL ALJADEED UNIVERSITY"),
+        "titlePrimaryAr": _as_text(extra.get("hero", {}).get("titlePrimaryAr") or row.get("hero_title"), "جامعة الجيل الجديد"),
+        "titlePrimaryEn": _as_text(extra.get("hero", {}).get("titlePrimaryEn") or row.get("hero_title"), "AJ JEEL ALJADEED"),
+        "titleSecondaryAr": _as_text(extra.get("hero", {}).get("titleSecondaryAr"), "الجامعة"),
+        "titleSecondaryEn": _as_text(extra.get("hero", {}).get("titleSecondaryEn"), "UNIVERSITY"),
+        "descriptionAr": _as_text(extra.get("hero", {}).get("descriptionAr") or row.get("hero_description") or row.get("hero_subtitle")),
+        "descriptionEn": _as_text(extra.get("hero", {}).get("descriptionEn") or row.get("hero_description") or row.get("hero_subtitle")),
+        "applyTextAr": _as_text(extra.get("hero", {}).get("applyTextAr") or row.get("hero_cta_text"), "التقديم الآن"),
+        "applyTextEn": _as_text(extra.get("hero", {}).get("applyTextEn") or row.get("hero_cta_text"), "Apply Now"),
+        "applyLink": _as_text(extra.get("hero", {}).get("applyLink") or row.get("hero_cta_link"), "/admission"),
+        "exploreTextAr": _as_text(extra.get("hero", {}).get("exploreTextAr"), "استكشف الكليات"),
+        "exploreTextEn": _as_text(extra.get("hero", {}).get("exploreTextEn"), "Explore Colleges"),
+        "exploreLink": _as_text(extra.get("hero", {}).get("exploreLink"), "/colleges"),
+        "discoverTextAr": _as_text(extra.get("hero", {}).get("discoverTextAr"), "اكتشف المزيد"),
+        "discoverTextEn": _as_text(extra.get("hero", {}).get("discoverTextEn"), "Discover More"),
+        "image": _as_text(extra.get("hero", {}).get("image") or row.get("hero_image")),
     }
 
     colleges_count = frappe.db.count("Colleges") if frappe.db.exists("DocType", "Colleges") else 0
@@ -606,12 +606,12 @@ def _get_home_sections() -> dict:
         ]
 
     about = extra.get("about", {}) if isinstance(extra.get("about"), dict) else {}
-    about.setdefault("titleAr", row.get("about_title") or "عن الجامعة")
-    about.setdefault("titleEn", row.get("about_title") or "About the University")
-    about.setdefault("descriptionAr", row.get("about_description") or "")
-    about.setdefault("descriptionEn", row.get("about_description") or "")
+    about.setdefault("titleAr", _as_text(row.get("about_title"), "عن الجامعة"))
+    about.setdefault("titleEn", _as_text(row.get("about_title"), "About the University"))
+    about.setdefault("descriptionAr", _as_text(row.get("about_description")))
+    about.setdefault("descriptionEn", _as_text(row.get("about_description")))
     # WHY+WHAT: include about image from Home Page JSON so the frontend can fully de-hardcode home imagery.
-    about.setdefault("image", extra.get("about", {}).get("image"))
+    about.setdefault("image", _as_text(extra.get("about", {}).get("image")))
 
     partners = extra.get("partners", []) if isinstance(extra.get("partners"), list) else []
     testimonials = extra.get("testimonials", []) if isinstance(extra.get("testimonials"), list) else []
@@ -1071,9 +1071,9 @@ def _get_social_links_from_menu() -> list[dict]:
     doc = frappe.get_doc(doctype, menu_name)
     links = []
     for item in doc.get("items") or []:
-        label_ar = item.get("label_ar") or item.get("label") or ""
-        label_en = item.get("label_en") or item.get("label") or ""
-        url = item.get("url") or ""
+        label_ar = _as_text(item.get("label_ar") or item.get("label"))
+        label_en = _as_text(item.get("label_en") or item.get("label") or label_ar)
+        url = _as_text(item.get("url"))
         if not url:
             continue
         links.append(
@@ -1117,15 +1117,26 @@ def _merge_request_payload(payload: dict | None) -> frappe._dict:
     return merged
 
 
+def _as_text(value, default: str = "") -> str:
+    if value is None:
+        return default
+    if isinstance(value, str):
+        cleaned = value.strip()
+        return cleaned if cleaned else default
+    return str(value).strip() or default
+
+
 def _serialize_news_item(row: dict) -> dict:
-    slug = row.get("slug") or _slugify_news_value(row.get("title_en") or row.get("title_ar") or row.get("title"))
-    title_ar = row.get("title_ar") or row.get("title") or ""
-    title_en = row.get("title_en") or row.get("title") or ""
-    description_ar = row.get("description_ar") or row.get("summary") or ""
-    description_en = row.get("description_en") or row.get("summary") or ""
-    content_ar = row.get("content_ar") or row.get("content") or ""
-    content_en = row.get("content_en") or row.get("content") or ""
-    image = row.get("image") or row.get("featured_image")
+    slug = _as_text(row.get("slug")) or _slugify_news_value(
+        row.get("title_en") or row.get("title_ar") or row.get("title")
+    )
+    title_ar = _as_text(row.get("title_ar") or row.get("title"))
+    title_en = _as_text(row.get("title_en") or row.get("title") or title_ar)
+    description_ar = _as_text(row.get("description_ar") or row.get("summary"))
+    description_en = _as_text(row.get("description_en") or row.get("summary") or description_ar)
+    content_ar = _as_text(row.get("content_ar") or row.get("content"))
+    content_en = _as_text(row.get("content_en") or row.get("content") or content_ar)
+    image = _as_text(row.get("image") or row.get("featured_image"))
     date = row.get("date") or row.get("publish_date")
     raw_tags = row.get("tags")
     if isinstance(raw_tags, str):
@@ -1145,18 +1156,18 @@ def _serialize_news_item(row: dict) -> dict:
         "contentAr": content_ar,
         "contentEn": content_en,
         "image": image,
-        "date": str(date)[:10] if date else None,
+        "date": str(date)[:10] if date else "",
         "tags": tags,
         "views": int(row.get("views") or 0),
     }
 
 
 def _serialize_faq_item(row: dict) -> dict:
-    question_ar = row.get("question_ar") or row.get("question") or row.get("title") or ""
-    question_en = row.get("question_en") or row.get("question") or row.get("title") or ""
-    answer_ar = row.get("answer_ar") or row.get("answer") or ""
-    answer_en = row.get("answer_en") or row.get("answer") or ""
-    category = row.get("category")
+    question_ar = _as_text(row.get("question_ar") or row.get("question") or row.get("title"))
+    question_en = _as_text(row.get("question_en") or row.get("question") or row.get("title") or question_ar)
+    answer_ar = _as_text(row.get("answer_ar") or row.get("answer") or row.get("content"))
+    answer_en = _as_text(row.get("answer_en") or row.get("answer") or row.get("content") or answer_ar)
+    category = _as_text(row.get("category"))
     fallback_id = _slugify_news_value(question_en or question_ar)
 
     return {
@@ -1178,24 +1189,24 @@ def _slugify_news_value(value: str | None) -> str:
 
 
 def _serialize_event_item(row: dict) -> dict:
-    slug = row.get("slug") or _slugify_news_value(
+    slug = _as_text(row.get("slug")) or _slugify_news_value(
         row.get("title_en")
         or row.get("title_ar")
         or row.get("event_title")
         or row.get("title")
     )
-    title_ar = row.get("title_ar") or row.get("title") or row.get("event_title")
-    title_en = row.get("title_en") or row.get("title") or row.get("event_title")
-    description_ar = row.get("description_ar") or row.get("description") or ""
-    description_en = row.get("description_en") or row.get("description") or ""
-    content_ar = row.get("content_ar") or row.get("content") or ""
-    content_en = row.get("content_en") or row.get("content") or ""
+    title_ar = _as_text(row.get("title_ar") or row.get("title") or row.get("event_title"))
+    title_en = _as_text(row.get("title_en") or row.get("title") or row.get("event_title") or title_ar)
+    description_ar = _as_text(row.get("description_ar") or row.get("description"))
+    description_en = _as_text(row.get("description_en") or row.get("description") or description_ar)
+    content_ar = _as_text(row.get("content_ar") or row.get("content"))
+    content_en = _as_text(row.get("content_en") or row.get("content") or content_ar)
     date = row.get("date") or row.get("event_date")
     end_date = row.get("end_date")
-    location_ar = row.get("location_ar") or row.get("location")
-    location_en = row.get("location_en") or row.get("location")
-    organizer_ar = row.get("organizer_ar") or row.get("organizer")
-    organizer_en = row.get("organizer_en") or row.get("organizer")
+    location_ar = _as_text(row.get("location_ar") or row.get("location"))
+    location_en = _as_text(row.get("location_en") or row.get("location") or location_ar)
+    organizer_ar = _as_text(row.get("organizer_ar") or row.get("organizer"))
+    organizer_en = _as_text(row.get("organizer_en") or row.get("organizer") or organizer_ar)
     raw_tags = row.get("tags")
     if isinstance(raw_tags, str):
         tags = [part.strip() for part in raw_tags.split(",") if part.strip()]
@@ -1213,17 +1224,17 @@ def _serialize_event_item(row: dict) -> dict:
         "descriptionEn": description_en,
         "contentAr": content_ar,
         "contentEn": content_en,
-        "date": str(date)[:10] if date else None,
-        "endDate": str(end_date)[:10] if end_date else None,
+        "date": str(date)[:10] if date else "",
+        "endDate": str(end_date)[:10] if end_date else "",
         "locationAr": location_ar,
         "locationEn": location_en,
         "organizerAr": organizer_ar,
         "organizerEn": organizer_en,
-        "category": row.get("category") or "other",
-        "status": row.get("status") or "upcoming",
+        "category": _as_text(row.get("category"), "other"),
+        "status": _as_text(row.get("status"), "upcoming"),
         "registrationRequired": bool(row.get("registration_required")),
-        "registrationLink": row.get("registration_link"),
-        "image": row.get("image"),
+        "registrationLink": _as_text(row.get("registration_link")),
+        "image": _as_text(row.get("image")),
         "tags": tags,
     }
 
@@ -1238,10 +1249,10 @@ def _serialize_college_item(row: dict) -> dict:
         or row.get("college_name")
         or row.get("name")
     )
-    name_ar = row.get("name_ar") or row.get("college_name") or row.get("name")
-    name_en = row.get("name_en") or row.get("college_name") or row.get("name")
-    description_ar = row.get("description_ar") or row.get("description") or ""
-    description_en = row.get("description_en") or row.get("description") or ""
+    name_ar = _as_text(row.get("name_ar") or row.get("college_name") or row.get("name"))
+    name_en = _as_text(row.get("name_en") or row.get("college_name") or row.get("name") or name_ar)
+    description_ar = _as_text(row.get("description_ar") or row.get("description"))
+    description_en = _as_text(row.get("description_en") or row.get("description") or description_ar)
 
     return {
         "id": row.get("id") or slug or row.get("name"),
@@ -1250,16 +1261,16 @@ def _serialize_college_item(row: dict) -> dict:
         "nameEn": name_en,
         "descriptionAr": description_ar,
         "descriptionEn": description_en,
-        "visionAr": row.get("vision_ar") or "",
-        "visionEn": row.get("vision_en") or "",
-        "missionAr": row.get("mission_ar") or "",
-        "missionEn": row.get("mission_en") or "",
-        "goalsAr": row.get("goals_ar") or "",
-        "goalsEn": row.get("goals_en") or "",
-        "admissionRequirementsAr": row.get("admission_requirements_ar") or "",
-        "admissionRequirementsEn": row.get("admission_requirements_en") or "",
-        "icon": row.get("icon"),
-        "image": row.get("image"),
+        "visionAr": _as_text(row.get("vision_ar")),
+        "visionEn": _as_text(row.get("vision_en")),
+        "missionAr": _as_text(row.get("mission_ar")),
+        "missionEn": _as_text(row.get("mission_en")),
+        "goalsAr": _as_text(row.get("goals_ar")),
+        "goalsEn": _as_text(row.get("goals_en")),
+        "admissionRequirementsAr": _as_text(row.get("admission_requirements_ar")),
+        "admissionRequirementsEn": _as_text(row.get("admission_requirements_en")),
+        "icon": _as_text(row.get("icon")),
+        "image": _as_text(row.get("image")),
         "programs": programs,
     }
 
