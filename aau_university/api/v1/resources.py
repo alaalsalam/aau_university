@@ -4,7 +4,7 @@ from __future__ import annotations
 import frappe
 from frappe.utils.file_manager import save_file
 
-from .registry import ADMIN_ROLES, ENTITY_CONFIG
+from .registry import ENTITY_CONFIG, ENTITY_ROLE_PERMISSIONS, SUPER_ADMIN_ROLES
 from .utils import (
     ApiError,
     build_filters,
@@ -25,6 +25,23 @@ def _get_entity_config(entity_key: str) -> dict:
     if entity_key not in ENTITY_CONFIG:
         raise ApiError("NOT_FOUND", "Unknown entity", status_code=404)
     return ENTITY_CONFIG[entity_key]
+
+
+def _require_entity_permission(entity_key: str, mode: str):
+    user_roles = set(frappe.get_roles(frappe.session.user))
+    if user_roles.intersection(SUPER_ADMIN_ROLES):
+        return
+
+    config = ENTITY_ROLE_PERMISSIONS.get(entity_key) or {}
+    allowed = set(config.get(mode) or [])
+    if not allowed:
+        allowed = set(config.get("write") or [])
+    if not allowed:
+        allowed = set(config.get("read") or [])
+    if not allowed:
+        allowed = {"AAU Admin", "AUU Admin", "System Manager", "Administrator"}
+
+    require_roles(allowed)
 
 
 def _resolve_doctype(config: dict) -> str:
@@ -135,6 +152,8 @@ def _resolve_doc_name(doctype: str, fieldname: str, value: str) -> str:
 
 
 def list_entities(entity_key: str, search_fields: list[str] | None = None, public: bool = True):
+    if not public:
+        _require_entity_permission(entity_key, "read")
     config = _get_entity_config(entity_key)
     doctype = _resolve_doctype(config)
     meta = _get_meta(doctype)
@@ -186,6 +205,8 @@ def list_entities(entity_key: str, search_fields: list[str] | None = None, publi
 
 
 def get_entity(entity_key: str, identifier: str, by: str = "id", public: bool = True):
+    if not public:
+        _require_entity_permission(entity_key, "read")
     config = _get_entity_config(entity_key)
     doctype = _resolve_doctype(config)
     meta = _get_meta(doctype)
@@ -202,6 +223,8 @@ def get_entity(entity_key: str, identifier: str, by: str = "id", public: bool = 
 
 
 def get_entity_by_field(entity_key: str, fieldname: str, value: str, public: bool = True):
+    if not public:
+        _require_entity_permission(entity_key, "read")
     config = _get_entity_config(entity_key)
     doctype = _resolve_doctype(config)
     meta = _get_meta(doctype)
@@ -215,7 +238,7 @@ def get_entity_by_field(entity_key: str, fieldname: str, value: str, public: boo
 
 def create_entity(entity_key: str, payload: dict, public: bool = False):
     if not public:
-        require_roles(ADMIN_ROLES)
+        _require_entity_permission(entity_key, "write")
     config = _get_entity_config(entity_key)
     doctype = _resolve_doctype(config)
     meta = _get_meta(doctype)
@@ -238,7 +261,7 @@ def create_entity(entity_key: str, payload: dict, public: bool = False):
 
 
 def update_entity(entity_key: str, identifier: str, payload: dict, by: str = "id"):
-    require_roles(ADMIN_ROLES)
+    _require_entity_permission(entity_key, "write")
     config = _get_entity_config(entity_key)
     doctype = _resolve_doctype(config)
     meta = _get_meta(doctype)
@@ -259,7 +282,7 @@ def update_entity(entity_key: str, identifier: str, payload: dict, by: str = "id
 
 
 def update_entity_by_field(entity_key: str, fieldname: str, value: str, payload: dict):
-    require_roles(ADMIN_ROLES)
+    _require_entity_permission(entity_key, "write")
     config = _get_entity_config(entity_key)
     doctype = _resolve_doctype(config)
     meta = _get_meta(doctype)
@@ -278,7 +301,7 @@ def update_entity_by_field(entity_key: str, fieldname: str, value: str, payload:
 
 
 def delete_entity(entity_key: str, identifier: str, by: str = "id"):
-    require_roles(ADMIN_ROLES)
+    _require_entity_permission(entity_key, "write")
     config = _get_entity_config(entity_key)
     doctype = _resolve_doctype(config)
     meta = _get_meta(doctype)
@@ -290,7 +313,7 @@ def delete_entity(entity_key: str, identifier: str, by: str = "id"):
 
 def increment_counter(entity_key: str, identifier: str, fieldname: str, public: bool = True):
     if not public:
-        require_roles(ADMIN_ROLES)
+        _require_entity_permission(entity_key, "write")
     config = _get_entity_config(entity_key)
     doctype = _resolve_doctype(config)
     meta = _get_meta(doctype)
@@ -304,7 +327,7 @@ def increment_counter(entity_key: str, identifier: str, fieldname: str, public: 
 
 
 def update_status(entity_key: str, identifier: str, status_field: str, status_value: str):
-    require_roles(ADMIN_ROLES)
+    _require_entity_permission(entity_key, "write")
     config = _get_entity_config(entity_key)
     doctype = _resolve_doctype(config)
     meta = _get_meta(doctype)
@@ -321,7 +344,7 @@ def update_status(entity_key: str, identifier: str, status_field: str, status_va
 
 
 def upload_media():
-    require_roles(ADMIN_ROLES)
+    _require_entity_permission("media", "write")
     if not frappe.request.files:
         raise ApiError("VALIDATION_ERROR", "No file uploaded", status_code=400)
 

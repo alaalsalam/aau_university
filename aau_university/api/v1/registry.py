@@ -49,3 +49,36 @@ SEARCH_TYPES = {
 
 
 ADMIN_ROLES = {"System Manager", "Administrator", "AAU Admin", "AAU Content Manager"}
+
+SUPER_ADMIN_ROLES = {"System Manager", "Administrator", "AAU Admin", "AUU Admin"}
+CONTENT_MANAGER_ROLES = {"AAU Content Manager", "Website Manager", "Blogger"}
+ACADEMIC_MANAGER_ROLES = {"AAU Academic Manager", "Education Manager", "Academics User", "Instructor"}
+SERVICE_MANAGER_ROLES = {"AAU Service Manager", "Support Team"}
+
+ENTITY_ROLE_PERMISSIONS = {
+    "colleges": {"read": ACADEMIC_MANAGER_ROLES, "write": ACADEMIC_MANAGER_ROLES},
+    "college_deans": {"read": ACADEMIC_MANAGER_ROLES, "write": ACADEMIC_MANAGER_ROLES},
+    "academic_programs": {"read": ACADEMIC_MANAGER_ROLES, "write": ACADEMIC_MANAGER_ROLES},
+    "program_objectives": {"read": ACADEMIC_MANAGER_ROLES, "write": ACADEMIC_MANAGER_ROLES},
+    "study_plans": {"read": ACADEMIC_MANAGER_ROLES, "write": ACADEMIC_MANAGER_ROLES},
+    "study_plan_courses": {"read": ACADEMIC_MANAGER_ROLES, "write": ACADEMIC_MANAGER_ROLES},
+    "faculty_members": {"read": ACADEMIC_MANAGER_ROLES, "write": ACADEMIC_MANAGER_ROLES},
+    "program_faculty": {"read": ACADEMIC_MANAGER_ROLES, "write": ACADEMIC_MANAGER_ROLES},
+    "news": {"read": CONTENT_MANAGER_ROLES, "write": CONTENT_MANAGER_ROLES},
+    "events": {"read": CONTENT_MANAGER_ROLES, "write": CONTENT_MANAGER_ROLES},
+    "centers": {"read": CONTENT_MANAGER_ROLES, "write": CONTENT_MANAGER_ROLES},
+    "center_services": {"read": CONTENT_MANAGER_ROLES, "write": CONTENT_MANAGER_ROLES},
+    "center_programs": {"read": CONTENT_MANAGER_ROLES, "write": CONTENT_MANAGER_ROLES},
+    "partners": {"read": CONTENT_MANAGER_ROLES, "write": CONTENT_MANAGER_ROLES},
+    "offers": {"read": CONTENT_MANAGER_ROLES, "write": CONTENT_MANAGER_ROLES},
+    "faqs": {"read": CONTENT_MANAGER_ROLES, "write": CONTENT_MANAGER_ROLES},
+    "team_members": {"read": CONTENT_MANAGER_ROLES, "write": CONTENT_MANAGER_ROLES},
+    "projects": {"read": CONTENT_MANAGER_ROLES, "write": CONTENT_MANAGER_ROLES},
+    "campus_life": {"read": CONTENT_MANAGER_ROLES, "write": CONTENT_MANAGER_ROLES},
+    "blog_posts": {"read": CONTENT_MANAGER_ROLES, "write": CONTENT_MANAGER_ROLES},
+    "pages": {"read": CONTENT_MANAGER_ROLES, "write": CONTENT_MANAGER_ROLES},
+    "media": {"read": CONTENT_MANAGER_ROLES, "write": CONTENT_MANAGER_ROLES},
+    "settings": {"read": CONTENT_MANAGER_ROLES, "write": CONTENT_MANAGER_ROLES},
+    "contact_messages": {"read": SERVICE_MANAGER_ROLES, "write": SERVICE_MANAGER_ROLES},
+    "join_requests": {"read": SERVICE_MANAGER_ROLES, "write": SERVICE_MANAGER_ROLES},
+}
