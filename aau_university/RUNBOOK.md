@@ -106,6 +106,20 @@ print(frappe.get_all("Instructor", fields=["name","employee","custom_user_id"], 
 print(frappe.get_all("Instructor", filters={"custom_user_id": ["is", "set"]}, fields=["name","custom_user_id"]))
 ```
 
+## 13) Account-link management APIs (admin)
+```bash
+bench --site edu.yemenfrappe.com execute aau_university.api.v1.utils.account_linking_smoke_test
+
+# Summary
+curl -sS -b cookies.txt https://edu.yemenfrappe.com/api/account-links/summary
+
+# Link doctor account
+curl -sS -X PUT -b cookies.txt "https://edu.yemenfrappe.com/api/account-links/doctors/%D8%AF%D9%8A%D9%86%D8%A7%20%D9%85%D8%AF%D8%AD%D8%AA?user_id=teacher@gmail.com&overwrite=1"
+
+# Link student account
+curl -sS -X PUT -b cookies.txt "https://edu.yemenfrappe.com/api/account-links/students/EDU-STU-2024-00002?user_id=abdou@gmail.com&overwrite=1"
+```
+
 ## Renamed DocTypes (valid technical names)
 - `University Vision and Mission` (was `University Vision & Mission`)
 - `Research and Publications` (was `Research & Publications`)

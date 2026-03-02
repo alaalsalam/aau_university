@@ -185,6 +185,15 @@ def ensure_routes():
         Rule("/roles/<path:role_id>", methods=["DELETE"], endpoint=access.delete_role),
         Rule("/permissions", methods=["GET"], endpoint=access.list_permissions),
         Rule("/permissions/category/<path:category>", methods=["GET"], endpoint=access.list_permissions),
+        # Account links
+        Rule("/account-links/summary", methods=["GET"], endpoint=access.get_account_link_summary),
+        Rule("/account-links/users", methods=["GET"], endpoint=access.list_linkable_users),
+        Rule("/account-links/doctors", methods=["GET"], endpoint=access.list_doctor_links),
+        Rule("/account-links/doctors/<path:instructor_id>", methods=["PUT"], endpoint=access.link_doctor_account),
+        Rule("/account-links/doctors/<path:instructor_id>", methods=["DELETE"], endpoint=access.unlink_doctor_account),
+        Rule("/account-links/students", methods=["GET"], endpoint=access.list_student_links),
+        Rule("/account-links/students/<path:student_id>", methods=["PUT"], endpoint=access.link_student_account),
+        Rule("/account-links/students/<path:student_id>", methods=["DELETE"], endpoint=access.unlink_student_account),
         # Doctor portal
         Rule("/doctor/profile", methods=["GET"], endpoint=portal.get_doctor_profile),
         Rule("/doctor/profile", methods=["PUT"], endpoint=portal.update_doctor_profile),

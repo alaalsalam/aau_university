@@ -487,6 +487,76 @@ def portal_smoke_test(student_user: str | None = None, doctor_user: str | None =
     }
 
 
+def account_linking_smoke_test(admin_user: str | None = None) -> dict:
+    """Smoke test for account-link management endpoints."""
+    from . import access
+
+    original_user = frappe.session.user
+    checks: list[dict] = []
+    skipped: list[str] = []
+
+    if not admin_user:
+        admin_user = _find_user_with_roles({"System Manager", "Administrator", "AAU Admin"}) or "Administrator"
+
+    try:
+        frappe.set_user(admin_user)
+        summary = _call_api_method(access.get_account_link_summary)
+        checks.append(
+            {
+                "case": "summary",
+                "passed": bool(summary and "doctor" in summary and "student" in summary),
+                "doctor": (summary or {}).get("doctor"),
+                "student": (summary or {}).get("student"),
+            }
+        )
+
+        users = _call_api_method(access.list_linkable_users, form_dict={"page": 1, "page_size": 5}) or {}
+        user_items = users.get("items") if isinstance(users, dict) else None
+        checks.append(
+            {
+                "case": "users_list",
+                "passed": isinstance(user_items, list),
+                "count": len(user_items or []),
+            }
+        )
+
+        doctors = _call_api_method(access.list_doctor_links, form_dict={"status": "all", "page": 1, "page_size": 5}) or {}
+        doctor_items = doctors.get("items") if isinstance(doctors, dict) else None
+        checks.append(
+            {
+                "case": "doctor_links_list",
+                "passed": isinstance(doctor_items, list),
+                "count": len(doctor_items or []),
+            }
+        )
+
+        students = _call_api_method(access.list_student_links, form_dict={"status": "all", "page": 1, "page_size": 5}) or {}
+        student_items = students.get("items") if isinstance(students, dict) else None
+        checks.append(
+            {
+                "case": "student_links_list",
+                "passed": isinstance(student_items, list),
+                "count": len(student_items or []),
+            }
+        )
+    except Exception as exc:
+        skipped.append(str(exc))
+    finally:
+        frappe.set_user(original_user)
+
+    return {
+        "ok": not skipped and all(item.get("passed") for item in checks),
+        "adminUser": admin_user,
+        "summary": {
+            "checks": len(checks),
+            "passed": sum(1 for item in checks if item.get("passed")),
+            "failed": sum(1 for item in checks if not item.get("passed")),
+            "skipped": skipped,
+        },
+        "checks": checks,
+    }
+
+
 def launch_readiness_e2e_check() -> dict:
     """End-to-end launch readiness checks for backend-backed CMS/public flow."""
     from . import cms, content, public
