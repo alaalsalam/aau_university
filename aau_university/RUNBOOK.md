@@ -42,6 +42,7 @@ import frappe
 frappe.db.delete("Patch Log", {"patch": "aau_university.patches.v1_0_run_screen_audit_fix"})
 frappe.db.delete("Patch Log", {"patch": "aau_university.patches.v1_1_migrate_json_content_to_fields"})
 frappe.db.delete("Patch Log", {"patch": "aau_university.patches.v1_2_cleanup_unused_screens_and_workspace"})
+frappe.db.delete("Patch Log", {"patch": "aau_university.patches.v1_3_add_instructor_user_link"})
 frappe.db.commit()
 ```
 
@@ -94,6 +95,15 @@ bench --site edu.yemenfrappe.com execute aau_university.api.v1.utils.payload_val
 ## 11) Launch readiness E2E (admin update -> public read)
 ```bash
 bench --site edu.yemenfrappe.com execute aau_university.api.v1.utils.launch_readiness_e2e_check
+```
+
+## 12) Portal identity mapping + RBAC smoke
+```bash
+bench --site edu.yemenfrappe.com execute aau_university.api.v1.utils.portal_smoke_test
+bench --site edu.yemenfrappe.com console
+import frappe
+print(frappe.get_all("Instructor", fields=["name","employee","custom_user_id"], limit_page_length=20))
+print(frappe.get_all("Instructor", filters={"custom_user_id": ["is", "set"]}, fields=["name","custom_user_id"]))
 ```
 
 ## Renamed DocTypes (valid technical names)

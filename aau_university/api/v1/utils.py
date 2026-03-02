@@ -373,10 +373,10 @@ def payload_validation_smoke_test() -> dict:
     }
 
 
-def _call_api_method(method, *args, **kwargs):
+def _call_api_method(method, *args, form_dict: dict | None = None, **kwargs):
     original_form_dict = getattr(frappe.local, "form_dict", None)
     try:
-        frappe.form_dict = frappe._dict({})
+        frappe.form_dict = frappe._dict(form_dict or {})
         result = method(*args, **kwargs)
     finally:
         frappe.form_dict = original_form_dict if original_form_dict is not None else frappe._dict({})
@@ -392,6 +392,99 @@ def _call_api_method(method, *args, **kwargs):
             )
         return result.get("data")
     return result
+
+
+def portal_smoke_test(student_user: str | None = None, doctor_user: str | None = None) -> dict:
+    """Read-only smoke test for student/doctor portal endpoints."""
+    from . import portal
+
+    original_user = frappe.session.user
+    checks: list[dict] = []
+    skipped: list[str] = []
+
+    if not doctor_user:
+        role_rows = frappe.get_all(
+            "Has Role",
+            filters={"role": ["in", ["Instructor", "Education Manager", "System Manager", "AAU Admin", "AUU Admin"]]},
+            fields=["parent"],
+            distinct=True,
+            ignore_permissions=True,
+        )
+        candidates = [row.get("parent") for row in role_rows if row.get("parent")]
+        for candidate in candidates:
+            if candidate in {"Guest"}:
+                continue
+            if not frappe.db.get_value("User", candidate, "enabled"):
+                continue
+            try:
+                frappe.set_user(candidate)
+                _call_api_method(portal.list_doctor_courses)
+                doctor_user = candidate
+                break
+            except Exception:
+                continue
+
+    if not student_user and frappe.db.exists("DocType", "Student"):
+        student_rows = frappe.get_all(
+            "Student",
+            filters={"user": ["is", "set"]},
+            fields=["user"],
+            order_by="modified desc",
+            ignore_permissions=True,
+            limit_page_length=50,
+        )
+        for row in student_rows:
+            user = row.get("user")
+            if user and frappe.db.get_value("User", user, "enabled"):
+                student_user = user
+                break
+
+    def run_case(user: str, name: str, method, form_dict: dict | None = None):
+        frappe.set_user(user)
+        data = _call_api_method(method, form_dict=form_dict)
+        size = len(data) if isinstance(data, list) else None
+        checks.append({"user": user, "case": name, "passed": True, "size": size})
+
+    try:
+        if doctor_user:
+            run_case(doctor_user, "doctor.profile", portal.get_doctor_profile)
+            run_case(doctor_user, "doctor.courses", portal.list_doctor_courses)
+            run_case(doctor_user, "doctor.students", portal.list_doctor_students)
+            run_case(doctor_user, "doctor.schedule", portal.list_doctor_schedule)
+            run_case(doctor_user, "doctor.finance", portal.get_doctor_finance)
+            run_case(doctor_user, "doctor.materials", portal.list_doctor_materials)
+            run_case(doctor_user, "doctor.messages", portal.list_doctor_messages)
+            run_case(doctor_user, "doctor.conversations", portal.list_conversations, form_dict={"view": "doctor"})
+            run_case(doctor_user, "doctor.unread", portal.unread_message_count)
+        else:
+            skipped.append("No doctor user found")
+
+        if student_user:
+            run_case(student_user, "student.profile", portal.get_student_profile)
+            run_case(student_user, "student.courses", portal.list_student_courses)
+            run_case(student_user, "student.schedule", portal.list_student_schedule)
+            run_case(student_user, "student.grades", portal.list_student_grades)
+            run_case(student_user, "student.finance", portal.get_student_finance)
+            run_case(student_user, "student.materials", portal.list_student_materials)
+            run_case(student_user, "student.notifications", portal.list_student_notifications)
+            run_case(student_user, "student.conversations", portal.list_conversations, form_dict={"view": "student"})
+            run_case(student_user, "student.unread", portal.unread_message_count)
+        else:
+            skipped.append("No student user found")
+    finally:
+        frappe.set_user(original_user)
+
+    return {
+        "ok": not skipped and all(item.get("passed") for item in checks),
+        "users": {"doctor": doctor_user, "student": student_user},
+        "summary": {
+            "checks": len(checks),
+            "passed": sum(1 for item in checks if item.get("passed")),
+            "failed": sum(1 for item in checks if not item.get("passed")),
+            "skipped": skipped,
+        },
+        "checks": checks,
+    }
 
 
 def launch_readiness_e2e_check() -> dict:

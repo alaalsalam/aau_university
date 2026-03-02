@@ -38,6 +38,9 @@ GRADE_POINTS = {
     "O": 0.0,
 }
 
+ELEVATED_PORTAL_ROLES = {"System Manager", "Administrator", "Education Manager", "AAU Admin", "AUU Admin"}
+DOCTOR_PORTAL_ROLES = {"Instructor"} | ELEVATED_PORTAL_ROLES
+
 
 def _require_doctype(doctype: str):
     if not frappe.db.exists("DocType", doctype):
@@ -150,6 +153,44 @@ def _user_identity() -> dict[str, Any]:
         "roles": roles,
         "identifiers": identifiers,
     }
+
+
+def _require_doctor_access() -> dict[str, Any]:
+    identity = _user_identity()
+    if not identity["roles"].intersection(DOCTOR_PORTAL_ROLES):
+        raise ApiError("FORBIDDEN", "Doctor access required", status_code=403)
+    return identity
+
+
+def _instructor_user_link_field() -> str | None:
+    if not frappe.db.exists("DocType", "Instructor"):
+        return None
+    meta = frappe.get_meta("Instructor")
+    valid_columns = set(meta.get_valid_columns())
+    for fieldname in ("custom_user_id", "user_id", "user", "custom_user"):
+        if fieldname in valid_columns:
+            return fieldname
+    return None
+
+
+def _employee_user_map(employee_ids: set[str]) -> dict[str, str]:
+    cleaned = {_clean(emp) for emp in employee_ids if _clean(emp)}
+    if not cleaned or not frappe.db.exists("DocType", "Employee"):
+        return {}
+    rows = frappe.get_all(
+        "Employee",
+        filters={"name": ["in", list(cleaned)]},
+        fields=["name", "user_id"],
+        ignore_permissions=True,
+        limit_page_length=0,
+    )
+    mapped = {}
+    for row in rows:
+        employee_name = _clean(row.get("name"))
+        user_id = _clean(row.get("user_id"))
+        if employee_name and user_id:
+            mapped[employee_name] = user_id
+    return mapped
 
 
 def _student_fields() -> list[str]:
@@ -273,41 +314,77 @@ def _course_name_map(courses: set[str]) -> dict[str, str]:
 
 def _resolve_doctor_context() -> dict[str, Any]:
     identity = _user_identity()
+    all_scope = bool(identity["roles"].intersection(ELEVATED_PORTAL_ROLES))
     instructors: list[dict] = []
+    link_field = _instructor_user_link_field()
     if frappe.db.exists("DocType", "Instructor"):
+        fields = ["name", "instructor_name", "employee", "department", "image"]
+        if link_field and link_field not in fields:
+            fields.append(link_field)
         instructors = frappe.get_all(
             "Instructor",
-            fields=["name", "instructor_name", "employee", "department", "image"],
+            fields=fields,
             ignore_permissions=True,
             limit_page_length=0,
         )
 
-    matches = []
+    employee_to_user = _employee_user_map({_clean(row.get("employee")) for row in instructors if row.get("employee")})
+    explicit_matches = []
+    name_fallback_matches = []
     for row in instructors:
+        keys = set()
+        if link_field:
+            keys.add(_normalize(row.get(link_field)))
+        employee_name = _clean(row.get("employee"))
+        if employee_name and employee_name in employee_to_user:
+            keys.add(_normalize(employee_to_user[employee_name]))
+        keys.discard("")
+        if keys.intersection(identity["identifiers"]):
+            explicit_matches.append(row)
+
         names = {
             _normalize(row.get("name")),
             _normalize(row.get("instructor_name")),
         }
+        names.discard("")
         if names.intersection(identity["identifiers"]):
-            matches.append(row)
+            name_fallback_matches.append(row)
 
-    elevated_roles = {"System Manager", "Administrator", "Education Manager", "AAU Admin", "AUU Admin"}
-    all_scope = bool(identity["roles"].intersection(elevated_roles))
-
-    if not matches and "Instructor" in identity["roles"] and len(instructors) == 1:
-        matches = instructors
+    matches = explicit_matches
+    matched_by = "explicit"
+    if not matches and "Instructor" in identity["roles"] and len(name_fallback_matches) == 1:
+        matches = name_fallback_matches
+        matched_by = "name_fallback"
 
     return {
         "identity": identity,
         "all_scope": all_scope,
         "matched_instructors": matches,
         "instructors": instructors,
+        "matched_by": matched_by if matches else "",
+        "instructor_user_link_field": link_field,
+        "employee_to_user": employee_to_user,
     }
+
+
+def _ensure_doctor_context(require_mapping: bool = True) -> dict[str, Any]:
+    _require_doctor_access()
+    ctx = _resolve_doctor_context()
+    if not require_mapping or ctx["all_scope"] or ctx["matched_instructors"]:
+        return ctx
+    raise ApiError(
+        "FORBIDDEN",
+        "Doctor account is not linked to an Instructor profile",
+        status_code=403,
+        details={
+            "hint": "Set Instructor.custom_user_id or Instructor.employee -> Employee.user_id for this account"
+        },
+    )
 
 
 def _doctor_schedule_rows(course_id: str | None = None) -> list[dict]:
     _require_doctype("Course Schedule")
-    ctx = _resolve_doctor_context()
+    ctx = _ensure_doctor_context(require_mapping=True)
     rows = frappe.get_all(
         "Course Schedule",
         fields=[
@@ -618,6 +695,37 @@ def _parse_conversation_id(conversation_id: str) -> tuple[str, str]:
     return student_id, doctor_id
 
 
+def _ensure_conversation_access(student_row: dict, doctor_id: str) -> dict[str, Any]:
+    identity = _user_identity()
+    current_ids = _current_message_identities()
+    student_ids = _student_user_ids(student_row)
+    student_name = _normalize(student_row.get("name"))
+    doctor_identity = _normalize(doctor_id)
+    is_admin = bool(identity["roles"].intersection(ELEVATED_PORTAL_ROLES))
+
+    is_student_participant = bool(current_ids.intersection(student_ids) or (student_name and student_name in current_ids))
+    is_doctor_participant = False
+    if doctor_identity and doctor_identity in current_ids:
+        if is_admin:
+            is_doctor_participant = True
+        else:
+            _ensure_doctor_context(require_mapping=True)
+            is_doctor_participant = True
+
+    if not (is_admin or is_student_participant or is_doctor_participant):
+        raise ApiError("FORBIDDEN", "Not allowed to access this conversation", status_code=403)
+
+    return {
+        "identity": identity,
+        "current_ids": current_ids,
+        "student_ids": student_ids,
+        "doctor_identity": doctor_identity,
+        "is_admin": is_admin,
+        "is_student_participant": is_student_participant,
+        "is_doctor_participant": is_doctor_participant,
+    }
+
+
 def _counterpart_from_message(message_row: dict, current_ids: set[str]) -> str:
     sender = _normalize(message_row.get("sender"))
     recipients = [_normalize(v) for v in _split_csv(message_row.get("recipients"))]
@@ -681,10 +789,10 @@ def _payment_method_labels(method: str) -> tuple[str, str]:
 @api_endpoint
 def get_doctor_profile():
     """Get doctor profile from Instructor doctype (with Faculty Members fallback)."""
-    identity = _user_identity()
+    ctx = _ensure_doctor_context(require_mapping=True)
+    identity = ctx["identity"]
 
     if frappe.db.exists("DocType", "Instructor"):
-        ctx = _resolve_doctor_context()
         if ctx["matched_instructors"]:
             instructor = ctx["matched_instructors"][0]
             name = _clean(instructor.get("instructor_name") or instructor.get("name") or identity["full_name"])
@@ -766,7 +874,8 @@ def get_doctor_profile():
 @api_endpoint
 def update_doctor_profile(**payload):
     """Update doctor profile fields on User and Instructor when available."""
-    identity = _user_identity()
+    ctx = _ensure_doctor_context(require_mapping=True)
+    identity = ctx["identity"]
     user_doc = frappe.get_doc("User", identity["user"])
 
     if payload.get("email"):
@@ -775,15 +884,16 @@ def update_doctor_profile(**payload):
         user_doc.full_name = payload.get("nameAr") or payload.get("nameEn")
     user_doc.save(ignore_permissions=True)
 
-    if frappe.db.exists("DocType", "Instructor"):
-        ctx = _resolve_doctor_context()
-        if ctx["matched_instructors"]:
-            instructor_doc = frappe.get_doc("Instructor", ctx["matched_instructors"][0]["name"])
-            if payload.get("nameAr") or payload.get("nameEn"):
-                instructor_doc.instructor_name = payload.get("nameAr") or payload.get("nameEn")
-            if payload.get("image"):
-                instructor_doc.image = payload.get("image")
-            instructor_doc.save(ignore_permissions=True)
+    if frappe.db.exists("DocType", "Instructor") and ctx["matched_instructors"]:
+        instructor_doc = frappe.get_doc("Instructor", ctx["matched_instructors"][0]["name"])
+        if payload.get("nameAr") or payload.get("nameEn"):
+            instructor_doc.instructor_name = payload.get("nameAr") or payload.get("nameEn")
+        if payload.get("image"):
+            instructor_doc.image = payload.get("image")
+        link_field = ctx.get("instructor_user_link_field")
+        if link_field and not _clean(instructor_doc.get(link_field)):
+            instructor_doc.set(link_field, identity["user"])
+        instructor_doc.save(ignore_permissions=True)
 
     frappe.db.commit()
     return get_doctor_profile()
@@ -915,6 +1025,7 @@ def list_doctor_students(courseId: str | None = None):
 @api_endpoint
 def update_doctor_student_grades(student_id: str, **payload):
     """Create/update Assessment Result for student and course."""
+    ctx = _ensure_doctor_context(require_mapping=True)
     _require_doctype("Assessment Result")
 
     student_row = _find_student_by_identifier(student_id)
@@ -924,6 +1035,9 @@ def update_doctor_student_grades(student_id: str, **payload):
     course = _clean(payload.get("courseId") or payload.get("course_code") or payload.get("course"))
     if not course:
         raise ApiError("VALIDATION_ERROR", "courseId is required", status_code=400)
+
+    if not ctx["all_scope"] and not _doctor_schedule_rows(course_id=course):
+        raise ApiError("FORBIDDEN", "Course is not assigned to current doctor", status_code=403)
 
     total = _to_float(payload.get("total"))
     if total <= 0:
@@ -1011,9 +1125,9 @@ def list_doctor_schedule():
 @api_endpoint
 def get_doctor_finance():
     """Return doctor finance summary from Payment Entry when employee mapping exists."""
+    ctx = _ensure_doctor_context(require_mapping=True)
     _require_doctype("Payment Entry")
 
-    ctx = _resolve_doctor_context()
     employee = ""
     if ctx["matched_instructors"]:
         employee = _clean(ctx["matched_instructors"][0].get("employee"))
@@ -1127,6 +1241,7 @@ def get_doctor_finance():
 @api_endpoint
 def list_doctor_notifications():
     """List doctor notifications from Notification Log and ToDo."""
+    _ensure_doctor_context(require_mapping=False)
     return _notifications_for_current_user()
 
 
@@ -1134,6 +1249,7 @@ def list_doctor_notifications():
 @api_endpoint
 def mark_doctor_notification_read(notification_id: str):
     """Mark doctor notification as read."""
+    _ensure_doctor_context(require_mapping=False)
     return _mark_notification(notification_id)
 
 
@@ -1141,6 +1257,7 @@ def mark_doctor_notification_read(notification_id: str):
 @api_endpoint
 def list_doctor_messages():
     """List doctor messages from Communication."""
+    _ensure_doctor_context(require_mapping=False)
     current_ids = _current_message_identities()
     rows = _query_messages_for_current_user()
     out = []
@@ -1176,6 +1293,18 @@ def mark_doctor_message_read(message_id: str):
     """Mark doctor message as read."""
     if not frappe.db.exists("Communication", message_id):
         raise ApiError("NOT_FOUND", "Message not found", status_code=404)
+    current_ids = sorted(_current_message_identities())
+    if not current_ids:
+        raise ApiError("FORBIDDEN", "Not allowed to update this message", status_code=403)
+    where = " or ".join(["lower(ifnull(recipients, '')) like %s" for _ in current_ids])
+    params: list[Any] = [f"%{identifier}%" for identifier in current_ids]
+    can_access = frappe.db.sql(
+        f"select name from `tabCommunication` where name = %s and ({where}) limit 1",
+        tuple([message_id, *params]),
+        as_dict=True,
+    )
+    if not can_access:
+        raise ApiError("FORBIDDEN", "Not allowed to update this message", status_code=403)
     frappe.db.set_value("Communication", message_id, "read_by_recipient", 1, update_modified=False)
     frappe.db.commit()
     return {"id": message_id, "isRead": True}
@@ -1185,11 +1314,11 @@ def mark_doctor_message_read(message_id: str):
 @api_endpoint
 def list_doctor_materials(courseId: str | None = None):
     """List doctor materials from File attached to Course/Instructor."""
+    ctx = _ensure_doctor_context(require_mapping=True)
     _require_doctype("File")
     schedule_rows = _doctor_schedule_rows(course_id=courseId)
     courses = {_clean(row.get("course")) for row in schedule_rows if row.get("course")}
 
-    ctx = _resolve_doctor_context()
     instructor_names = {_clean(item.get("name")) for item in ctx["matched_instructors"] if item.get("name")}
 
     materials = []
@@ -1236,6 +1365,7 @@ def list_doctor_materials(courseId: str | None = None):
 @api_endpoint
 def upload_doctor_material(**payload):
     """Upload doctor material and attach to Course or Instructor."""
+    ctx = _ensure_doctor_context(require_mapping=True)
     _require_doctype("File")
     if not frappe.request or not frappe.request.files:
         raise ApiError("VALIDATION_ERROR", "No file uploaded", status_code=400)
@@ -1244,8 +1374,10 @@ def upload_doctor_material(**payload):
     attached_doctype = "Course" if course_id else "Instructor"
     attached_name = course_id
 
+    if course_id and not ctx["all_scope"] and not _doctor_schedule_rows(course_id=course_id):
+        raise ApiError("FORBIDDEN", "Course is not assigned to current doctor", status_code=403)
+
     if not attached_name:
-        ctx = _resolve_doctor_context()
         if not ctx["matched_instructors"]:
             raise ApiError("VALIDATION_ERROR", "No instructor mapping found for current user", status_code=400)
         attached_name = _clean(ctx["matched_instructors"][0].get("name"))
@@ -1267,6 +1399,25 @@ def delete_doctor_material(material_id: str):
     """Delete doctor material file."""
     if not frappe.db.exists("File", material_id):
         raise ApiError("NOT_FOUND", "Material not found", status_code=404)
+    ctx = _ensure_doctor_context(require_mapping=True)
+    file_row = frappe.db.get_value(
+        "File",
+        material_id,
+        ["attached_to_doctype", "attached_to_name"],
+        as_dict=True,
+    ) or {}
+    if not ctx["all_scope"]:
+        attached_doctype = _clean(file_row.get("attached_to_doctype"))
+        attached_name = _clean(file_row.get("attached_to_name"))
+        allowed_instructors = {_clean(item.get("name")) for item in ctx["matched_instructors"] if item.get("name")}
+        allowed_courses = {_clean(row.get("course")) for row in _doctor_schedule_rows() if row.get("course")}
+        allowed = False
+        if attached_doctype == "Instructor" and attached_name in allowed_instructors:
+            allowed = True
+        if attached_doctype == "Course" and attached_name in allowed_courses:
+            allowed = True
+        if not allowed:
+            raise ApiError("FORBIDDEN", "Not allowed to delete this material", status_code=403)
     frappe.delete_doc("File", material_id, ignore_permissions=True, force=1)
     frappe.db.commit()
     return {"deleted": True}
@@ -1900,8 +2051,23 @@ def list_conversations():
     identity = _user_identity()
     current_ids = _current_message_identities()
     student_row = _find_student_by_current_user(required=False)
-    student_ids = _student_user_ids(student_row)
-    is_student_view = bool(student_row and "Instructor" not in identity["roles"])
+    view = _normalize(frappe.form_dict.get("view"))
+    has_doctor_role = bool(identity["roles"].intersection(DOCTOR_PORTAL_ROLES))
+    is_student_view = False
+    if view == "student":
+        if not student_row:
+            raise ApiError("NOT_FOUND", "Student profile not found", status_code=404)
+        is_student_view = True
+    elif view == "doctor":
+        _ensure_doctor_context(require_mapping=True)
+    elif student_row and not has_doctor_role:
+        is_student_view = True
+    elif has_doctor_role:
+        _ensure_doctor_context(require_mapping=True)
+    elif student_row:
+        is_student_view = True
+    else:
+        raise ApiError("FORBIDDEN", "No conversation access for current account", status_code=403)
 
     rows = _query_messages_for_current_user()
     grouped: dict[str, dict] = {}
@@ -1917,17 +2083,19 @@ def list_conversations():
 
         student_ref_name = _clean(student_ref.get("name"))
         student_ref_user_ids = _student_user_ids(student_ref)
-
-        counterpart = _counterpart_from_message(row, current_ids)
-        if not counterpart:
-            continue
+        recipients = {_normalize(value) for value in _split_csv(row.get("recipients"))}
+        unread = 1 if recipients.intersection(current_ids) and not int(row.get("read_by_recipient") or 0) else 0
 
         if is_student_view:
+            if not current_ids.intersection(student_ref_user_ids) and _normalize(student_ref_name) not in current_ids:
+                continue
+            counterpart = _counterpart_from_message(row, current_ids)
+            if not counterpart:
+                continue
             doctor_id = counterpart
             conv_id = _conversation_id(student_ref_name, doctor_id)
             doctor_name, doctor_email = _resolve_user_display(doctor_id)
             key = conv_id
-            unread = 1 if _normalize(counterpart) not in current_ids and not int(row.get("read_by_recipient") or 0) else 0
             existing = grouped.get(key)
             if not existing:
                 grouped[key] = {
@@ -1949,7 +2117,6 @@ def list_conversations():
         doctor_id = identity["email"] or identity["user"]
         conv_id = _conversation_id(student_ref_name, doctor_id)
         key = conv_id
-        unread = 1 if _normalize(counterpart) in current_ids and not int(row.get("read_by_recipient") or 0) else 0
         existing = grouped.get(key)
         if not existing:
             grouped[key] = {
@@ -1976,20 +2143,15 @@ def list_conversations():
 @api_endpoint
 def get_conversation(conversation_id: str):
     """Get chat messages in a conversation."""
-    identity = _user_identity()
     student_id, doctor_id = _parse_conversation_id(conversation_id)
 
     student_row = _find_student_by_identifier(student_id)
     if not student_row:
         raise ApiError("NOT_FOUND", "Conversation student not found", status_code=404)
 
-    current_ids = _current_message_identities()
-    student_ids = _student_user_ids(student_row)
-    doctor_identity = _normalize(doctor_id)
-
-    if doctor_identity not in current_ids and not current_ids.intersection(student_ids):
-        if not identity["roles"].intersection({"System Manager", "Administrator"}):
-            raise ApiError("FORBIDDEN", "Not allowed to access this conversation", status_code=403)
+    access = _ensure_conversation_access(student_row, doctor_id)
+    doctor_identity = access["doctor_identity"]
+    student_ids = access["student_ids"]
 
     rows = frappe.get_all(
         "Communication",
@@ -2036,17 +2198,19 @@ def send_message(**payload):
     if not student_row:
         raise ApiError("NOT_FOUND", "Student not found for conversation", status_code=404)
 
-    student_ids = _student_user_ids(student_row)
-    doctor_identity = _normalize(doctor_id)
-    current_ids = _current_message_identities()
+    access = _ensure_conversation_access(student_row, doctor_id)
+    student_ids = access["student_ids"]
+    doctor_identity = access["doctor_identity"]
+    current_ids = access["current_ids"]
 
     sender_type = _clean(payload.get("senderType"))
     if sender_type == "student":
-        if not current_ids.intersection(student_ids):
+        if not access["is_student_participant"]:
             raise ApiError("FORBIDDEN", "Current user is not the student of this conversation", status_code=403)
         recipient = doctor_id
     elif sender_type == "doctor":
-        if doctor_identity not in current_ids and not identity["roles"].intersection({"System Manager", "Administrator"}):
+        _ensure_doctor_context(require_mapping=True)
+        if doctor_identity not in current_ids and not access["is_admin"]:
             raise ApiError("FORBIDDEN", "Current user is not the doctor of this conversation", status_code=403)
         recipient = student_row.get("user") or student_row.get("student_email_id") or student_row.get("name")
     else:
@@ -2095,7 +2259,8 @@ def mark_conversation_read(conversation_id: str):
     if not student_row:
         raise ApiError("NOT_FOUND", "Conversation student not found", status_code=404)
 
-    current_ids = _current_message_identities()
+    access = _ensure_conversation_access(student_row, doctor_id)
+    current_ids = access["current_ids"]
     recipient_filters = []
     params: list[Any] = []
     for identifier in sorted(current_ids):
