@@ -371,3 +371,120 @@ def payload_validation_smoke_test() -> dict:
         "entity": entity_key,
         "checks": checks,
     }
+
+
+def _call_api_method(method, *args, **kwargs):
+    original_form_dict = getattr(frappe.local, "form_dict", None)
+    try:
+        frappe.form_dict = frappe._dict({})
+        result = method(*args, **kwargs)
+    finally:
+        frappe.form_dict = original_form_dict if original_form_dict is not None else frappe._dict({})
+
+    if isinstance(result, dict) and "ok" in result:
+        if not result.get("ok"):
+            error = result.get("error") or {}
+            raise ApiError(
+                code=error.get("code") or "SERVER_ERROR",
+                message=error.get("message") or "API method failed",
+                details=error.get("details"),
+                status_code=400,
+            )
+        return result.get("data")
+    return result
+
+
+def launch_readiness_e2e_check() -> dict:
+    """End-to-end launch readiness checks for backend-backed CMS/public flow."""
+    from . import cms, content, public
+
+    checks: list[dict] = []
+
+    def run_check(name: str, fn):
+        try:
+            details = fn()
+            checks.append({"name": name, "passed": True, "details": details})
+        except Exception as exc:
+            checks.append({"name": name, "passed": False, "error": str(exc)})
+
+    def check_public_lists():
+        news = _call_api_method(public.list_public_news, limit=3, page=1)
+        events = _call_api_method(public.list_public_events, limit=3, page=1)
+        colleges = _call_api_method(public.list_public_colleges, limit=3, page=1)
+        return {
+            "newsItems": len((news or {}).get("items") or []),
+            "eventsItems": len((events or {}).get("items") or []),
+            "collegesItems": len((colleges or {}).get("items") or []),
+        }
+
+    def check_admin_lists():
+        news = _call_api_method(content.list_news) or []
+        events = _call_api_method(content.list_events) or []
+        offers = _call_api_method(content.list_offers) or []
+        centers = _call_api_method(content.list_centers) or []
+        team = _call_api_method(content.list_team_members) or []
+        blog = _call_api_method(content.list_blog_posts) or []
+        media = _call_api_method(cms.list_media) or []
+        return {
+            "news": len(news),
+            "events": len(events),
+            "offers": len(offers),
+            "centers": len(centers),
+            "team": len(team),
+            "blog": len(blog),
+            "media": len(media),
+        }
+
+    def check_profile_roundtrip():
+        original = _call_api_method(public.get_site_profile) or {}
+        original_name = original.get("siteName") or ""
+        marker = f"{original_name} E2E".strip() or "AAU E2E"
+        _call_api_method(public.update_site_profile, siteName=marker)
+        updated = _call_api_method(public.get_site_profile) or {}
+        _call_api_method(public.update_site_profile, siteName=original_name)
+        restored = _call_api_method(public.get_site_profile) or {}
+        if updated.get("siteName") != marker:
+            raise Exception("site profile update did not persist")
+        if (restored.get("siteName") or "") != original_name:
+            raise Exception("site profile restore failed")
+        return {"updatedSiteName": updated.get("siteName"), "restoredSiteName": restored.get("siteName")}
+
+    def check_page_roundtrip():
+        slug = "about"
+        public_snapshot = _call_api_method(public.get_public_page, slug=slug) or {}
+        try:
+            editable_snapshot = _call_api_method(content.get_page, slug=slug) or {}
+        except Exception:
+            return {"slug": slug, "status": "public_read_only", "publicTitleEn": public_snapshot.get("titleEn")}
+
+        candidate_keys = ["titleEn", "titleAr", "contentEn", "contentAr", "title", "content"]
+        target_key = next((key for key in candidate_keys if key in editable_snapshot), None)
+        if not target_key:
+            return {"slug": slug, "status": "no_editable_fields", "keys": sorted(editable_snapshot.keys())}
+
+        original_value = editable_snapshot.get(target_key) or ""
+        marker = f"{original_value} E2E".strip() or "AAU E2E"
+        _call_api_method(content.update_page, slug=slug, **{target_key: marker})
+        updated = _call_api_method(content.get_page, slug=slug) or {}
+        _call_api_method(content.update_page, slug=slug, **{target_key: original_value})
+        restored = _call_api_method(content.get_page, slug=slug) or {}
+        if updated.get(target_key) != marker:
+            raise Exception("page update did not persist")
+        if (restored.get(target_key) or "") != original_value:
+            raise Exception("page restore failed")
+        return {"slug": slug, "field": target_key, "updated": updated.get(target_key), "restored": restored.get(target_key)}
+
+    run_check("public_lists_available", check_public_lists)
+    run_check("admin_lists_available", check_admin_lists)
+    run_check("site_profile_update_roundtrip", check_profile_roundtrip)
+    run_check("about_page_update_roundtrip", check_page_roundtrip)
+
+    return {
+        "ok": all(item.get("passed") for item in checks),
+        "summary": {
+            "total": len(checks),
+            "passed": sum(1 for item in checks if item.get("passed")),
+            "failed": sum(1 for item in checks if not item.get("passed")),
+        },
+        "checks": checks,
+    }

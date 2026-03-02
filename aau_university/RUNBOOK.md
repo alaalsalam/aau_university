@@ -91,6 +91,11 @@ bench --site edu.yemenfrappe.com execute aau_university.api.v1.utils.payload_val
 # If omitted, fallback is now disabled automatically when NODE_ENV=production.
 ```
 
+## 11) Launch readiness E2E (admin update -> public read)
+```bash
+bench --site edu.yemenfrappe.com execute aau_university.api.v1.utils.launch_readiness_e2e_check
+```
+
 ## Renamed DocTypes (valid technical names)
 - `University Vision and Mission` (was `University Vision & Mission`)
 - `Research and Publications` (was `Research & Publications`)
