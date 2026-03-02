@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\":\"aau_header\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">AAU</span>\",\"col\":12}},{\"id\":\"aau_content_main\",\"type\":\"card\",\"data\":{\"card_name\":\"المحتوى الرئيسي / Website Content\",\"col\":4}},{\"id\":\"aau_content_programs\",\"type\":\"card\",\"data\":{\"card_name\":\"البرامج الأكاديمية / Academic Programs\",\"col\":4}},{\"id\":\"aau_content_menus\",\"type\":\"card\",\"data\":{\"card_name\":\"القوائم والتنقل / Navigation & Menus\",\"col\":4}},{\"id\":\"aau_content_support\",\"type\":\"card\",\"data\":{\"card_name\":\"إدارة المحتوى المساعد / Supporting Content\",\"col\":6}},{\"id\":\"aau_content_settings\",\"type\":\"card\",\"data\":{\"card_name\":\"الإعدادات العامة / Settings\",\"col\":6}}]",
+ "content": "[{\"id\":\"aau_header\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">AAU CMS Control Center</span>\",\"col\":12}},{\"id\":\"aau_core\",\"type\":\"card\",\"data\":{\"card_name\":\"المحتوى الرئيسي / Core Content\",\"col\":4}},{\"id\":\"aau_academic\",\"type\":\"card\",\"data\":{\"card_name\":\"الأكاديمي / Academic\",\"col\":4}},{\"id\":\"aau_marketing\",\"type\":\"card\",\"data\":{\"card_name\":\"التسويق والهوية / Marketing\",\"col\":4}},{\"id\":\"aau_engagement\",\"type\":\"card\",\"data\":{\"card_name\":\"التفاعل / Engagement\",\"col\":6}},{\"id\":\"aau_settings\",\"type\":\"card\",\"data\":{\"card_name\":\"الإعدادات والتنقل / Settings\",\"col\":6}}]",
  "creation": "2026-01-10 22:17:05.951942",
  "custom_blocks": [],
  "docstatus": 0,
@@ -17,8 +17,8 @@
    "hidden": 0,
    "icon": "website",
    "is_query_report": 0,
-   "label": "المحتوى الرئيسي / Website Content",
-   "link_count": 5,
+   "label": "المحتوى الرئيسي / Core Content",
+   "link_count": 7,
    "link_type": "DocType",
    "onboard": 0,
    "type": "Card Break"
@@ -29,6 +29,26 @@
    "label": "الصفحة الرئيسية",
    "link_count": 0,
    "link_to": "Home Page",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "الصفحات",
+   "link_count": 0,
+   "link_to": "Pages",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "صفحات الموقع",
+   "link_count": 0,
+   "link_to": "AAU Page",
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
@@ -56,9 +76,9 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "الكليات",
+   "label": "الحياة الجامعية",
    "link_count": 0,
-   "link_to": "Colleges",
+   "link_to": "Campus Life",
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
@@ -66,9 +86,9 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "الصفحات الثابتة",
+   "label": "المدونة",
    "link_count": 0,
-   "link_to": "AAU Page",
+   "link_to": "Blog Posts",
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
@@ -77,8 +97,8 @@
    "hidden": 0,
    "icon": "education",
    "is_query_report": 0,
-   "label": "البرامج الأكاديمية / Academic Programs",
-   "link_count": 2,
+   "label": "الأكاديمي / Academic",
+   "link_count": 6,
    "link_type": "DocType",
    "onboard": 0,
    "type": "Card Break"
@@ -96,7 +116,7 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "البرامج",
+   "label": "البرامج الأكاديمية",
    "link_count": 0,
    "link_to": "Academic Programs",
    "link_type": "DocType",
@@ -105,10 +125,50 @@
   },
   {
    "hidden": 0,
-   "icon": "folder-normal",
    "is_query_report": 0,
-   "label": "القوائم والتنقل / Navigation & Menus",
-   "link_count": 3,
+   "label": "أعضاء هيئة التدريس",
+   "link_count": 0,
+   "link_to": "Faculty Members",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "الخطط الدراسية",
+   "link_count": 0,
+   "link_to": "Study Plans",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "مقررات الخطة",
+   "link_count": 0,
+   "link_to": "Study Plan Courses",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "الأقسام الأكاديمية",
+   "link_count": 0,
+   "link_to": "Academic Departments",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "icon": "marketing",
+   "is_query_report": 0,
+   "label": "التسويق والهوية / Marketing",
+   "link_count": 6,
    "link_type": "DocType",
    "onboard": 0,
    "type": "Card Break"
@@ -116,49 +176,9 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "قائمة التنقل الرئيسية",
+   "label": "العروض",
    "link_count": 0,
-   "link_to": "AAU Menu",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "قائمة التذييل",
-   "link_count": 0,
-   "link_to": "AAU Menu",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "روابط التواصل الاجتماعي",
-   "link_count": 0,
-   "link_to": "AAU Menu",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "icon": "list",
-   "is_query_report": 0,
-   "label": "إدارة المحتوى المساعد / Supporting Content",
-   "link_count": 3,
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "الشهادات",
-   "link_count": 0,
-   "link_to": "Testimonials",
+   "link_to": "Offers",
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
@@ -176,6 +196,76 @@
   {
    "hidden": 0,
    "is_query_report": 0,
+   "label": "المراكز",
+   "link_count": 0,
+   "link_to": "Centers",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "الفريق",
+   "link_count": 0,
+   "link_to": "Team Members",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "الشهادات",
+   "link_count": 0,
+   "link_to": "Testimonials",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "الوظائف",
+   "link_count": 0,
+   "link_to": "Job Opportunities",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "icon": "mail",
+   "is_query_report": 0,
+   "label": "التفاعل / Engagement",
+   "link_count": 5,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "رسائل التواصل",
+   "link_count": 0,
+   "link_to": "Contact Us Messages",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "طلبات الانضمام",
+   "link_count": 0,
+   "link_to": "Join Requests",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
    "label": "الأسئلة الشائعة",
    "link_count": 0,
    "link_to": "FAQ",
@@ -185,10 +275,30 @@
   },
   {
    "hidden": 0,
+   "is_query_report": 0,
+   "label": "متطلبات القبول",
+   "link_count": 0,
+   "link_to": "Admission Requirements",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "دليل التسجيل",
+   "link_count": 0,
+   "link_to": "Registration Guide",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
    "icon": "settings",
    "is_query_report": 0,
-   "label": "الإعدادات العامة / Settings",
-   "link_count": 1,
+   "label": "الإعدادات والتنقل / Settings",
+   "link_count": 6,
    "link_type": "DocType",
    "onboard": 0,
    "type": "Card Break"
@@ -199,6 +309,56 @@
    "label": "إعدادات الموقع",
    "link_count": 0,
    "link_to": "Website Settings",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "قوائم الموقع",
+   "link_count": 0,
+   "link_to": "AAU Menu",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "عناصر القائمة",
+   "link_count": 0,
+   "link_to": "AAU Menu Item",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "مكتبة الوسائط",
+   "link_count": 0,
+   "link_to": "Media Library",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "المؤشرات",
+   "link_count": 0,
+   "link_to": "Dashboard Metrics",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "الإعلانات",
+   "link_count": 0,
+   "link_to": "Announcements",
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
@@ -217,5 +377,5 @@
  "sequence_id": 50.0,
  "is_standard": 1,
  "shortcuts": [],
- "title": "AAU"
+ "title": "AAU CMS Control Center"
 }

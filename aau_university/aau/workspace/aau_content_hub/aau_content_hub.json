@@ -10,9 +10,9 @@
  "icon": "website",
  "idx": 0,
  "indicator_color": "blue",
- "is_hidden": 0,
+ "is_hidden": 1,
  "is_standard": 1,
- "label": "AAU Content Hub",
+ "label": "AAU Content Hub (Legacy)",
  "links": [
   {
    "hidden": 0,
@@ -227,5 +227,5 @@
  "roles": [],
  "sequence_id": 51.0,
  "shortcuts": [],
- "title": "AAU Content Hub"
+ "title": "AAU Content Hub (Legacy)"
 }
