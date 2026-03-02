@@ -540,6 +540,57 @@ def get_site_profile():
     }
 
 
+@frappe.whitelist()
+@api_endpoint
+def update_site_profile(**payload):
+    require_roles(ADMIN_ROLES)
+    doctype = "Website Settings"
+    if not frappe.db.exists("DocType", doctype):
+        raise frappe.DoesNotExistError("Website Settings not found")
+
+    meta = frappe.get_meta(doctype)
+    field_map = {
+        "siteName": "site_name",
+        "siteNameAr": "site_name_ar",
+        "siteDescriptionAr": "site_description_ar",
+        "siteDescriptionEn": "site_description_en",
+        "contactPhone": "contact_phone",
+        "contactEmail": "contact_email",
+        "addressAr": "address_ar",
+        "addressEn": "address_en",
+        "mapLocation": "map_location",
+        "facebook": "facebook",
+        "twitter": "twitter",
+        "instagram": "instagram",
+        "linkedin": "linkedin",
+        "youtube": "youtube",
+    }
+
+    updates = {}
+    for key, value in (payload or {}).items():
+        fieldname = field_map.get(key, key)
+        if meta.get_field(fieldname):
+            updates[fieldname] = value
+
+    if not updates:
+        return get_site_profile()
+
+    if getattr(meta, "issingle", 0):
+        for fieldname, value in updates.items():
+            frappe.db.set_single_value(doctype, fieldname, value)
+    else:
+        row = frappe.get_all(doctype, fields=["name"], order_by="modified desc", limit_page_length=1, ignore_permissions=True)
+        if row:
+            for fieldname, value in updates.items():
+                frappe.db.set_value(doctype, row[0]["name"], fieldname, value)
+        else:
+            doc = frappe.get_doc({"doctype": doctype, **updates})
+            doc.insert(ignore_permissions=True)
+
+    frappe.db.commit()
+    return get_site_profile()
+
+
 def _get_home_sections() -> dict:
     if not frappe.db.exists("DocType", "Home Page"):
         return {"hero": {}, "stats": [], "about": {}, "partners": [], "testimonials": []}

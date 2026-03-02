@@ -556,4 +556,10 @@ def get_page(slug: str):
 @api_endpoint
 def update_page(slug: str, **payload):
     """Update a page by slug."""
-    return update_entity("pages", slug, payload, by="slug")
+    try:
+        return update_entity("pages", slug, payload, by="slug")
+    except frappe.DoesNotExistError:
+        data = dict(payload or {})
+        data.setdefault("slug", slug)
+        data.setdefault("id", slug)
+        return create_entity("pages", data), 201
