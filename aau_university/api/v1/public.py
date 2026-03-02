@@ -475,9 +475,16 @@ def get_public_college(slug: str):
 @api_endpoint
 def get_public_page(slug: str):
     # WHY+WHAT: use one lightweight AAU Page doctype + endpoint for static website pages to keep admin editing simple and rollout low-risk.
-    doctype = _first_existing_doctype(["AAU Page", "Static Page"])
+    doctype = _first_existing_doctype(["Pages", "AAU Page", "Static Page"])
     if not doctype:
-        raise frappe.DoesNotExistError("Page not found")
+        return {
+            "slug": slug,
+            "titleAr": slug,
+            "titleEn": slug,
+            "contentAr": "",
+            "contentEn": "",
+            "heroImage": None,
+        }
 
     meta = frappe.get_meta(doctype)
     db_fields = {
@@ -488,7 +495,14 @@ def get_public_page(slug: str):
     filters = {"slug": slug}
     row = frappe.db.get_value(doctype, filters, list(db_fields), as_dict=True)
     if not row:
-        raise frappe.DoesNotExistError("Page not found")
+        return {
+            "slug": slug,
+            "titleAr": slug,
+            "titleEn": slug,
+            "contentAr": "",
+            "contentEn": "",
+            "heroImage": None,
+        }
 
     if "published" in db_fields and not row.get("published") and frappe.session.user == "Guest":
         raise frappe.DoesNotExistError("Page not found")

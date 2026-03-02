@@ -83,6 +83,14 @@ print(rbac_smoke_test())  # auto-detect users
 bench --site edu.yemenfrappe.com execute aau_university.api.v1.utils.payload_validation_smoke_test
 ```
 
+## 10) Production fallback lock (frontend)
+```bash
+# In AAU-16.24 production env:
+# AAU_DISABLE_MOCK_FALLBACK=1
+#
+# If omitted, fallback is now disabled automatically when NODE_ENV=production.
+```
+
 ## Renamed DocTypes (valid technical names)
 - `University Vision and Mission` (was `University Vision & Mission`)
 - `Research and Publications` (was `Research & Publications`)
