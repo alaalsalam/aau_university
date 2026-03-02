@@ -558,6 +558,96 @@ def _serialize_doctor_announcement(row: dict) -> dict:
     }
 
 
+def _student_user_targets_for_course(course_id: str) -> set[str]:
+    course = _clean(course_id)
+    if not course:
+        return set()
+    if not (
+        frappe.db.exists("DocType", "Course Schedule")
+        and frappe.db.exists("DocType", "Student Group Student")
+        and frappe.db.exists("DocType", "Student")
+    ):
+        return set()
+
+    schedule_rows = frappe.get_all(
+        "Course Schedule",
+        filters={"course": course},
+        fields=["student_group"],
+        ignore_permissions=True,
+        limit_page_length=0,
+    )
+    groups = {_clean(row.get("student_group")) for row in schedule_rows if row.get("student_group")}
+    if not groups:
+        return set()
+
+    member_rows = frappe.get_all(
+        "Student Group Student",
+        filters={"parent": ["in", list(groups)]},
+        fields=["student", "active"],
+        ignore_permissions=True,
+        limit_page_length=0,
+    )
+    student_ids = {
+        _clean(row.get("student"))
+        for row in member_rows
+        if row.get("student") and (row.get("active") in (None, "", 1, "1", True))
+    }
+    if not student_ids:
+        return set()
+
+    student_rows = frappe.get_all(
+        "Student",
+        filters={"name": ["in", list(student_ids)]},
+        fields=["name", "user", "student_email_id"],
+        ignore_permissions=True,
+        limit_page_length=0,
+    )
+    targets = set()
+    for row in student_rows:
+        for candidate in (_clean(row.get("user")), _clean(row.get("student_email_id"))):
+            if candidate and frappe.db.exists("User", candidate):
+                targets.add(candidate)
+    return targets
+
+
+def _create_student_announcement_notifications(course_id: str, text: str, sender: str, communication_name: str) -> int:
+    if not frappe.db.exists("DocType", "Notification Log"):
+        return 0
+
+    targets = _student_user_targets_for_course(course_id)
+    if not targets:
+        return 0
+
+    created = 0
+    subject = f"Announcement: {course_id}"
+    for user in sorted(targets):
+        exists = frappe.db.exists(
+            "Notification Log",
+            {
+                "for_user": user,
+                "document_type": "Communication",
+                "document_name": communication_name,
+            },
+        )
+        if exists:
+            continue
+        doc = frappe.get_doc(
+            {
+                "doctype": "Notification Log",
+                "for_user": user,
+                "subject": subject,
+                "type": "Alert",
+                "email_content": text,
+                "document_type": "Communication",
+                "document_name": communication_name,
+                "from_user": sender,
+            }
+        )
+        doc.insert(ignore_permissions=True)
+        created += 1
+    return created
+
+
 def _notification_type(value: str) -> str:
     text = _normalize(value)
     if "grade" in text or "تقييم" in text or "درجة" in text:
@@ -1410,6 +1500,12 @@ def create_doctor_announcement(**payload):
         }
     )
     announcement.insert(ignore_permissions=True)
+    _create_student_announcement_notifications(
+        course_id=course_id,
+        text=text,
+        sender=sender,
+        communication_name=announcement.name,
+    )
     frappe.db.commit()
     return _serialize_doctor_announcement(announcement.as_dict())
 
@@ -2145,6 +2241,39 @@ def list_student_materials(courseId: str | None = None):
         seen.add(row["id"])
         deduped.append(row)
     return deduped
+
+
+@frappe.whitelist()
+@api_endpoint
+def list_student_announcements(courseId: str | None = None):
+    """List course announcements visible to the current student."""
+    _require_doctype("Communication")
+    student = _find_student_by_current_user(required=True)
+    _, _, course_codes = _student_course_rows(student)
+    allowed_courses = {_clean(code) for code in course_codes if _clean(code)}
+    if not allowed_courses:
+        return []
+
+    selected_course = _clean(courseId or frappe.form_dict.get("courseId"))
+    if selected_course:
+        if selected_course not in allowed_courses:
+            raise ApiError("FORBIDDEN", "Course is not assigned to current student", status_code=403)
+        allowed_courses = {selected_course}
+
+    rows = frappe.get_all(
+        "Communication",
+        filters={"reference_doctype": "Course", "reference_name": ["in", sorted(allowed_courses)]},
+        fields=["name", "subject", "content", "sender", "reference_doctype", "reference_name", "communication_date", "creation"],
+        order_by="creation desc",
+        ignore_permissions=True,
+        limit_page_length=500,
+    )
+    output = []
+    for row in rows:
+        if not _is_doctor_announcement_row(row):
+            continue
+        output.append(_serialize_doctor_announcement(row))
+    return output
 
 
 @frappe.whitelist()

@@ -467,6 +467,7 @@ def portal_smoke_test(student_user: str | None = None, doctor_user: str | None =
             run_case(student_user, "student.grades", portal.list_student_grades)
             run_case(student_user, "student.finance", portal.get_student_finance)
             run_case(student_user, "student.materials", portal.list_student_materials)
+            run_case(student_user, "student.announcements", portal.list_student_announcements)
             run_case(student_user, "student.notifications", portal.list_student_notifications)
             run_case(student_user, "student.conversations", portal.list_conversations, form_dict={"view": "student"})
             run_case(student_user, "student.unread", portal.unread_message_count)
