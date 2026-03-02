@@ -679,8 +679,32 @@ def _notifications_for_current_user(student_row: dict | None = None) -> list[dic
             ignore_permissions=True,
             limit_page_length=100,
         )
+        communication_ids = {
+            _clean(row.get("document_name"))
+            for row in rows
+            if _clean(row.get("document_type")) == "Communication" and row.get("document_name")
+        }
+        communication_course_map: dict[str, str] = {}
+        if communication_ids:
+            comm_rows = frappe.get_all(
+                "Communication",
+                filters={"name": ["in", list(communication_ids)]},
+                fields=["name", "reference_doctype", "reference_name", "subject"],
+                ignore_permissions=True,
+                limit_page_length=0,
+            )
+            for comm in comm_rows:
+                if _is_doctor_announcement_row(comm):
+                    communication_course_map[_clean(comm.get("name"))] = _clean(comm.get("reference_name"))
         for row in rows:
             kind = _notification_type(row.get("type") or row.get("subject"))
+            resource_type = _clean(row.get("document_type"))
+            resource_id = _clean(row.get("document_name"))
+            course_id = ""
+            if resource_type == "Communication" and resource_id:
+                course_id = communication_course_map.get(resource_id, "")
+            if resource_type == "Course" and resource_id:
+                course_id = resource_id
             notifications.append(
                 {
                     "id": f"NLOG::{row['name']}",
@@ -694,6 +718,9 @@ def _notifications_for_current_user(student_row: dict | None = None) -> list[dic
                     "senderType": "admin" if row.get("from_user") else "system",
                     "date": _iso(row.get("creation")),
                     "isRead": bool(int(row.get("read") or 0)),
+                    "resourceType": resource_type,
+                    "resourceId": resource_id,
+                    "courseId": course_id,
                 }
             )
 
@@ -726,6 +753,9 @@ def _notifications_for_current_user(student_row: dict | None = None) -> list[dic
                     "senderType": "system",
                     "date": _iso(row.get("date") or row.get("modified")),
                     "isRead": status in {"closed", "cancelled", "completed"},
+                    "resourceType": _clean(row.get("reference_type")),
+                    "resourceId": _clean(row.get("reference_name")),
+                    "courseId": _clean(row.get("reference_name")) if _clean(row.get("reference_type")) == "Course" else "",
                 }
             )
 
@@ -2295,6 +2325,9 @@ def list_student_notifications():
                 "type": item["type"] if item["type"] in {"announcement", "grade", "payment", "course", "system"} else "system",
                 "date": item["date"],
                 "isRead": item["isRead"],
+                "resourceType": item.get("resourceType"),
+                "resourceId": item.get("resourceId"),
+                "courseId": item.get("courseId"),
             }
         )
     return output
