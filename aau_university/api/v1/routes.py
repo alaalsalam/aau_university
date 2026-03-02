@@ -197,6 +197,7 @@ def ensure_routes():
         # Doctor portal
         Rule("/doctor/profile", methods=["GET"], endpoint=portal.get_doctor_profile),
         Rule("/doctor/profile", methods=["PUT"], endpoint=portal.update_doctor_profile),
+        Rule("/doctor/profile/image", methods=["POST"], endpoint=portal.upload_doctor_profile_image),
         Rule("/doctor/courses", methods=["GET"], endpoint=portal.list_doctor_courses),
         Rule("/doctor/students", methods=["GET"], endpoint=portal.list_doctor_students),
         Rule("/doctor/students/<path:student_id>/grades", methods=["PUT"], endpoint=portal.update_doctor_student_grades),
@@ -215,6 +216,7 @@ def ensure_routes():
         # Student portal
         Rule("/student/profile", methods=["GET"], endpoint=portal.get_student_profile),
         Rule("/student/profile", methods=["PUT"], endpoint=portal.update_student_profile),
+        Rule("/student/profile/image", methods=["POST"], endpoint=portal.upload_student_profile_image),
         Rule("/student/courses", methods=["GET"], endpoint=portal.list_student_courses),
         Rule("/student/schedule", methods=["GET"], endpoint=portal.list_student_schedule),
         Rule("/student/grades", methods=["GET"], endpoint=portal.list_student_grades),

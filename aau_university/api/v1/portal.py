@@ -41,6 +41,7 @@ GRADE_POINTS = {
 ELEVATED_PORTAL_ROLES = {"System Manager", "Administrator", "Education Manager", "AAU Admin", "AUU Admin"}
 DOCTOR_PORTAL_ROLES = {"Instructor"} | ELEVATED_PORTAL_ROLES
 ANNOUNCEMENT_SUBJECT_PREFIX = "[AAU-ANNOUNCEMENT]"
+MAX_PROFILE_IMAGE_BYTES = 5 * 1024 * 1024
 
 
 def _require_doctype(doctype: str):
@@ -127,6 +128,22 @@ def _file_size_label(size_bytes: Any) -> str:
     return f"{size:.1f} {units[idx]}"
 
 
+def _extract_uploaded_file(max_bytes: int | None = None) -> tuple[str, bytes]:
+    if not frappe.request or not getattr(frappe.request, "files", None):
+        raise ApiError("VALIDATION_ERROR", "No file uploaded", status_code=400)
+    fileobj = next(iter(frappe.request.files.values()), None)
+    if not fileobj:
+        raise ApiError("VALIDATION_ERROR", "No file uploaded", status_code=400)
+
+    filename = _clean(getattr(fileobj, "filename", None)) or "upload.bin"
+    content = fileobj.stream.read()
+    if not content:
+        raise ApiError("VALIDATION_ERROR", "Uploaded file is empty", status_code=400)
+    if max_bytes and len(content) > max_bytes:
+        raise ApiError("VALIDATION_ERROR", f"File size must be <= {max_bytes} bytes", status_code=400)
+    return filename, content
+
+
 def _split_csv(value: Any) -> list[str]:
     text = _clean(value)
     if not text:
@@ -151,6 +168,7 @@ def _user_identity() -> dict[str, Any]:
         "user": user,
         "email": email,
         "full_name": _clean(getattr(user_doc, "full_name", None) or user),
+        "user_image": _clean(getattr(user_doc, "user_image", None)),
         "roles": roles,
         "identifiers": identifiers,
     }
@@ -961,7 +979,7 @@ def get_doctor_profile():
                 "officeHoursEn": "",
                 "bioAr": "",
                 "bioEn": "",
-                "image": instructor.get("image"),
+                "image": instructor.get("image") or identity.get("user_image"),
             }
 
     if frappe.db.exists("DocType", "Faculty Members"):
@@ -992,7 +1010,7 @@ def get_doctor_profile():
                 "officeHoursEn": "",
                 "bioAr": _clean(row.get("biography")),
                 "bioEn": _clean(row.get("biography")),
-                "image": row.get("photo"),
+                "image": row.get("photo") or identity.get("user_image"),
             }
 
     return {
@@ -1013,7 +1031,7 @@ def get_doctor_profile():
         "officeHoursEn": "",
         "bioAr": "",
         "bioEn": "",
-        "image": None,
+        "image": identity.get("user_image") or None,
     }
 
 
@@ -1029,6 +1047,8 @@ def update_doctor_profile(**payload):
         user_doc.email = payload.get("email")
     if payload.get("nameAr") or payload.get("nameEn"):
         user_doc.full_name = payload.get("nameAr") or payload.get("nameEn")
+    if payload.get("image"):
+        user_doc.user_image = payload.get("image")
     user_doc.save(ignore_permissions=True)
 
     if frappe.db.exists("DocType", "Instructor") and ctx["matched_instructors"]:
@@ -1044,6 +1064,42 @@ def update_doctor_profile(**payload):
 
     frappe.db.commit()
     return get_doctor_profile()
+
+
+@frappe.whitelist()
+@api_endpoint
+def upload_doctor_profile_image():
+    """Upload doctor profile image and persist it on User/Instructor."""
+    ctx = _ensure_doctor_context(require_mapping=True)
+    identity = ctx["identity"]
+    filename, content = _extract_uploaded_file(max_bytes=MAX_PROFILE_IMAGE_BYTES)
+
+    attached_doctype = "User"
+    attached_name = identity["user"]
+    if ctx["matched_instructors"]:
+        attached_doctype = "Instructor"
+        attached_name = _clean(ctx["matched_instructors"][0].get("name")) or identity["user"]
+
+    saved = save_file(
+        filename,
+        content,
+        attached_to_doctype=attached_doctype,
+        attached_to_name=attached_name,
+        is_private=0,
+    )
+    file_url = _clean(saved.file_url)
+
+    user_doc = frappe.get_doc("User", identity["user"])
+    user_doc.user_image = file_url
+    user_doc.save(ignore_permissions=True)
+
+    if attached_doctype == "Instructor" and frappe.db.exists("DocType", "Instructor"):
+        instructor_meta = frappe.get_meta("Instructor")
+        if "image" in set(instructor_meta.get_valid_columns()):
+            frappe.db.set_value("Instructor", attached_name, "image", file_url, update_modified=False)
+
+    frappe.db.commit()
+    return {"fileUrl": file_url}
 
 
 @frappe.whitelist()
@@ -1746,6 +1802,38 @@ def update_student_profile(**payload):
     doc.save(ignore_permissions=True)
     frappe.db.commit()
     return get_student_profile()
+
+
+@frappe.whitelist()
+@api_endpoint
+def upload_student_profile_image():
+    """Upload student profile image and persist it on Student/User."""
+    student = _find_student_by_current_user(required=True)
+    filename, content = _extract_uploaded_file(max_bytes=MAX_PROFILE_IMAGE_BYTES)
+
+    saved = save_file(
+        filename,
+        content,
+        attached_to_doctype="Student",
+        attached_to_name=student["name"],
+        is_private=0,
+    )
+    file_url = _clean(saved.file_url)
+
+    doc = frappe.get_doc("Student", student["name"])
+    valid_cols = set(frappe.get_meta("Student").get_valid_columns())
+    if "image" in valid_cols:
+        doc.image = file_url
+    elif "photo" in valid_cols:
+        doc.photo = file_url
+    doc.save(ignore_permissions=True)
+
+    user_doc = frappe.get_doc("User", frappe.session.user)
+    user_doc.user_image = file_url
+    user_doc.save(ignore_permissions=True)
+
+    frappe.db.commit()
+    return {"fileUrl": file_url}
 
 
 def _student_course_rows(student: dict) -> tuple[list[dict], dict[str, str], set[str]]:
