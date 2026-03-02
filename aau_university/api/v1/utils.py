@@ -452,6 +452,7 @@ def portal_smoke_test(student_user: str | None = None, doctor_user: str | None =
             run_case(doctor_user, "doctor.students", portal.list_doctor_students)
             run_case(doctor_user, "doctor.schedule", portal.list_doctor_schedule)
             run_case(doctor_user, "doctor.finance", portal.get_doctor_finance)
+            run_case(doctor_user, "doctor.announcements", portal.list_doctor_announcements)
             run_case(doctor_user, "doctor.materials", portal.list_doctor_materials)
             run_case(doctor_user, "doctor.messages", portal.list_doctor_messages)
             run_case(doctor_user, "doctor.conversations", portal.list_conversations, form_dict={"view": "doctor"})

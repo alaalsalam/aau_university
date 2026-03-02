@@ -40,6 +40,7 @@ GRADE_POINTS = {
 
 ELEVATED_PORTAL_ROLES = {"System Manager", "Administrator", "Education Manager", "AAU Admin", "AUU Admin"}
 DOCTOR_PORTAL_ROLES = {"Instructor"} | ELEVATED_PORTAL_ROLES
+ANNOUNCEMENT_SUBJECT_PREFIX = "[AAU-ANNOUNCEMENT]"
 
 
 def _require_doctype(doctype: str):
@@ -528,6 +529,32 @@ def _serialize_material(file_row: dict, course_id: str | None = None) -> dict:
         "uploadDate": _iso(file_row.get("creation")),
         "downloadCount": 0,
         "fileUrl": file_row.get("file_url"),
+    }
+
+
+def _announcement_subject(course_id: str) -> str:
+    return f"{ANNOUNCEMENT_SUBJECT_PREFIX} {course_id}"
+
+
+def _is_doctor_announcement_row(row: dict | None) -> bool:
+    if not row:
+        return False
+    return _clean(row.get("reference_doctype")) == "Course" and _clean(row.get("subject")).startswith(
+        ANNOUNCEMENT_SUBJECT_PREFIX
+    )
+
+
+def _serialize_doctor_announcement(row: dict) -> dict:
+    body = _clean(row.get("content"))
+    if not body:
+        body = _clean(row.get("subject")).replace(ANNOUNCEMENT_SUBJECT_PREFIX, "", 1).strip()
+    return {
+        "id": _clean(row.get("name")),
+        "courseId": _clean(row.get("reference_name")),
+        "textAr": body,
+        "textEn": body,
+        "createdAt": _iso(row.get("communication_date") or row.get("creation")),
+        "createdBy": _clean(row.get("sender")),
     }
 
 
@@ -1308,6 +1335,113 @@ def mark_doctor_message_read(message_id: str):
     frappe.db.set_value("Communication", message_id, "read_by_recipient", 1, update_modified=False)
     frappe.db.commit()
     return {"id": message_id, "isRead": True}
+
+
+@frappe.whitelist()
+@api_endpoint
+def list_doctor_announcements(courseId: str | None = None):
+    """List doctor-authored course announcements."""
+    ctx = _ensure_doctor_context(require_mapping=True)
+    _require_doctype("Communication")
+
+    selected_course = _clean(courseId or frappe.form_dict.get("courseId"))
+    filters: dict[str, Any] = {"reference_doctype": "Course"}
+    if selected_course:
+        if not ctx["all_scope"] and not _doctor_schedule_rows(course_id=selected_course):
+            raise ApiError("FORBIDDEN", "Course is not assigned to current doctor", status_code=403)
+        filters["reference_name"] = selected_course
+    elif not ctx["all_scope"]:
+        allowed_courses = {_clean(row.get("course")) for row in _doctor_schedule_rows() if row.get("course")}
+        if not allowed_courses:
+            return []
+        filters["reference_name"] = ["in", sorted(allowed_courses)]
+
+    rows = frappe.get_all(
+        "Communication",
+        filters=filters,
+        fields=["name", "subject", "content", "sender", "reference_doctype", "reference_name", "communication_date", "creation"],
+        order_by="creation desc",
+        ignore_permissions=True,
+        limit_page_length=500,
+    )
+    current_ids = _current_message_identities()
+    out = []
+    for row in rows:
+        if not _is_doctor_announcement_row(row):
+            continue
+        if _normalize(row.get("sender")) not in current_ids:
+            continue
+        out.append(_serialize_doctor_announcement(row))
+    return out
+
+
+@frappe.whitelist()
+@api_endpoint
+def create_doctor_announcement(**payload):
+    """Create a course announcement authored by current doctor."""
+    ctx = _ensure_doctor_context(require_mapping=True)
+    _require_doctype("Communication")
+
+    course_id = _clean(payload.get("courseId") or frappe.form_dict.get("courseId"))
+    text = _clean(payload.get("text") or payload.get("message") or frappe.form_dict.get("text"))
+    if not course_id:
+        raise ApiError("VALIDATION_ERROR", "courseId is required", status_code=400)
+    if not text:
+        raise ApiError("VALIDATION_ERROR", "text is required", status_code=400)
+    if len(text) > 5000:
+        raise ApiError("VALIDATION_ERROR", "text length must be <= 5000", status_code=400)
+
+    if not ctx["all_scope"] and not _doctor_schedule_rows(course_id=course_id):
+        raise ApiError("FORBIDDEN", "Course is not assigned to current doctor", status_code=403)
+
+    sender = _clean(frappe.session.user)
+    announcement = frappe.get_doc(
+        {
+            "doctype": "Communication",
+            "communication_type": "Communication",
+            "communication_medium": "Other",
+            "sent_or_received": "Sent",
+            "sender": sender,
+            "subject": _announcement_subject(course_id),
+            "content": text,
+            "reference_doctype": "Course",
+            "reference_name": course_id,
+            "read_by_recipient": 0,
+        }
+    )
+    announcement.insert(ignore_permissions=True)
+    frappe.db.commit()
+    return _serialize_doctor_announcement(announcement.as_dict())
+
+
+@frappe.whitelist()
+@api_endpoint
+def delete_doctor_announcement(announcement_id: str):
+    """Delete a doctor-authored course announcement."""
+    ctx = _ensure_doctor_context(require_mapping=True)
+    if not frappe.db.exists("Communication", announcement_id):
+        raise ApiError("NOT_FOUND", "Announcement not found", status_code=404)
+
+    row = frappe.db.get_value(
+        "Communication",
+        announcement_id,
+        ["name", "subject", "sender", "reference_doctype", "reference_name"],
+        as_dict=True,
+    ) or {}
+    if not _is_doctor_announcement_row(row):
+        raise ApiError("NOT_FOUND", "Announcement not found", status_code=404)
+
+    course_id = _clean(row.get("reference_name"))
+    if course_id and not ctx["all_scope"] and not _doctor_schedule_rows(course_id=course_id):
+        raise ApiError("FORBIDDEN", "Course is not assigned to current doctor", status_code=403)
+
+    current_ids = _current_message_identities()
+    if not ctx["all_scope"] and _normalize(row.get("sender")) not in current_ids:
+        raise ApiError("FORBIDDEN", "Not allowed to delete this announcement", status_code=403)
+
+    frappe.delete_doc("Communication", announcement_id, ignore_permissions=True, force=1)
+    frappe.db.commit()
+    return {"deleted": True}
 
 
 @frappe.whitelist()
