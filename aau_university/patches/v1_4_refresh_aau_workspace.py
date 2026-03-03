@@ -41,7 +41,8 @@ def _activate_workspace():
     if frappe.db.exists("Workspace", "AAU"):
         frappe.db.set_value("Workspace", "AAU", "public", 1, update_modified=False)
         frappe.db.set_value("Workspace", "AAU", "is_hidden", 0, update_modified=False)
-        frappe.db.set_value("Workspace", "AAU", "title", "مركز إدارة موقع الجامعة", update_modified=False)
+        frappe.db.set_value("Workspace", "AAU", "title", "AAU", update_modified=False)
+        frappe.db.set_value("Workspace", "AAU", "label", "مركز إدارة موقع الجامعة", update_modified=False)
 
     # Keep legacy workspace out of sidebar to avoid confusion.
     if frappe.db.exists("Workspace", "AAU Content Hub"):
