@@ -172,6 +172,7 @@ def ensure_routes():
         Rule("/aau/profile", methods=["GET"], endpoint=public.get_site_profile),
         Rule("/aau/profile", methods=["PUT"], endpoint=public.update_site_profile),
         Rule("/access/me", methods=["GET"], endpoint=access.get_current_access),
+        Rule("/admin/dashboard", methods=["GET"], endpoint=access.get_admin_dashboard),
         # Users & roles
         Rule("/users", methods=["GET"], endpoint=access.list_users),
         Rule("/users", methods=["POST"], endpoint=access.create_user),

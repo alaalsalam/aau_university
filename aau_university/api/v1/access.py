@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
 from __future__ import annotations
 
-import frappe
+from datetime import datetime
 
-from .registry import ADMIN_ROLES, ENTITY_ROLE_PERMISSIONS, SUPER_ADMIN_ROLES
+import frappe
+from frappe.utils import get_datetime, today
+
+from .registry import ADMIN_ROLES, ENTITY_CONFIG, ENTITY_ROLE_PERMISSIONS, SUPER_ADMIN_ROLES
 from .utils import ApiError, api_endpoint, require_roles
 
 
@@ -246,6 +249,225 @@ def list_permissions(category: str | None = None):
         }
         for role in roles
     ]
+
+
+def _resolve_entity_doctype(entity_key: str) -> str | None:
+    config = ENTITY_CONFIG.get(entity_key) or {}
+    candidates = []
+    primary = config.get("doctype")
+    if primary:
+        candidates.append(primary)
+    for item in config.get("doctype_candidates") or []:
+        if item and item not in candidates:
+            candidates.append(item)
+    for doctype in candidates:
+        if frappe.db.exists("DocType", doctype):
+            return doctype
+    return None
+
+
+def _valid_columns(doctype: str | None) -> set[str]:
+    if not doctype:
+        return set()
+    try:
+        meta = frappe.get_meta(doctype)
+    except Exception:
+        return set()
+    columns = set(meta.get_valid_columns() or [])
+    columns.update({"name", "creation", "modified", "owner"})
+    return columns
+
+
+def _safe_count(doctype: str | None, filters: dict | None = None) -> int:
+    if not doctype:
+        return 0
+    try:
+        return int(frappe.db.count(doctype, filters=filters or {}))
+    except Exception:
+        frappe.logger("aau_university").warning(f"[AAU API] dashboard count failed for {doctype}")
+        return 0
+
+
+def _pick_value(record: dict, fields: list[str], fallback: str = "") -> str:
+    for fieldname in fields:
+        value = str(record.get(fieldname) or "").strip()
+        if value:
+            return value
+    return fallback
+
+
+def _timestamp_to_iso(value) -> str:
+    if not value:
+        return ""
+    if isinstance(value, datetime):
+        return value.isoformat()
+    text = str(value).strip()
+    if not text:
+        return ""
+    try:
+        return get_datetime(text).isoformat()
+    except Exception:
+        return text
+
+
+def _pending_count(doctype: str | None, fallback_to_unpublished: bool = True) -> int:
+    valid_columns = _valid_columns(doctype)
+    if "status" in valid_columns:
+        status_values = [
+            "pending",
+            "Pending",
+            "draft",
+            "Draft",
+            "under review",
+            "Under Review",
+            "under_review",
+            "pending_review",
+            "Pending Review",
+            "new",
+            "New",
+            "قيد المراجعة",
+            "مسودة",
+        ]
+        count = _safe_count(doctype, {"status": ["in", status_values]})
+        if count > 0:
+            return count
+    if fallback_to_unpublished and "is_published" in valid_columns:
+        return _safe_count(doctype, {"is_published": 0})
+    return 0
+
+
+def _recent_activity_for_doctype(
+    doctype: str | None,
+    activity_type: str,
+    link: str,
+    title_ar_fields: list[str],
+    title_en_fields: list[str],
+    limit: int = 4,
+) -> list[dict]:
+    valid_columns = _valid_columns(doctype)
+    if not valid_columns:
+        return []
+
+    timestamp_field = "modified" if "modified" in valid_columns else ("creation" if "creation" in valid_columns else None)
+    if not timestamp_field:
+        return []
+
+    wanted_fields = ["name", timestamp_field]
+    for fieldname in title_ar_fields + title_en_fields:
+        if fieldname in valid_columns and fieldname not in wanted_fields:
+            wanted_fields.append(fieldname)
+
+    try:
+        rows = frappe.get_all(
+            doctype,
+            fields=wanted_fields,
+            order_by=f"{timestamp_field} desc",
+            limit_page_length=limit,
+            ignore_permissions=True,
+        )
+    except Exception:
+        frappe.logger("aau_university").warning(f"[AAU API] dashboard recent activity fetch failed for {doctype}")
+        return []
+
+    result: list[dict] = []
+    for row in rows:
+        fallback = str(row.get("name") or "").strip()
+        title_ar = _pick_value(row, title_ar_fields, fallback=fallback)
+        title_en = _pick_value(row, title_en_fields, fallback=title_ar or fallback)
+        timestamp_iso = _timestamp_to_iso(row.get(timestamp_field))
+        if not timestamp_iso:
+            continue
+        result.append(
+            {
+                "id": fallback,
+                "type": activity_type,
+                "titleAr": title_ar,
+                "titleEn": title_en,
+                "timestamp": timestamp_iso,
+                "link": link,
+            }
+        )
+    return result
+
+
+@frappe.whitelist()
+@api_endpoint
+def get_admin_dashboard():
+    """Return admin dashboard snapshot for control-panel overview."""
+    require_roles(ADMIN_ROLES)
+
+    news_doctype = _resolve_entity_doctype("news")
+    projects_doctype = _resolve_entity_doctype("projects")
+    contact_doctype = _resolve_entity_doctype("contact_messages")
+    join_doctype = _resolve_entity_doctype("join_requests")
+    students_doctype = "Student" if frappe.db.exists("DocType", "Student") else None
+
+    today_start = f"{today()} 00:00:00"
+
+    summary = {
+        "usersTotal": _safe_count("User", {"user_type": "System User"}),
+        "newsTotal": _safe_count(news_doctype),
+        "projectsTotal": _safe_count(projects_doctype),
+        "studentsTotal": _safe_count(students_doctype),
+    }
+
+    quick_stats = {
+        "dailyRegistrations": _safe_count(students_doctype, {"creation": [">=", today_start]}),
+        "pendingNews": _pending_count(news_doctype, fallback_to_unpublished=True),
+        "projectsUnderReview": _pending_count(projects_doctype, fallback_to_unpublished=True),
+        "newQuestions": _pending_count(contact_doctype, fallback_to_unpublished=False)
+        + _pending_count(join_doctype, fallback_to_unpublished=False),
+    }
+
+    recent_activity = []
+    recent_activity.extend(
+        _recent_activity_for_doctype(
+            news_doctype,
+            "news",
+            "/admin/news",
+            title_ar_fields=["title_ar", "title"],
+            title_en_fields=["title_en", "title"],
+            limit=3,
+        )
+    )
+    recent_activity.extend(
+        _recent_activity_for_doctype(
+            projects_doctype,
+            "project",
+            "/admin/projects",
+            title_ar_fields=["title_ar", "id", "name"],
+            title_en_fields=["title_en", "id", "name"],
+            limit=3,
+        )
+    )
+    recent_activity.extend(
+        _recent_activity_for_doctype(
+            contact_doctype,
+            "contact",
+            "/admin/settings",
+            title_ar_fields=["subject", "sender_name", "email", "id"],
+            title_en_fields=["subject", "sender_name", "email", "id"],
+            limit=3,
+        )
+    )
+    recent_activity.extend(
+        _recent_activity_for_doctype(
+            join_doctype,
+            "join_request",
+            "/admin/settings",
+            title_ar_fields=["full_name", "email", "id"],
+            title_en_fields=["full_name", "email", "id"],
+            limit=3,
+        )
+    )
+    recent_activity.sort(key=lambda row: row.get("timestamp") or "", reverse=True)
+    recent_activity = recent_activity[:8]
+
+    return {
+        "summary": summary,
+        "quickStats": quick_stats,
+        "recentActivity": recent_activity,
+    }
 
 
 def _normalize(value) -> str:
