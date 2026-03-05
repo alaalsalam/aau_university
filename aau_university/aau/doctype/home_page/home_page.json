@@ -4,19 +4,9 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "section_hero",
-  "hero_title",
-  "hero_subtitle",
-  "hero_image",
-  "hero_cta_text",
-  "hero_cta_link",
-  "section_about",
-  "about_title",
-  "about_description",
-  "section_statistics",
-  "students_count",
-  "programs_count",
-  "graduates_count",
+  "section_publishing",
+  "is_published",
+  "display_order",
   "section_hero_bilingual",
   "hero_badge_ar",
   "hero_badge_en",
@@ -26,8 +16,10 @@
   "hero_title_secondary_en",
   "hero_description_ar",
   "hero_description_en",
+  "hero_image",
   "hero_apply_text_ar",
   "hero_apply_text_en",
+  "hero_cta_link",
   "hero_explore_text_ar",
   "hero_explore_text_en",
   "hero_explore_link",
@@ -39,7 +31,10 @@
   "about_description_ar",
   "about_description_en",
   "about_image",
-  "section_stats_labels",
+  "section_statistics",
+  "students_count",
+  "programs_count",
+  "graduates_count",
   "stats_students_label_ar",
   "stats_students_label_en",
   "stats_faculty_label_ar",
@@ -52,135 +47,26 @@
   "page_title_ar",
   "page_title_en",
   "footer_text_ar",
-  "footer_text_en",
-  "home_sections_json",
-  "is_published",
-  "display_order",
-  "section_footer",
-  "footer_text",
-  "page_title",
-  "hero_description"
+  "footer_text_en"
  ],
  "fields": [
   {
-   "fieldname": "section_hero",
+   "fieldname": "section_publishing",
    "fieldtype": "Section Break",
-   "label": "قسم الواجهة الرئيسية"
+   "label": "النشر والترتيب"
   },
   {
-   "description": "العنوان الأساسي الظاهر في أعلى الصفحة الرئيسية",
-   "fieldname": "hero_title",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "العنوان الرئيسي",
-   "reqd": 1
-  },
-  {
-   "description": "نص توضيحي مختصر أسفل العنوان الرئيسي",
-   "fieldname": "hero_subtitle",
-   "fieldtype": "Small Text",
-   "label": "العنوان الفرعي"
-  },
-  {
-   "description": "صورة الهيدر",
-   "fieldname": "hero_image",
-   "fieldtype": "Attach Image",
-   "label": "Hero Image"
-  },
-  {
-   "description": "النص الظاهر على زر الدعوة لاتخاذ إجراء مثل (سجل الآن)",
-   "fieldname": "hero_cta_text",
-   "fieldtype": "Data",
-   "label": "نص زر الإجراء"
-  },
-  {
-   "description": "الرابط الذي يتم الانتقال إليه عند الضغط على زر الإجراء",
-   "fieldname": "hero_cta_link",
-   "fieldtype": "Data",
-   "label": "رابط زر الإجراء"
-  },
-  {
-   "fieldname": "section_about",
-   "fieldtype": "Section Break",
-   "label": "قسم من نحن"
-  },
-  {
-   "description": "عنوان قسم من نحن في الصفحة الرئيسية",
-   "fieldname": "about_title",
-   "fieldtype": "Data",
-   "label": "عنوان من نحن"
-  },
-  {
-   "description": "نص تعريفي عن الجامعة أو الجهة التعليمية",
-   "fieldname": "about_description",
-   "fieldtype": "Long Text",
-   "label": "وصف من نحن"
-  },
-  {
-   "fieldname": "section_statistics",
-   "fieldtype": "Section Break",
-   "label": "قسم الإحصائيات"
-  },
-  {
-   "description": "إجمالي عدد الطلاب المسجلين في الجامعة",
-   "fieldname": "students_count",
-   "fieldtype": "Int",
-   "label": "عدد الطلاب"
-  },
-  {
-   "description": "إجمالي عدد البرامج الأكاديمية المتاحة",
-   "fieldname": "programs_count",
-   "fieldtype": "Int",
-   "label": "عدد البرامج الأكاديمية"
-  },
-  {
-   "description": "إجمالي عدد الخريجين",
-   "fieldname": "graduates_count",
-   "fieldtype": "Int",
-   "label": "عدد الخريجين"
-  },
-  {
-   "fieldname": "section_footer",
-   "fieldtype": "Section Break",
-   "label": "قسم التذييل"
-  },
-  {
-   "description": "النص الظاهر في أسفل الموقع مثل حقوق النشر",
-   "fieldname": "footer_text",
-   "fieldtype": "Small Text",
-   "label": "نص التذييل"
-  },
-  {
-   "description": "Structured JSON for dynamic home hero/stats/about/partners/testimonials payload.",
-   "fieldname": "home_sections_json",
-   "fieldtype": "Long Text",
-   "label": "Home Sections JSON"
-  },
-  {
-   "default": "0",
-   "description": "حالة النشر",
    "fieldname": "is_published",
    "fieldtype": "Check",
-   "label": "Is Published"
+   "label": "Is Published",
+   "default": "0",
+   "description": "حالة نشر الصفحة الرئيسية"
   },
   {
-   "description": "ترتيب العرض",
    "fieldname": "display_order",
    "fieldtype": "Int",
-   "label": "Display Order"
-  },
-  {
-   "description": "عنوان الصفحة الرئيسي",
-   "fieldname": "page_title",
-   "fieldtype": "Data",
-   "label": "Page Title",
-   "reqd": 1
-  },
-  {
-   "description": "نص ترحيبي مختصر",
-   "fieldname": "hero_description",
-   "fieldtype": "Small Text",
-   "label": "Hero Description"
+   "label": "Display Order",
+   "description": "ترتيب العرض"
   },
   {
    "fieldname": "section_hero_bilingual",
@@ -228,6 +114,11 @@
    "label": "Hero Description (EN)"
   },
   {
+   "fieldname": "hero_image",
+   "fieldtype": "Attach Image",
+   "label": "Hero Image"
+  },
+  {
    "fieldname": "hero_apply_text_ar",
    "fieldtype": "Data",
    "label": "Hero Apply Text (AR)"
@@ -236,6 +127,11 @@
    "fieldname": "hero_apply_text_en",
    "fieldtype": "Data",
    "label": "Hero Apply Text (EN)"
+  },
+  {
+   "fieldname": "hero_cta_link",
+   "fieldtype": "Data",
+   "label": "Hero Apply Link"
   },
   {
    "fieldname": "hero_explore_text_ar",
@@ -293,9 +189,24 @@
    "label": "About Image"
   },
   {
-   "fieldname": "section_stats_labels",
+   "fieldname": "section_statistics",
    "fieldtype": "Section Break",
-   "label": "Statistics Labels (AR/EN)"
+   "label": "Statistics"
+  },
+  {
+   "fieldname": "students_count",
+   "fieldtype": "Int",
+   "label": "Students Count"
+  },
+  {
+   "fieldname": "programs_count",
+   "fieldtype": "Int",
+   "label": "Programs Count"
+  },
+  {
+   "fieldname": "graduates_count",
+   "fieldtype": "Int",
+   "label": "Graduates Count"
   },
   {
    "fieldname": "stats_students_label_ar",
@@ -366,7 +277,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-03-02 00:40:57.489334",
+ "modified": "2026-03-05 01:30:00.000000",
  "modified_by": "Administrator",
  "module": "AAU",
  "name": "Home Page",

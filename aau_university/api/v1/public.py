@@ -611,12 +611,6 @@ def _get_home_sections() -> dict:
 
     meta = frappe.get_meta("Home Page")
     fields = [
-        "hero_title",
-        "hero_subtitle",
-        "hero_description",
-        "hero_image",
-        "hero_cta_text",
-        "hero_cta_link",
         "hero_badge_ar",
         "hero_badge_en",
         "hero_title_primary_ar",
@@ -625,15 +619,15 @@ def _get_home_sections() -> dict:
         "hero_title_secondary_en",
         "hero_description_ar",
         "hero_description_en",
+        "hero_image",
         "hero_apply_text_ar",
         "hero_apply_text_en",
+        "hero_cta_link",
         "hero_explore_text_ar",
         "hero_explore_text_en",
         "hero_explore_link",
         "hero_discover_text_ar",
         "hero_discover_text_en",
-        "about_title",
-        "about_description",
         "about_title_ar",
         "about_title_en",
         "about_description_ar",
@@ -651,8 +645,6 @@ def _get_home_sections() -> dict:
         "stats_colleges_label_ar",
         "stats_colleges_label_en",
     ]
-    if _json_fallback_enabled() and meta.get_field("home_sections_json"):
-        fields.append("home_sections_json")
     rows = frappe.get_all(
         "Home Page",
         fields=fields,
@@ -665,9 +657,6 @@ def _get_home_sections() -> dict:
         return {"hero": {}, "stats": [], "about": {}, "partners": [], "testimonials": []}
 
     row = rows[0]
-    extra = {}
-    if _json_fallback_enabled():
-        extra = _parse_home_sections_json(row.get("home_sections_json"))
 
     def _text(*candidates, default=""):
         for candidate in candidates:
@@ -677,83 +666,66 @@ def _get_home_sections() -> dict:
         return _as_text(default)
 
     hero = {
-        "badgeAr": _text(row.get("hero_badge_ar"), extra.get("hero", {}).get("badgeAr"), default="مرحباً بكم في جامعة الجيل الجديد"),
-        "badgeEn": _text(row.get("hero_badge_en"), extra.get("hero", {}).get("badgeEn"), default="Welcome to AJ JEEL ALJADEED UNIVERSITY"),
-        "titlePrimaryAr": _text(row.get("hero_title_primary_ar"), extra.get("hero", {}).get("titlePrimaryAr"), row.get("hero_title"), default="جامعة الجيل الجديد"),
-        "titlePrimaryEn": _text(row.get("hero_title_primary_en"), extra.get("hero", {}).get("titlePrimaryEn"), row.get("hero_title"), default="AJ JEEL ALJADEED"),
-        "titleSecondaryAr": _text(row.get("hero_title_secondary_ar"), extra.get("hero", {}).get("titleSecondaryAr"), default="الجامعة"),
-        "titleSecondaryEn": _text(row.get("hero_title_secondary_en"), extra.get("hero", {}).get("titleSecondaryEn"), default="UNIVERSITY"),
-        "descriptionAr": _text(row.get("hero_description_ar"), extra.get("hero", {}).get("descriptionAr"), row.get("hero_description"), row.get("hero_subtitle")),
-        "descriptionEn": _text(row.get("hero_description_en"), extra.get("hero", {}).get("descriptionEn"), row.get("hero_description"), row.get("hero_subtitle")),
-        "applyTextAr": _text(row.get("hero_apply_text_ar"), extra.get("hero", {}).get("applyTextAr"), row.get("hero_cta_text"), default="التقديم الآن"),
-        "applyTextEn": _text(row.get("hero_apply_text_en"), extra.get("hero", {}).get("applyTextEn"), row.get("hero_cta_text"), default="Apply Now"),
-        "applyLink": _text(extra.get("hero", {}).get("applyLink"), row.get("hero_cta_link"), default="/admission"),
-        "exploreTextAr": _text(row.get("hero_explore_text_ar"), extra.get("hero", {}).get("exploreTextAr"), default="استكشف الكليات"),
-        "exploreTextEn": _text(row.get("hero_explore_text_en"), extra.get("hero", {}).get("exploreTextEn"), default="Explore Colleges"),
-        "exploreLink": _text(row.get("hero_explore_link"), extra.get("hero", {}).get("exploreLink"), default="/colleges"),
-        "discoverTextAr": _text(row.get("hero_discover_text_ar"), extra.get("hero", {}).get("discoverTextAr"), default="اكتشف المزيد"),
-        "discoverTextEn": _text(row.get("hero_discover_text_en"), extra.get("hero", {}).get("discoverTextEn"), default="Discover More"),
-        "image": _text(row.get("hero_image"), extra.get("hero", {}).get("image")),
+        "badgeAr": _text(row.get("hero_badge_ar"), default="مرحباً بكم في جامعة الجيل الجديد"),
+        "badgeEn": _text(row.get("hero_badge_en"), default="Welcome to AJ JEEL ALJADEED UNIVERSITY"),
+        "titlePrimaryAr": _text(row.get("hero_title_primary_ar"), default="جامعة الجيل الجديد"),
+        "titlePrimaryEn": _text(row.get("hero_title_primary_en"), default="AJ JEEL ALJADEED"),
+        "titleSecondaryAr": _text(row.get("hero_title_secondary_ar"), default="الجامعة"),
+        "titleSecondaryEn": _text(row.get("hero_title_secondary_en"), default="UNIVERSITY"),
+        "descriptionAr": _text(row.get("hero_description_ar")),
+        "descriptionEn": _text(row.get("hero_description_en")),
+        "applyTextAr": _text(row.get("hero_apply_text_ar"), default="التقديم الآن"),
+        "applyTextEn": _text(row.get("hero_apply_text_en"), default="Apply Now"),
+        "applyLink": _text(row.get("hero_cta_link"), default="/admission"),
+        "exploreTextAr": _text(row.get("hero_explore_text_ar"), default="استكشف الكليات"),
+        "exploreTextEn": _text(row.get("hero_explore_text_en"), default="Explore Colleges"),
+        "exploreLink": _text(row.get("hero_explore_link"), default="/colleges"),
+        "discoverTextAr": _text(row.get("hero_discover_text_ar"), default="اكتشف المزيد"),
+        "discoverTextEn": _text(row.get("hero_discover_text_en"), default="Discover More"),
+        "image": _text(row.get("hero_image")),
     }
 
     colleges_count = frappe.db.count("Colleges") if frappe.db.exists("DocType", "Colleges") else 0
-    stats = extra.get("stats", []) if isinstance(extra.get("stats"), list) else []
-    if not stats:
-        stats = [
-            {
-                "key": "students",
-                "number": str(row.get("students_count") or 0),
-                "labelAr": _text(row.get("stats_students_label_ar"), default="طالب وطالبة"),
-                "labelEn": _text(row.get("stats_students_label_en"), default="Students"),
-                "icon": "GraduationCap",
-            },
-            {
-                "key": "faculty",
-                "number": "500+",
-                "labelAr": _text(row.get("stats_faculty_label_ar"), default="عضو هيئة تدريس"),
-                "labelEn": _text(row.get("stats_faculty_label_en"), default="Faculty Members"),
-                "icon": "Users",
-            },
-            {
-                "key": "programs",
-                "number": str(row.get("programs_count") or 0),
-                "labelAr": _text(row.get("stats_programs_label_ar"), default="برنامج أكاديمي"),
-                "labelEn": _text(row.get("stats_programs_label_en"), default="Academic Programs"),
-                "icon": "BookOpen",
-            },
-            {
-                "key": "colleges",
-                "number": str(colleges_count or 0),
-                "labelAr": _text(row.get("stats_colleges_label_ar"), default="كليات متخصصة"),
-                "labelEn": _text(row.get("stats_colleges_label_en"), default="Specialized Colleges"),
-                "icon": "Award",
-            },
-        ]
+    stats = [
+        {
+            "key": "students",
+            "number": str(row.get("students_count") or 0),
+            "labelAr": _text(row.get("stats_students_label_ar"), default="طالب وطالبة"),
+            "labelEn": _text(row.get("stats_students_label_en"), default="Students"),
+            "icon": "GraduationCap",
+        },
+        {
+            "key": "faculty",
+            "number": "500+",
+            "labelAr": _text(row.get("stats_faculty_label_ar"), default="عضو هيئة تدريس"),
+            "labelEn": _text(row.get("stats_faculty_label_en"), default="Faculty Members"),
+            "icon": "Users",
+        },
+        {
+            "key": "programs",
+            "number": str(row.get("programs_count") or 0),
+            "labelAr": _text(row.get("stats_programs_label_ar"), default="برنامج أكاديمي"),
+            "labelEn": _text(row.get("stats_programs_label_en"), default="Academic Programs"),
+            "icon": "BookOpen",
+        },
+        {
+            "key": "colleges",
+            "number": str(colleges_count or 0),
+            "labelAr": _text(row.get("stats_colleges_label_ar"), default="كليات متخصصة"),
+            "labelEn": _text(row.get("stats_colleges_label_en"), default="Specialized Colleges"),
+            "icon": "Award",
+        },
+    ]
 
-    about = extra.get("about", {}) if isinstance(extra.get("about"), dict) else {}
-    about.setdefault("titleAr", _text(row.get("about_title_ar"), row.get("about_title"), default="عن الجامعة"))
-    about.setdefault("titleEn", _text(row.get("about_title_en"), row.get("about_title"), default="About the University"))
-    about.setdefault("descriptionAr", _text(row.get("about_description_ar"), row.get("about_description")))
-    about.setdefault("descriptionEn", _text(row.get("about_description_en"), row.get("about_description")))
-    # WHY+WHAT: include about image from Home Page JSON so the frontend can fully de-hardcode home imagery.
-    about.setdefault("image", _text(row.get("about_image"), extra.get("about", {}).get("image")))
+    about = {
+        "titleAr": _text(row.get("about_title_ar"), default="عن الجامعة"),
+        "titleEn": _text(row.get("about_title_en"), default="About the University"),
+        "descriptionAr": _text(row.get("about_description_ar")),
+        "descriptionEn": _text(row.get("about_description_en")),
+        "image": _text(row.get("about_image")),
+    }
 
-    partners = extra.get("partners", []) if isinstance(extra.get("partners"), list) else []
-    testimonials = extra.get("testimonials", []) if isinstance(extra.get("testimonials"), list) else []
-
-    return {"hero": hero, "stats": stats, "about": about, "partners": partners, "testimonials": testimonials}
-
-
-def _parse_home_sections_json(raw: str | None) -> dict:
-    if not raw:
-        return {}
-    try:
-        parsed = json.loads(raw)
-    except Exception:
-        frappe.logger("aau_university").warning("[AAU API] Invalid home_sections_json payload on Home Page")
-        return {}
-    return parsed if isinstance(parsed, dict) else {}
-
+    return {"hero": hero, "stats": stats, "about": about, "partners": [], "testimonials": []}
 
 def _list_home_section(entity_key: str, limit: int, filters: dict | None = None) -> list[dict]:
     candidates = {
