@@ -617,11 +617,39 @@ def _get_home_sections() -> dict:
         "hero_image",
         "hero_cta_text",
         "hero_cta_link",
+        "hero_badge_ar",
+        "hero_badge_en",
+        "hero_title_primary_ar",
+        "hero_title_primary_en",
+        "hero_title_secondary_ar",
+        "hero_title_secondary_en",
+        "hero_description_ar",
+        "hero_description_en",
+        "hero_apply_text_ar",
+        "hero_apply_text_en",
+        "hero_explore_text_ar",
+        "hero_explore_text_en",
+        "hero_explore_link",
+        "hero_discover_text_ar",
+        "hero_discover_text_en",
         "about_title",
         "about_description",
+        "about_title_ar",
+        "about_title_en",
+        "about_description_ar",
+        "about_description_en",
+        "about_image",
         "students_count",
         "programs_count",
         "graduates_count",
+        "stats_students_label_ar",
+        "stats_students_label_en",
+        "stats_faculty_label_ar",
+        "stats_faculty_label_en",
+        "stats_programs_label_ar",
+        "stats_programs_label_en",
+        "stats_colleges_label_ar",
+        "stats_colleges_label_en",
     ]
     if _json_fallback_enabled() and meta.get_field("home_sections_json"):
         fields.append("home_sections_json")
@@ -640,43 +668,75 @@ def _get_home_sections() -> dict:
     extra = {}
     if _json_fallback_enabled():
         extra = _parse_home_sections_json(row.get("home_sections_json"))
+
+    def _text(*candidates, default=""):
+        for candidate in candidates:
+            value = _as_text(candidate)
+            if value:
+                return value
+        return _as_text(default)
+
     hero = {
-        "badgeAr": _as_text(extra.get("hero", {}).get("badgeAr"), "مرحباً بكم في جامعة الجيل الجديد"),
-        "badgeEn": _as_text(extra.get("hero", {}).get("badgeEn"), "Welcome to AJ JEEL ALJADEED UNIVERSITY"),
-        "titlePrimaryAr": _as_text(extra.get("hero", {}).get("titlePrimaryAr") or row.get("hero_title"), "جامعة الجيل الجديد"),
-        "titlePrimaryEn": _as_text(extra.get("hero", {}).get("titlePrimaryEn") or row.get("hero_title"), "AJ JEEL ALJADEED"),
-        "titleSecondaryAr": _as_text(extra.get("hero", {}).get("titleSecondaryAr"), "الجامعة"),
-        "titleSecondaryEn": _as_text(extra.get("hero", {}).get("titleSecondaryEn"), "UNIVERSITY"),
-        "descriptionAr": _as_text(extra.get("hero", {}).get("descriptionAr") or row.get("hero_description") or row.get("hero_subtitle")),
-        "descriptionEn": _as_text(extra.get("hero", {}).get("descriptionEn") or row.get("hero_description") or row.get("hero_subtitle")),
-        "applyTextAr": _as_text(extra.get("hero", {}).get("applyTextAr") or row.get("hero_cta_text"), "التقديم الآن"),
-        "applyTextEn": _as_text(extra.get("hero", {}).get("applyTextEn") or row.get("hero_cta_text"), "Apply Now"),
-        "applyLink": _as_text(extra.get("hero", {}).get("applyLink") or row.get("hero_cta_link"), "/admission"),
-        "exploreTextAr": _as_text(extra.get("hero", {}).get("exploreTextAr"), "استكشف الكليات"),
-        "exploreTextEn": _as_text(extra.get("hero", {}).get("exploreTextEn"), "Explore Colleges"),
-        "exploreLink": _as_text(extra.get("hero", {}).get("exploreLink"), "/colleges"),
-        "discoverTextAr": _as_text(extra.get("hero", {}).get("discoverTextAr"), "اكتشف المزيد"),
-        "discoverTextEn": _as_text(extra.get("hero", {}).get("discoverTextEn"), "Discover More"),
-        "image": _as_text(extra.get("hero", {}).get("image") or row.get("hero_image")),
+        "badgeAr": _text(row.get("hero_badge_ar"), extra.get("hero", {}).get("badgeAr"), default="مرحباً بكم في جامعة الجيل الجديد"),
+        "badgeEn": _text(row.get("hero_badge_en"), extra.get("hero", {}).get("badgeEn"), default="Welcome to AJ JEEL ALJADEED UNIVERSITY"),
+        "titlePrimaryAr": _text(row.get("hero_title_primary_ar"), extra.get("hero", {}).get("titlePrimaryAr"), row.get("hero_title"), default="جامعة الجيل الجديد"),
+        "titlePrimaryEn": _text(row.get("hero_title_primary_en"), extra.get("hero", {}).get("titlePrimaryEn"), row.get("hero_title"), default="AJ JEEL ALJADEED"),
+        "titleSecondaryAr": _text(row.get("hero_title_secondary_ar"), extra.get("hero", {}).get("titleSecondaryAr"), default="الجامعة"),
+        "titleSecondaryEn": _text(row.get("hero_title_secondary_en"), extra.get("hero", {}).get("titleSecondaryEn"), default="UNIVERSITY"),
+        "descriptionAr": _text(row.get("hero_description_ar"), extra.get("hero", {}).get("descriptionAr"), row.get("hero_description"), row.get("hero_subtitle")),
+        "descriptionEn": _text(row.get("hero_description_en"), extra.get("hero", {}).get("descriptionEn"), row.get("hero_description"), row.get("hero_subtitle")),
+        "applyTextAr": _text(row.get("hero_apply_text_ar"), extra.get("hero", {}).get("applyTextAr"), row.get("hero_cta_text"), default="التقديم الآن"),
+        "applyTextEn": _text(row.get("hero_apply_text_en"), extra.get("hero", {}).get("applyTextEn"), row.get("hero_cta_text"), default="Apply Now"),
+        "applyLink": _text(extra.get("hero", {}).get("applyLink"), row.get("hero_cta_link"), default="/admission"),
+        "exploreTextAr": _text(row.get("hero_explore_text_ar"), extra.get("hero", {}).get("exploreTextAr"), default="استكشف الكليات"),
+        "exploreTextEn": _text(row.get("hero_explore_text_en"), extra.get("hero", {}).get("exploreTextEn"), default="Explore Colleges"),
+        "exploreLink": _text(row.get("hero_explore_link"), extra.get("hero", {}).get("exploreLink"), default="/colleges"),
+        "discoverTextAr": _text(row.get("hero_discover_text_ar"), extra.get("hero", {}).get("discoverTextAr"), default="اكتشف المزيد"),
+        "discoverTextEn": _text(row.get("hero_discover_text_en"), extra.get("hero", {}).get("discoverTextEn"), default="Discover More"),
+        "image": _text(row.get("hero_image"), extra.get("hero", {}).get("image")),
     }
 
     colleges_count = frappe.db.count("Colleges") if frappe.db.exists("DocType", "Colleges") else 0
     stats = extra.get("stats", []) if isinstance(extra.get("stats"), list) else []
     if not stats:
         stats = [
-            {"key": "students", "number": str(row.get("students_count") or 0), "labelAr": "طالب وطالبة", "labelEn": "Students", "icon": "GraduationCap"},
-            {"key": "faculty", "number": "500+", "labelAr": "عضو هيئة تدريس", "labelEn": "Faculty Members", "icon": "Users"},
-            {"key": "programs", "number": str(row.get("programs_count") or 0), "labelAr": "برنامج أكاديمي", "labelEn": "Academic Programs", "icon": "BookOpen"},
-            {"key": "colleges", "number": str(colleges_count or 0), "labelAr": "كليات متخصصة", "labelEn": "Specialized Colleges", "icon": "Award"},
+            {
+                "key": "students",
+                "number": str(row.get("students_count") or 0),
+                "labelAr": _text(row.get("stats_students_label_ar"), default="طالب وطالبة"),
+                "labelEn": _text(row.get("stats_students_label_en"), default="Students"),
+                "icon": "GraduationCap",
+            },
+            {
+                "key": "faculty",
+                "number": "500+",
+                "labelAr": _text(row.get("stats_faculty_label_ar"), default="عضو هيئة تدريس"),
+                "labelEn": _text(row.get("stats_faculty_label_en"), default="Faculty Members"),
+                "icon": "Users",
+            },
+            {
+                "key": "programs",
+                "number": str(row.get("programs_count") or 0),
+                "labelAr": _text(row.get("stats_programs_label_ar"), default="برنامج أكاديمي"),
+                "labelEn": _text(row.get("stats_programs_label_en"), default="Academic Programs"),
+                "icon": "BookOpen",
+            },
+            {
+                "key": "colleges",
+                "number": str(colleges_count or 0),
+                "labelAr": _text(row.get("stats_colleges_label_ar"), default="كليات متخصصة"),
+                "labelEn": _text(row.get("stats_colleges_label_en"), default="Specialized Colleges"),
+                "icon": "Award",
+            },
         ]
 
     about = extra.get("about", {}) if isinstance(extra.get("about"), dict) else {}
-    about.setdefault("titleAr", _as_text(row.get("about_title"), "عن الجامعة"))
-    about.setdefault("titleEn", _as_text(row.get("about_title"), "About the University"))
-    about.setdefault("descriptionAr", _as_text(row.get("about_description")))
-    about.setdefault("descriptionEn", _as_text(row.get("about_description")))
+    about.setdefault("titleAr", _text(row.get("about_title_ar"), row.get("about_title"), default="عن الجامعة"))
+    about.setdefault("titleEn", _text(row.get("about_title_en"), row.get("about_title"), default="About the University"))
+    about.setdefault("descriptionAr", _text(row.get("about_description_ar"), row.get("about_description")))
+    about.setdefault("descriptionEn", _text(row.get("about_description_en"), row.get("about_description")))
     # WHY+WHAT: include about image from Home Page JSON so the frontend can fully de-hardcode home imagery.
-    about.setdefault("image", _as_text(extra.get("about", {}).get("image")))
+    about.setdefault("image", _text(row.get("about_image"), extra.get("about", {}).get("image")))
 
     partners = extra.get("partners", []) if isinstance(extra.get("partners"), list) else []
     testimonials = extra.get("testimonials", []) if isinstance(extra.get("testimonials"), list) else []

@@ -17,6 +17,42 @@
   "students_count",
   "programs_count",
   "graduates_count",
+  "section_hero_bilingual",
+  "hero_badge_ar",
+  "hero_badge_en",
+  "hero_title_primary_ar",
+  "hero_title_primary_en",
+  "hero_title_secondary_ar",
+  "hero_title_secondary_en",
+  "hero_description_ar",
+  "hero_description_en",
+  "hero_apply_text_ar",
+  "hero_apply_text_en",
+  "hero_explore_text_ar",
+  "hero_explore_text_en",
+  "hero_explore_link",
+  "hero_discover_text_ar",
+  "hero_discover_text_en",
+  "section_about_bilingual",
+  "about_title_ar",
+  "about_title_en",
+  "about_description_ar",
+  "about_description_en",
+  "about_image",
+  "section_stats_labels",
+  "stats_students_label_ar",
+  "stats_students_label_en",
+  "stats_faculty_label_ar",
+  "stats_faculty_label_en",
+  "stats_programs_label_ar",
+  "stats_programs_label_en",
+  "stats_colleges_label_ar",
+  "stats_colleges_label_en",
+  "section_page_text_bilingual",
+  "page_title_ar",
+  "page_title_en",
+  "footer_text_ar",
+  "footer_text_en",
   "home_sections_json",
   "is_published",
   "display_order",
@@ -29,90 +65,90 @@
   {
    "fieldname": "section_hero",
    "fieldtype": "Section Break",
-   "label": "\u0642\u0633\u0645 \u0627\u0644\u0648\u0627\u062c\u0647\u0629 \u0627\u0644\u0631\u0626\u064a\u0633\u064a\u0629"
+   "label": "قسم الواجهة الرئيسية"
   },
   {
-   "description": "\u0627\u0644\u0639\u0646\u0648\u0627\u0646 \u0627\u0644\u0623\u0633\u0627\u0633\u064a \u0627\u0644\u0638\u0627\u0647\u0631 \u0641\u064a \u0623\u0639\u0644\u0649 \u0627\u0644\u0635\u0641\u062d\u0629 \u0627\u0644\u0631\u0626\u064a\u0633\u064a\u0629",
+   "description": "العنوان الأساسي الظاهر في أعلى الصفحة الرئيسية",
    "fieldname": "hero_title",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "\u0627\u0644\u0639\u0646\u0648\u0627\u0646 \u0627\u0644\u0631\u0626\u064a\u0633\u064a",
+   "label": "العنوان الرئيسي",
    "reqd": 1
   },
   {
-   "description": "\u0646\u0635 \u062a\u0648\u0636\u064a\u062d\u064a \u0645\u062e\u062a\u0635\u0631 \u0623\u0633\u0641\u0644 \u0627\u0644\u0639\u0646\u0648\u0627\u0646 \u0627\u0644\u0631\u0626\u064a\u0633\u064a",
+   "description": "نص توضيحي مختصر أسفل العنوان الرئيسي",
    "fieldname": "hero_subtitle",
    "fieldtype": "Small Text",
-   "label": "\u0627\u0644\u0639\u0646\u0648\u0627\u0646 \u0627\u0644\u0641\u0631\u0639\u064a"
+   "label": "العنوان الفرعي"
   },
   {
-   "description": "\u0635\u0648\u0631\u0629 \u0627\u0644\u0647\u064a\u062f\u0631",
+   "description": "صورة الهيدر",
    "fieldname": "hero_image",
    "fieldtype": "Attach Image",
    "label": "Hero Image"
   },
   {
-   "description": "\u0627\u0644\u0646\u0635 \u0627\u0644\u0638\u0627\u0647\u0631 \u0639\u0644\u0649 \u0632\u0631 \u0627\u0644\u062f\u0639\u0648\u0629 \u0644\u0627\u062a\u062e\u0627\u0630 \u0625\u062c\u0631\u0627\u0621 \u0645\u062b\u0644 (\u0633\u062c\u0644 \u0627\u0644\u0622\u0646)",
+   "description": "النص الظاهر على زر الدعوة لاتخاذ إجراء مثل (سجل الآن)",
    "fieldname": "hero_cta_text",
    "fieldtype": "Data",
-   "label": "\u0646\u0635 \u0632\u0631 \u0627\u0644\u0625\u062c\u0631\u0627\u0621"
+   "label": "نص زر الإجراء"
   },
   {
-   "description": "\u0627\u0644\u0631\u0627\u0628\u0637 \u0627\u0644\u0630\u064a \u064a\u062a\u0645 \u0627\u0644\u0627\u0646\u062a\u0642\u0627\u0644 \u0625\u0644\u064a\u0647 \u0639\u0646\u062f \u0627\u0644\u0636\u063a\u0637 \u0639\u0644\u0649 \u0632\u0631 \u0627\u0644\u0625\u062c\u0631\u0627\u0621",
+   "description": "الرابط الذي يتم الانتقال إليه عند الضغط على زر الإجراء",
    "fieldname": "hero_cta_link",
    "fieldtype": "Data",
-   "label": "\u0631\u0627\u0628\u0637 \u0632\u0631 \u0627\u0644\u0625\u062c\u0631\u0627\u0621"
+   "label": "رابط زر الإجراء"
   },
   {
    "fieldname": "section_about",
    "fieldtype": "Section Break",
-   "label": "\u0642\u0633\u0645 \u0645\u0646 \u0646\u062d\u0646"
+   "label": "قسم من نحن"
   },
   {
-   "description": "\u0639\u0646\u0648\u0627\u0646 \u0642\u0633\u0645 \u0645\u0646 \u0646\u062d\u0646 \u0641\u064a \u0627\u0644\u0635\u0641\u062d\u0629 \u0627\u0644\u0631\u0626\u064a\u0633\u064a\u0629",
+   "description": "عنوان قسم من نحن في الصفحة الرئيسية",
    "fieldname": "about_title",
    "fieldtype": "Data",
-   "label": "\u0639\u0646\u0648\u0627\u0646 \u0645\u0646 \u0646\u062d\u0646"
+   "label": "عنوان من نحن"
   },
   {
-   "description": "\u0646\u0635 \u062a\u0639\u0631\u064a\u0641\u064a \u0639\u0646 \u0627\u0644\u062c\u0627\u0645\u0639\u0629 \u0623\u0648 \u0627\u0644\u062c\u0647\u0629 \u0627\u0644\u062a\u0639\u0644\u064a\u0645\u064a\u0629",
+   "description": "نص تعريفي عن الجامعة أو الجهة التعليمية",
    "fieldname": "about_description",
    "fieldtype": "Long Text",
-   "label": "\u0648\u0635\u0641 \u0645\u0646 \u0646\u062d\u0646"
+   "label": "وصف من نحن"
   },
   {
    "fieldname": "section_statistics",
    "fieldtype": "Section Break",
-   "label": "\u0642\u0633\u0645 \u0627\u0644\u0625\u062d\u0635\u0627\u0626\u064a\u0627\u062a"
+   "label": "قسم الإحصائيات"
   },
   {
-   "description": "\u0625\u062c\u0645\u0627\u0644\u064a \u0639\u062f\u062f \u0627\u0644\u0637\u0644\u0627\u0628 \u0627\u0644\u0645\u0633\u062c\u0644\u064a\u0646 \u0641\u064a \u0627\u0644\u062c\u0627\u0645\u0639\u0629",
+   "description": "إجمالي عدد الطلاب المسجلين في الجامعة",
    "fieldname": "students_count",
    "fieldtype": "Int",
-   "label": "\u0639\u062f\u062f \u0627\u0644\u0637\u0644\u0627\u0628"
+   "label": "عدد الطلاب"
   },
   {
-   "description": "\u0625\u062c\u0645\u0627\u0644\u064a \u0639\u062f\u062f \u0627\u0644\u0628\u0631\u0627\u0645\u062c \u0627\u0644\u0623\u0643\u0627\u062f\u064a\u0645\u064a\u0629 \u0627\u0644\u0645\u062a\u0627\u062d\u0629",
+   "description": "إجمالي عدد البرامج الأكاديمية المتاحة",
    "fieldname": "programs_count",
    "fieldtype": "Int",
-   "label": "\u0639\u062f\u062f \u0627\u0644\u0628\u0631\u0627\u0645\u062c \u0627\u0644\u0623\u0643\u0627\u062f\u064a\u0645\u064a\u0629"
+   "label": "عدد البرامج الأكاديمية"
   },
   {
-   "description": "\u0625\u062c\u0645\u0627\u0644\u064a \u0639\u062f\u062f \u0627\u0644\u062e\u0631\u064a\u062c\u064a\u0646",
+   "description": "إجمالي عدد الخريجين",
    "fieldname": "graduates_count",
    "fieldtype": "Int",
-   "label": "\u0639\u062f\u062f \u0627\u0644\u062e\u0631\u064a\u062c\u064a\u0646"
+   "label": "عدد الخريجين"
   },
   {
    "fieldname": "section_footer",
    "fieldtype": "Section Break",
-   "label": "\u0642\u0633\u0645 \u0627\u0644\u062a\u0630\u064a\u064a\u0644"
+   "label": "قسم التذييل"
   },
   {
-   "description": "\u0627\u0644\u0646\u0635 \u0627\u0644\u0638\u0627\u0647\u0631 \u0641\u064a \u0623\u0633\u0641\u0644 \u0627\u0644\u0645\u0648\u0642\u0639 \u0645\u062b\u0644 \u062d\u0642\u0648\u0642 \u0627\u0644\u0646\u0634\u0631",
+   "description": "النص الظاهر في أسفل الموقع مثل حقوق النشر",
    "fieldname": "footer_text",
    "fieldtype": "Small Text",
-   "label": "\u0646\u0635 \u0627\u0644\u062a\u0630\u064a\u064a\u0644"
+   "label": "نص التذييل"
   },
   {
    "description": "Structured JSON for dynamic home hero/stats/about/partners/testimonials payload.",
@@ -122,29 +158,209 @@
   },
   {
    "default": "0",
-   "description": "\u062d\u0627\u0644\u0629 \u0627\u0644\u0646\u0634\u0631",
+   "description": "حالة النشر",
    "fieldname": "is_published",
    "fieldtype": "Check",
    "label": "Is Published"
   },
   {
-   "description": "\u062a\u0631\u062a\u064a\u0628 \u0627\u0644\u0639\u0631\u0636",
+   "description": "ترتيب العرض",
    "fieldname": "display_order",
    "fieldtype": "Int",
    "label": "Display Order"
   },
   {
-   "description": "\u0639\u0646\u0648\u0627\u0646 \u0627\u0644\u0635\u0641\u062d\u0629 \u0627\u0644\u0631\u0626\u064a\u0633\u064a",
+   "description": "عنوان الصفحة الرئيسي",
    "fieldname": "page_title",
    "fieldtype": "Data",
    "label": "Page Title",
    "reqd": 1
   },
   {
-   "description": "\u0646\u0635 \u062a\u0631\u062d\u064a\u0628\u064a \u0645\u062e\u062a\u0635\u0631",
+   "description": "نص ترحيبي مختصر",
    "fieldname": "hero_description",
    "fieldtype": "Small Text",
    "label": "Hero Description"
+  },
+  {
+   "fieldname": "section_hero_bilingual",
+   "fieldtype": "Section Break",
+   "label": "Hero (AR/EN)"
+  },
+  {
+   "fieldname": "hero_badge_ar",
+   "fieldtype": "Data",
+   "label": "Hero Badge (AR)"
+  },
+  {
+   "fieldname": "hero_badge_en",
+   "fieldtype": "Data",
+   "label": "Hero Badge (EN)"
+  },
+  {
+   "fieldname": "hero_title_primary_ar",
+   "fieldtype": "Data",
+   "label": "Hero Title Primary (AR)"
+  },
+  {
+   "fieldname": "hero_title_primary_en",
+   "fieldtype": "Data",
+   "label": "Hero Title Primary (EN)"
+  },
+  {
+   "fieldname": "hero_title_secondary_ar",
+   "fieldtype": "Data",
+   "label": "Hero Title Secondary (AR)"
+  },
+  {
+   "fieldname": "hero_title_secondary_en",
+   "fieldtype": "Data",
+   "label": "Hero Title Secondary (EN)"
+  },
+  {
+   "fieldname": "hero_description_ar",
+   "fieldtype": "Small Text",
+   "label": "Hero Description (AR)"
+  },
+  {
+   "fieldname": "hero_description_en",
+   "fieldtype": "Small Text",
+   "label": "Hero Description (EN)"
+  },
+  {
+   "fieldname": "hero_apply_text_ar",
+   "fieldtype": "Data",
+   "label": "Hero Apply Text (AR)"
+  },
+  {
+   "fieldname": "hero_apply_text_en",
+   "fieldtype": "Data",
+   "label": "Hero Apply Text (EN)"
+  },
+  {
+   "fieldname": "hero_explore_text_ar",
+   "fieldtype": "Data",
+   "label": "Hero Explore Text (AR)"
+  },
+  {
+   "fieldname": "hero_explore_text_en",
+   "fieldtype": "Data",
+   "label": "Hero Explore Text (EN)"
+  },
+  {
+   "fieldname": "hero_explore_link",
+   "fieldtype": "Data",
+   "label": "Hero Explore Link"
+  },
+  {
+   "fieldname": "hero_discover_text_ar",
+   "fieldtype": "Data",
+   "label": "Hero Discover Text (AR)"
+  },
+  {
+   "fieldname": "hero_discover_text_en",
+   "fieldtype": "Data",
+   "label": "Hero Discover Text (EN)"
+  },
+  {
+   "fieldname": "section_about_bilingual",
+   "fieldtype": "Section Break",
+   "label": "About (AR/EN)"
+  },
+  {
+   "fieldname": "about_title_ar",
+   "fieldtype": "Data",
+   "label": "About Title (AR)"
+  },
+  {
+   "fieldname": "about_title_en",
+   "fieldtype": "Data",
+   "label": "About Title (EN)"
+  },
+  {
+   "fieldname": "about_description_ar",
+   "fieldtype": "Long Text",
+   "label": "About Description (AR)"
+  },
+  {
+   "fieldname": "about_description_en",
+   "fieldtype": "Long Text",
+   "label": "About Description (EN)"
+  },
+  {
+   "fieldname": "about_image",
+   "fieldtype": "Attach Image",
+   "label": "About Image"
+  },
+  {
+   "fieldname": "section_stats_labels",
+   "fieldtype": "Section Break",
+   "label": "Statistics Labels (AR/EN)"
+  },
+  {
+   "fieldname": "stats_students_label_ar",
+   "fieldtype": "Data",
+   "label": "Students Label (AR)"
+  },
+  {
+   "fieldname": "stats_students_label_en",
+   "fieldtype": "Data",
+   "label": "Students Label (EN)"
+  },
+  {
+   "fieldname": "stats_faculty_label_ar",
+   "fieldtype": "Data",
+   "label": "Faculty Label (AR)"
+  },
+  {
+   "fieldname": "stats_faculty_label_en",
+   "fieldtype": "Data",
+   "label": "Faculty Label (EN)"
+  },
+  {
+   "fieldname": "stats_programs_label_ar",
+   "fieldtype": "Data",
+   "label": "Programs Label (AR)"
+  },
+  {
+   "fieldname": "stats_programs_label_en",
+   "fieldtype": "Data",
+   "label": "Programs Label (EN)"
+  },
+  {
+   "fieldname": "stats_colleges_label_ar",
+   "fieldtype": "Data",
+   "label": "Colleges Label (AR)"
+  },
+  {
+   "fieldname": "stats_colleges_label_en",
+   "fieldtype": "Data",
+   "label": "Colleges Label (EN)"
+  },
+  {
+   "fieldname": "section_page_text_bilingual",
+   "fieldtype": "Section Break",
+   "label": "Page/Footer (AR/EN)"
+  },
+  {
+   "fieldname": "page_title_ar",
+   "fieldtype": "Data",
+   "label": "Page Title (AR)"
+  },
+  {
+   "fieldname": "page_title_en",
+   "fieldtype": "Data",
+   "label": "Page Title (EN)"
+  },
+  {
+   "fieldname": "footer_text_ar",
+   "fieldtype": "Small Text",
+   "label": "Footer Text (AR)"
+  },
+  {
+   "fieldname": "footer_text_en",
+   "fieldtype": "Small Text",
+   "label": "Footer Text (EN)"
   }
  ],
  "grid_page_length": 50,
