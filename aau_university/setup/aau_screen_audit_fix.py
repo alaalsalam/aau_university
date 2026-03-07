@@ -25,6 +25,7 @@ def run(update_existing: bool = True, dry_run: bool = False):
     for doctype_name, spec in _doctype_specs().items():
         expected_module = MODULE_NAME
         required_fields = spec["fields"]
+        expected_issingle = int(spec.get("issingle", 0) or 0)
 
         if not frappe.db.exists("DocType", doctype_name):
             report["missing_doctypes"].append(doctype_name)
@@ -35,7 +36,7 @@ def run(update_existing: bool = True, dry_run: bool = False):
                     report["would_create_count"] += 1
                     _log(action)
                 else:
-                    _create_doctype(doctype_name, expected_module, required_fields, report)
+                    _create_doctype(doctype_name, expected_module, required_fields, report, issingle=expected_issingle)
                     report["created_count"] += 1
                     _log(f"CREATED DocType: {doctype_name}")
             continue
@@ -53,12 +54,22 @@ def run(update_existing: bool = True, dry_run: bool = False):
                 doc = frappe.get_doc("DocType", doctype_name)
                 doc_changed = True
 
+        if int(doc.issingle or 0) != expected_issingle:
+            report["field_issues"].append(
+                f"{doctype_name}: issingle mismatch (expected {expected_issingle}, found {int(doc.issingle or 0)})"
+            )
+            if update_existing and not dry_run:
+                frappe.db.set_value("DocType", doctype_name, "issingle", expected_issingle, update_modified=False)
+                frappe.clear_cache(doctype=doctype_name)
+                doc = frappe.get_doc("DocType", doctype_name)
+                doc_changed = True
+
         field_issues, field_changes = _audit_fields(doc, required_fields)
         report["field_issues"].extend([f"{doctype_name}: {issue}" for issue in field_issues])
 
         if update_existing:
             if dry_run:
-                if field_changes or (doc.module != expected_module):
+                if field_changes or (doc.module != expected_module) or (int(doc.issingle or 0) != expected_issingle):
                     action = f"WOULD_UPDATE DocType: {doctype_name}"
                     report["actions"].append(action)
                     report["would_update_count"] += 1
@@ -110,12 +121,29 @@ def _doctype_specs() -> dict:
     raw_specs = {
         "Home Page": {
             "module": MODULE_NAME,
+            "issingle": 1,
             "fields": [
-                _field("Page Title", "Data", "عنوان الصفحة الرئيسي", reqd=1),
-                _field("Hero Description", "Small Text", "نص ترحيبي مختصر"),
+                _field("Hero Badge Ar", "Data", "شارة الهيدر بالعربية"),
+                _field("Hero Badge En", "Data", "شارة الهيدر بالإنجليزية"),
+                _field("Hero Title Primary Ar", "Data", "عنوان الهيدر الرئيسي بالعربية", reqd=1),
+                _field("Hero Title Primary En", "Data", "عنوان الهيدر الرئيسي بالإنجليزية", reqd=1),
+                _field("Hero Title Secondary Ar", "Data", "عنوان الهيدر الثانوي بالعربية"),
+                _field("Hero Title Secondary En", "Data", "عنوان الهيدر الثانوي بالإنجليزية"),
+                _field("Hero Description Ar", "Small Text", "وصف الهيدر بالعربية"),
+                _field("Hero Description En", "Small Text", "وصف الهيدر بالإنجليزية"),
                 _field("Hero Image", "Attach Image", "صورة الهيدر"),
-                _field("Is Published", "Check", "حالة النشر"),
-                _field("Display Order", "Int", "ترتيب العرض"),
+                _field("Students Count", "Int", "عدد الطلاب"),
+                _field("Faculty Count", "Int", "عدد أعضاء هيئة التدريس"),
+                _field("Programs Count", "Int", "عدد البرامج"),
+                _field("Colleges Count", "Int", "عدد الكليات"),
+                _field("Stats Students Label Ar", "Data", "نص الطلاب بالعربية"),
+                _field("Stats Students Label En", "Data", "نص الطلاب بالإنجليزية"),
+                _field("Stats Faculty Label Ar", "Data", "نص أعضاء هيئة التدريس بالعربية"),
+                _field("Stats Faculty Label En", "Data", "نص أعضاء هيئة التدريس بالإنجليزية"),
+                _field("Stats Programs Label Ar", "Data", "نص البرامج بالعربية"),
+                _field("Stats Programs Label En", "Data", "نص البرامج بالإنجليزية"),
+                _field("Stats Colleges Label Ar", "Data", "نص الكليات بالعربية"),
+                _field("Stats Colleges Label En", "Data", "نص الكليات بالإنجليزية"),
             ],
         },
         "About University": {
@@ -527,7 +555,7 @@ def _ensure_module_defs(report: dict, dry_run: bool = False):
             frappe.db.commit()
 
 
-def _create_doctype(name: str, module: str, required_fields: list[dict], report: dict):
+def _create_doctype(name: str, module: str, required_fields: list[dict], report: dict, issingle: int = 0):
     doctype_name = sanitize_doctype_name(name)
     fields = _with_section_break(required_fields, existing_fields=[])
     field_order = [f["fieldname"] for f in fields if f.get("fieldname")]
@@ -539,7 +567,7 @@ def _create_doctype(name: str, module: str, required_fields: list[dict], report:
             "custom": 1,
             "allow_rename": 1,
             "istable": 0,
-            "issingle": 0,
+            "issingle": int(issingle or 0),
             "track_changes": 1,
             "fields": fields,
             "permissions": [_system_manager_permission()],

@@ -4,9 +4,6 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "section_publishing",
-  "is_published",
-  "display_order",
   "section_hero_bilingual",
   "hero_badge_ar",
   "hero_badge_en",
@@ -17,14 +14,6 @@
   "hero_description_ar",
   "hero_description_en",
   "hero_image",
-  "hero_apply_text_ar",
-  "hero_apply_text_en",
-  "hero_cta_link",
-  "hero_explore_text_ar",
-  "hero_explore_text_en",
-  "hero_explore_link",
-  "hero_discover_text_ar",
-  "hero_discover_text_en",
   "section_about_bilingual",
   "about_title_ar",
   "about_title_en",
@@ -33,8 +22,9 @@
   "about_image",
   "section_statistics",
   "students_count",
+  "faculty_count",
   "programs_count",
-  "graduates_count",
+  "colleges_count",
   "stats_students_label_ar",
   "stats_students_label_en",
   "stats_faculty_label_ar",
@@ -42,32 +32,9 @@
   "stats_programs_label_ar",
   "stats_programs_label_en",
   "stats_colleges_label_ar",
-  "stats_colleges_label_en",
-  "section_page_text_bilingual",
-  "page_title_ar",
-  "page_title_en",
-  "footer_text_ar",
-  "footer_text_en"
+  "stats_colleges_label_en"
  ],
  "fields": [
-  {
-   "fieldname": "section_publishing",
-   "fieldtype": "Section Break",
-   "label": "النشر والترتيب"
-  },
-  {
-   "fieldname": "is_published",
-   "fieldtype": "Check",
-   "label": "Is Published",
-   "default": "0",
-   "description": "حالة نشر الصفحة الرئيسية"
-  },
-  {
-   "fieldname": "display_order",
-   "fieldtype": "Int",
-   "label": "Display Order",
-   "description": "ترتيب العرض"
-  },
   {
    "fieldname": "section_hero_bilingual",
    "fieldtype": "Section Break",
@@ -119,46 +86,6 @@
    "label": "Hero Image"
   },
   {
-   "fieldname": "hero_apply_text_ar",
-   "fieldtype": "Data",
-   "label": "Hero Apply Text (AR)"
-  },
-  {
-   "fieldname": "hero_apply_text_en",
-   "fieldtype": "Data",
-   "label": "Hero Apply Text (EN)"
-  },
-  {
-   "fieldname": "hero_cta_link",
-   "fieldtype": "Data",
-   "label": "Hero Apply Link"
-  },
-  {
-   "fieldname": "hero_explore_text_ar",
-   "fieldtype": "Data",
-   "label": "Hero Explore Text (AR)"
-  },
-  {
-   "fieldname": "hero_explore_text_en",
-   "fieldtype": "Data",
-   "label": "Hero Explore Text (EN)"
-  },
-  {
-   "fieldname": "hero_explore_link",
-   "fieldtype": "Data",
-   "label": "Hero Explore Link"
-  },
-  {
-   "fieldname": "hero_discover_text_ar",
-   "fieldtype": "Data",
-   "label": "Hero Discover Text (AR)"
-  },
-  {
-   "fieldname": "hero_discover_text_en",
-   "fieldtype": "Data",
-   "label": "Hero Discover Text (EN)"
-  },
-  {
    "fieldname": "section_about_bilingual",
    "fieldtype": "Section Break",
    "label": "About (AR/EN)"
@@ -199,14 +126,19 @@
    "label": "Students Count"
   },
   {
+   "fieldname": "faculty_count",
+   "fieldtype": "Int",
+   "label": "Faculty Count"
+  },
+  {
    "fieldname": "programs_count",
    "fieldtype": "Int",
    "label": "Programs Count"
   },
   {
-   "fieldname": "graduates_count",
+   "fieldname": "colleges_count",
    "fieldtype": "Int",
-   "label": "Graduates Count"
+   "label": "Colleges Count"
   },
   {
    "fieldname": "stats_students_label_ar",
@@ -247,35 +179,9 @@
    "fieldname": "stats_colleges_label_en",
    "fieldtype": "Data",
    "label": "Colleges Label (EN)"
-  },
-  {
-   "fieldname": "section_page_text_bilingual",
-   "fieldtype": "Section Break",
-   "label": "Page/Footer (AR/EN)"
-  },
-  {
-   "fieldname": "page_title_ar",
-   "fieldtype": "Data",
-   "label": "Page Title (AR)"
-  },
-  {
-   "fieldname": "page_title_en",
-   "fieldtype": "Data",
-   "label": "Page Title (EN)"
-  },
-  {
-   "fieldname": "footer_text_ar",
-   "fieldtype": "Small Text",
-   "label": "Footer Text (AR)"
-  },
-  {
-   "fieldname": "footer_text_en",
-   "fieldtype": "Small Text",
-   "label": "Footer Text (EN)"
   }
  ],
  "grid_page_length": 50,
- "index_web_pages_for_search": 1,
  "links": [],
  "modified": "2026-03-05 01:30:00.000000",
  "modified_by": "Administrator",
@@ -298,7 +204,6 @@
  ],
  "row_format": "Dynamic",
  "rows_threshold_for_grid_search": 20,
- "sort_field": "modified",
- "sort_order": "DESC",
- "states": []
+ "states": [],
+ "issingle": 1
 }
