@@ -610,53 +610,16 @@ def _get_home_sections() -> dict:
         return {"hero": {}, "stats": [], "about": {}, "partners": [], "testimonials": []}
 
     meta = frappe.get_meta("Home Page")
-    fields = [
-        "hero_badge_ar",
-        "hero_badge_en",
-        "hero_title_primary_ar",
-        "hero_title_primary_en",
-        "hero_title_secondary_ar",
-        "hero_title_secondary_en",
-        "hero_description_ar",
-        "hero_description_en",
-        "hero_image",
-        "hero_apply_text_ar",
-        "hero_apply_text_en",
-        "hero_cta_link",
-        "hero_explore_text_ar",
-        "hero_explore_text_en",
-        "hero_explore_link",
-        "hero_discover_text_ar",
-        "hero_discover_text_en",
-        "about_title_ar",
-        "about_title_en",
-        "about_description_ar",
-        "about_description_en",
-        "about_image",
-        "students_count",
-        "programs_count",
-        "graduates_count",
-        "stats_students_label_ar",
-        "stats_students_label_en",
-        "stats_faculty_label_ar",
-        "stats_faculty_label_en",
-        "stats_programs_label_ar",
-        "stats_programs_label_en",
-        "stats_colleges_label_ar",
-        "stats_colleges_label_en",
-    ]
-    rows = frappe.get_all(
-        "Home Page",
-        fields=fields,
-        filters={"is_published": 1} if meta.get_field("is_published") else None,
-        order_by="display_order asc, modified desc",
-        limit_page_length=1,
-        ignore_permissions=True,
-    )
-    if not rows:
-        return {"hero": {}, "stats": [], "about": {}, "partners": [], "testimonials": []}
+    if not getattr(meta, "issingle", 0):
+        rows = frappe.get_all("Home Page", fields=["name"], limit_page_length=1, ignore_permissions=True)
+        if not rows:
+            return {"hero": {}, "stats": [], "about": {}, "partners": [], "testimonials": []}
+        row = frappe.get_doc("Home Page", rows[0]["name"]).as_dict()
+    else:
+        row = frappe.get_cached_doc("Home Page").as_dict()
 
-    row = rows[0]
+    if not row:
+        return {"hero": {}, "stats": [], "about": {}, "partners": [], "testimonials": []}
 
     def _text(*candidates, default=""):
         for candidate in candidates:
@@ -674,18 +637,14 @@ def _get_home_sections() -> dict:
         "titleSecondaryEn": _text(row.get("hero_title_secondary_en"), default="UNIVERSITY"),
         "descriptionAr": _text(row.get("hero_description_ar")),
         "descriptionEn": _text(row.get("hero_description_en")),
-        "applyTextAr": _text(row.get("hero_apply_text_ar"), default="التقديم الآن"),
-        "applyTextEn": _text(row.get("hero_apply_text_en"), default="Apply Now"),
-        "applyLink": _text(row.get("hero_cta_link"), default="/admission"),
-        "exploreTextAr": _text(row.get("hero_explore_text_ar"), default="استكشف الكليات"),
-        "exploreTextEn": _text(row.get("hero_explore_text_en"), default="Explore Colleges"),
-        "exploreLink": _text(row.get("hero_explore_link"), default="/colleges"),
-        "discoverTextAr": _text(row.get("hero_discover_text_ar"), default="اكتشف المزيد"),
-        "discoverTextEn": _text(row.get("hero_discover_text_en"), default="Discover More"),
         "image": _text(row.get("hero_image")),
     }
 
-    colleges_count = frappe.db.count("Colleges") if frappe.db.exists("DocType", "Colleges") else 0
+    colleges_count = row.get("colleges_count")
+    if not colleges_count:
+        colleges_count = frappe.db.count("Colleges") if frappe.db.exists("DocType", "Colleges") else 0
+
+    faculty_count = row.get("faculty_count") or 500
     stats = [
         {
             "key": "students",
@@ -696,7 +655,7 @@ def _get_home_sections() -> dict:
         },
         {
             "key": "faculty",
-            "number": "500+",
+            "number": str(faculty_count),
             "labelAr": _text(row.get("stats_faculty_label_ar"), default="عضو هيئة تدريس"),
             "labelEn": _text(row.get("stats_faculty_label_en"), default="Faculty Members"),
             "icon": "Users",

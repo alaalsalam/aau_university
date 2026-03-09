@@ -10,3 +10,4 @@ aau_university.patches.v1_2_cleanup_unused_screens_and_workspace
 aau_university.patches.v1_3_add_instructor_user_link
 aau_university.patches.v1_4_refresh_aau_workspace
 aau_university.patches.v1_5_home_page_bilingual_fields
+aau_university.patches.v1_6_home_page_single_cms
