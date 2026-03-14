@@ -5,6 +5,7 @@ import json
 import re
 
 import frappe
+from frappe.translate import get_all_translations
 
 from .registry import ADMIN_ROLES, SEARCH_TYPES
 from .resources import (
@@ -174,6 +175,10 @@ def get_home():
             "hero": home_sections["hero"],
             "stats": home_sections["stats"],
             "about": home_sections["about"],
+            "sections": home_sections["sections"],
+            "siteProfile": _build_site_profile_payload(),
+            "campusLife": _list_home_campus_life(limit=3),
+            "projects": _list_home_projects(limit=3),
             "partners": home_sections["partners"],
             "testimonials": home_sections["testimonials"],
             # WHY+WHAT: return minimal, frontend-shaped payloads for list sections (avoid raw DocType column spillover).
@@ -193,6 +198,10 @@ def get_home():
             "hero": {},
             "stats": [],
             "about": {},
+            "sections": {},
+            "siteProfile": _build_site_profile_payload(),
+            "campusLife": [],
+            "projects": [],
             "partners": [],
             "testimonials": [],
             "news": [],
@@ -538,20 +547,7 @@ def get_public_menu(key: str):
 @frappe.whitelist(allow_guest=True)
 @api_endpoint
 def get_site_profile():
-    settings = _get_website_settings_payload()
-    social_links = _get_social_links_from_menu()
-    return {
-        "siteName": _as_text(settings.get("site_name") or settings.get("app_name")),
-        "siteNameAr": _as_text(settings.get("site_name_ar") or settings.get("site_name")),
-        "siteDescriptionAr": _as_text(settings.get("site_description_ar") or settings.get("about_short")),
-        "siteDescriptionEn": _as_text(settings.get("site_description_en") or settings.get("about_short_en")),
-        "contactPhone": _as_text(settings.get("contact_phone") or settings.get("phone")),
-        "contactEmail": _as_text(settings.get("contact_email") or settings.get("email")),
-        "addressAr": _as_text(settings.get("address_ar") or settings.get("address")),
-        "addressEn": _as_text(settings.get("address_en") or settings.get("address")),
-        "mapLocation": _as_text(settings.get("map_location")),
-        "socialLinks": social_links,
-    }
+    return _build_site_profile_payload()
 
 
 @frappe.whitelist()
@@ -607,19 +603,19 @@ def update_site_profile(**payload):
 
 def _get_home_sections() -> dict:
     if not frappe.db.exists("DocType", "Home Page"):
-        return {"hero": {}, "stats": [], "about": {}, "partners": [], "testimonials": []}
+        return {"hero": {}, "stats": [], "about": {}, "sections": {}, "partners": [], "testimonials": []}
 
     meta = frappe.get_meta("Home Page")
     if not getattr(meta, "issingle", 0):
         rows = frappe.get_all("Home Page", fields=["name"], limit_page_length=1, ignore_permissions=True)
         if not rows:
-            return {"hero": {}, "stats": [], "about": {}, "partners": [], "testimonials": []}
+            return {"hero": {}, "stats": [], "about": {}, "sections": {}, "partners": [], "testimonials": []}
         row = frappe.get_doc("Home Page", rows[0]["name"]).as_dict()
     else:
         row = frappe.get_cached_doc("Home Page").as_dict()
 
     if not row:
-        return {"hero": {}, "stats": [], "about": {}, "partners": [], "testimonials": []}
+        return {"hero": {}, "stats": [], "about": {}, "sections": {}, "partners": [], "testimonials": []}
 
     def _text(*candidates, default=""):
         for candidate in candidates:
@@ -628,15 +624,22 @@ def _get_home_sections() -> dict:
                 return value
         return _as_text(default)
 
+    def _translated(value: str, lang: str = "en") -> str:
+        source = _as_text(value)
+        if not source:
+            return ""
+        translations = get_all_translations(lang) or {}
+        return _as_text(translations.get(source), default=source)
+
     hero = {
         "badgeAr": _text(row.get("hero_badge_ar"), default="مرحباً بكم في جامعة الجيل الجديد"),
-        "badgeEn": _text(row.get("hero_badge_en"), default="Welcome to AJ JEEL ALJADEED UNIVERSITY"),
+        "badgeEn": _translated(_text(row.get("hero_badge_ar"), default="مرحباً بكم في جامعة الجيل الجديد")),
         "titlePrimaryAr": _text(row.get("hero_title_primary_ar"), default="جامعة الجيل الجديد"),
-        "titlePrimaryEn": _text(row.get("hero_title_primary_en"), default="AJ JEEL ALJADEED"),
+        "titlePrimaryEn": _translated(_text(row.get("hero_title_primary_ar"), default="جامعة الجيل الجديد")),
         "titleSecondaryAr": _text(row.get("hero_title_secondary_ar"), default="الجامعة"),
-        "titleSecondaryEn": _text(row.get("hero_title_secondary_en"), default="UNIVERSITY"),
+        "titleSecondaryEn": _translated(_text(row.get("hero_title_secondary_ar"), default="الجامعة")),
         "descriptionAr": _text(row.get("hero_description_ar")),
-        "descriptionEn": _text(row.get("hero_description_en")),
+        "descriptionEn": _translated(_text(row.get("hero_description_ar"))),
         "image": _text(row.get("hero_image")),
     }
 
@@ -650,41 +653,199 @@ def _get_home_sections() -> dict:
             "key": "students",
             "number": str(row.get("students_count") or 0),
             "labelAr": _text(row.get("stats_students_label_ar"), default="طالب وطالبة"),
-            "labelEn": _text(row.get("stats_students_label_en"), default="Students"),
+            "labelEn": _translated(_text(row.get("stats_students_label_ar"), default="طالب وطالبة")),
             "icon": "GraduationCap",
         },
         {
             "key": "faculty",
             "number": str(faculty_count),
             "labelAr": _text(row.get("stats_faculty_label_ar"), default="عضو هيئة تدريس"),
-            "labelEn": _text(row.get("stats_faculty_label_en"), default="Faculty Members"),
+            "labelEn": _translated(_text(row.get("stats_faculty_label_ar"), default="عضو هيئة تدريس")),
             "icon": "Users",
         },
         {
             "key": "programs",
             "number": str(row.get("programs_count") or 0),
             "labelAr": _text(row.get("stats_programs_label_ar"), default="برنامج أكاديمي"),
-            "labelEn": _text(row.get("stats_programs_label_en"), default="Academic Programs"),
+            "labelEn": _translated(_text(row.get("stats_programs_label_ar"), default="برنامج أكاديمي")),
             "icon": "BookOpen",
         },
         {
             "key": "colleges",
             "number": str(colleges_count or 0),
             "labelAr": _text(row.get("stats_colleges_label_ar"), default="كليات متخصصة"),
-            "labelEn": _text(row.get("stats_colleges_label_en"), default="Specialized Colleges"),
+            "labelEn": _translated(_text(row.get("stats_colleges_label_ar"), default="كليات متخصصة")),
             "icon": "Award",
         },
     ]
 
+    about_title_ar = _text(row.get("about_title_ar"), default="عن الجامعة")
+    about_description_ar = _text(row.get("about_description_ar"))
+    about_vision_ar = _text(
+        row.get("about_vision_ar"),
+        default="مؤسسة تعليمية رائدة وطنيا ومتميزة إقليميا وفعالة في بناء مجتمع المعرفة",
+    )
+    about_mission_ar = _text(
+        row.get("about_mission_ar"),
+        default="إعداد خريجين يتمتعون بالكفاءة العلمية والمهنية والتعلم مدى الحياة من خلال بيئة تعليمية داعمة وبرامج أكاديمية نوعية.",
+    )
+    about_goals_ar = _text(
+        row.get("about_goals_ar"),
+        default="تحقيق التميز الأكاديمي والبحثي وتعزيز الشراكة المجتمعية وتوفير بيئة تعليمية محفزة.",
+    )
+    about_values_ar = _text(
+        row.get("about_values_ar"),
+        default="الريادة والتعلم المستمر، الابتكار والإبداع، المسؤولية والشفافية، والعمل بروح الفريق.",
+    )
+    about_highlight_title_ar = _text(row.get("about_highlight_title_ar"), default="بيئة تعليمية متميزة")
+    about_highlight_text_ar = _text(
+        row.get("about_highlight_text_ar"),
+        default="نوفر بيئة تعليمية حديثة بمختبرات متطورة ومساحات تعلم محفزة.",
+    )
+    president_message_intro_ar = _text(
+        row.get("president_message_intro_ar"),
+        default="بسم الله الرحمن الرحيم. الحمد لله رب العالمين، والصلاة والسلام على خاتم الأنبياء والمرسلين.",
+    )
+    president_message_body_ar = _text(
+        row.get("president_message_body_ar"),
+        default="يسرني أن أرحب بطلابنا وطالباتنا، ونؤكد التزام الجامعة بتقديم تعليم نوعي وبيئة جامعية تشجع على الإبداع والريادة والتميز.",
+    )
+    president_message_closing_ar = _text(
+        row.get("president_message_closing_ar"),
+        default="نثق بأنكم ستكونون على قدر المسؤولية في تمثيل الجامعة وبناء مستقبل مشرق لكم ولوطنكم.",
+    )
+    president_name_ar = _text(row.get("president_name_ar"), default="أ.د/ همدان الشامي")
+    president_role_ar = _text(row.get("president_role_ar"), default="رئيس الجامعة")
+
     about = {
-        "titleAr": _text(row.get("about_title_ar"), default="عن الجامعة"),
-        "titleEn": _text(row.get("about_title_en"), default="About the University"),
-        "descriptionAr": _text(row.get("about_description_ar")),
-        "descriptionEn": _text(row.get("about_description_en")),
+        "titleAr": about_title_ar,
+        "titleEn": _translated(about_title_ar),
+        "descriptionAr": about_description_ar,
+        "descriptionEn": _translated(about_description_ar),
         "image": _text(row.get("about_image")),
+        "visionAr": about_vision_ar,
+        "visionEn": _translated(about_vision_ar),
+        "missionAr": about_mission_ar,
+        "missionEn": _translated(about_mission_ar),
+        "goalsAr": about_goals_ar,
+        "goalsEn": _translated(about_goals_ar),
+        "valuesAr": about_values_ar,
+        "valuesEn": _translated(about_values_ar),
+        "highlightTitleAr": about_highlight_title_ar,
+        "highlightTitleEn": _translated(about_highlight_title_ar),
+        "highlightTextAr": about_highlight_text_ar,
+        "highlightTextEn": _translated(about_highlight_text_ar),
+        "presidentMessageIntroAr": president_message_intro_ar,
+        "presidentMessageIntroEn": _translated(president_message_intro_ar),
+        "presidentMessageBodyAr": president_message_body_ar,
+        "presidentMessageBodyEn": _translated(president_message_body_ar),
+        "presidentMessageClosingAr": president_message_closing_ar,
+        "presidentMessageClosingEn": _translated(president_message_closing_ar),
+        "presidentNameAr": president_name_ar,
+        "presidentNameEn": _translated(president_name_ar),
+        "presidentRoleAr": president_role_ar,
+        "presidentRoleEn": _translated(president_role_ar),
     }
 
-    return {"hero": hero, "stats": stats, "about": about, "partners": [], "testimonials": []}
+    def _section_content(prefix: str, title_ar: str, title_en: str, description_ar: str, description_en: str):
+        title_value = _text(row.get(f"{prefix}_title_ar"), default=title_ar)
+        description_value = _text(row.get(f"{prefix}_description_ar"), default=description_ar)
+        return {
+            "titleAr": title_value,
+            "titleEn": _translated(title_value) or title_en,
+            "descriptionAr": description_value,
+            "descriptionEn": _translated(description_value) or description_en,
+        }
+
+    sections = {
+        "campusLife": _section_content(
+            "campus_life",
+            "الحياة الجامعية",
+            "Campus Life",
+            "تجربة جامعية متكاملة ومميزة تجمع بين التعليم والأنشطة والمتعة",
+            "A complete and distinctive university experience combining education, activities, and fun",
+        ),
+        "projects": _section_content(
+            "projects",
+            "مشاريع التخرج",
+            "Graduation Projects",
+            "اكتشف المشاريع الإبداعية والابتكارية لطلابنا الموهوبين",
+            "Discover the creative and innovative projects of our talented students",
+        ),
+        "colleges": _section_content(
+            "colleges",
+            "كلياتنا",
+            "Our Colleges",
+            "نقدم مجموعة متنوعة من البرامج الأكاديمية المتميزة في مختلف التخصصات",
+            "We offer a diverse range of distinguished academic programs in various specializations",
+        ),
+        "news": _section_content(
+            "news",
+            "الأخبار",
+            "News",
+            "تابع آخر أخبار الجامعة ومستجداتها",
+            "Follow the latest university news and updates",
+        ),
+        "events": _section_content(
+            "events",
+            "الفعاليات",
+            "Events",
+            "اكتشف الفعاليات والأنشطة المتنوعة التي تقدمها الجامعة",
+            "Discover the diverse events and activities offered by the university",
+        ),
+        "faq": _section_content(
+            "faq",
+            "الأسئلة المتكررة",
+            "Frequently Asked Questions",
+            "إجابات للأسئلة الشائعة",
+            "Answers to common questions",
+        ),
+        "video": {
+            **_section_content(
+                "video",
+                "لقطات من جامعتنا",
+                "Glimpses of Our University",
+                "شاهد بيئة التعليم الحديثة والمرافق المتطورة التي نقدمها لطلابنا",
+                "Experience our modern learning environment and advanced facilities.",
+            ),
+            "overlayTitleAr": _text(row.get("video_overlay_title_ar"), default="جولة في الحرم الجامعي"),
+            "overlayTitleEn": _translated(_text(row.get("video_overlay_title_ar"), default="جولة في الحرم الجامعي")) or "Campus Virtual Tour",
+            "overlayDescriptionAr": _text(
+                row.get("video_overlay_description_ar"),
+                default="استكشف القاعات الدراسية والمعامل المجهزة بأحدث التقنيات.",
+            ),
+            "overlayDescriptionEn": _translated(
+                _text(row.get("video_overlay_description_ar"), default="استكشف القاعات الدراسية والمعامل المجهزة بأحدث التقنيات.")
+            )
+            or "Explore classrooms and laboratories equipped with the latest technologies.",
+        },
+        "contact": _section_content(
+            "contact",
+            "تواصل معنا",
+            "Contact Us",
+            "نحن هنا للإجابة على استفساراتكم ومساعدتكم",
+            "We are here to answer your questions and assist you",
+        ),
+    }
+
+    return {"hero": hero, "stats": stats, "about": about, "sections": sections, "partners": [], "testimonials": []}
+
+
+def _build_site_profile_payload() -> dict:
+    settings = _get_website_settings_payload()
+    social_links = _get_social_links_from_menu()
+    return {
+        "siteName": _as_text(settings.get("site_name") or settings.get("app_name")),
+        "siteNameAr": _as_text(settings.get("site_name_ar") or settings.get("site_name")),
+        "siteDescriptionAr": _as_text(settings.get("site_description_ar") or settings.get("about_short")),
+        "siteDescriptionEn": _as_text(settings.get("site_description_en") or settings.get("about_short_en")),
+        "contactPhone": _as_text(settings.get("contact_phone") or settings.get("phone")),
+        "contactEmail": _as_text(settings.get("contact_email") or settings.get("email")),
+        "addressAr": _as_text(settings.get("address_ar") or settings.get("address")),
+        "addressEn": _as_text(settings.get("address_en") or settings.get("address")),
+        "mapLocation": _as_text(settings.get("map_location")),
+        "socialLinks": social_links,
+    }
 
 def _list_home_section(entity_key: str, limit: int, filters: dict | None = None) -> list[dict]:
     candidates = {
@@ -996,8 +1157,69 @@ def _list_home_faqs(limit: int) -> list[dict]:
     return [_serialize_faq_item(row) for row in rows]
 
 
+def _list_home_campus_life(limit: int) -> list[dict]:
+    doctype = _first_existing_doctype(["Campus Life"])
+    if not doctype:
+        return []
+
+    available = _selectable_fields(doctype)
+    desired = ["name", "title", "content", "image", "display_order", "is_published"]
+    fields = [field for field in desired if field in available]
+    filters = {"is_published": 1} if "is_published" in available else {}
+    order_by = "display_order asc, modified desc" if "display_order" in available else "modified desc"
+
+    rows = frappe.get_all(
+        doctype,
+        fields=fields,
+        filters=filters,
+        order_by=order_by,
+        limit_page_length=limit,
+        ignore_permissions=True,
+    )
+    return [_serialize_campus_life_item(row) for row in rows]
+
+
+def _list_home_projects(limit: int) -> list[dict]:
+    doctype = _first_existing_doctype(["Projects"])
+    if not doctype:
+        return []
+
+    available = _selectable_fields(doctype)
+    desired = [
+        "name",
+        "id",
+        "slug",
+        "title_ar",
+        "title_en",
+        "desc_ar",
+        "desc_en",
+        "details_ar",
+        "details_en",
+        "status",
+        "year",
+        "progress",
+        "start_date",
+        "end_date",
+        "display_order",
+        "is_published",
+    ]
+    fields = [field for field in desired if field in available]
+    filters = {"is_published": 1} if "is_published" in available else {}
+    order_by = "display_order asc, modified desc" if "display_order" in available else "modified desc"
+
+    rows = frappe.get_all(
+        doctype,
+        fields=fields,
+        filters=filters,
+        order_by=order_by,
+        limit_page_length=limit,
+        ignore_permissions=True,
+    )
+    return [_serialize_project_item(row) for row in rows]
+
+
 def _home_source() -> str:
-    source_doctypes = ["News", "Events", "Colleges", "FAQ"]
+    source_doctypes = ["News", "Events", "Colleges", "FAQ", "Campus Life", "Projects"]
     if frappe.db.exists("DocType", "Home Page"):
         source_doctypes.insert(0, "Home Page")
     if frappe.db.exists("DocType", "FAQs"):
@@ -1234,6 +1456,56 @@ def _serialize_faq_item(row: dict) -> dict:
         "answerEn": answer_en,
         "category": category,
     }
+
+
+def _serialize_campus_life_item(row: dict) -> dict:
+    title_ar = _as_text(row.get("title"))
+    content_ar = _as_text(row.get("content"))
+    slug = _as_text(row.get("name")) or _slugify_news_value(title_ar)
+    return {
+        "id": slug,
+        "slug": slug,
+        "titleAr": title_ar,
+        "titleEn": _translated_text(title_ar),
+        "descriptionAr": content_ar,
+        "descriptionEn": _translated_text(content_ar),
+        "contentAr": content_ar,
+        "contentEn": _translated_text(content_ar),
+        "category": "",
+        "image": _as_text(row.get("image")),
+    }
+
+
+def _serialize_project_item(row: dict) -> dict:
+    title_ar = _as_text(row.get("title_ar"))
+    desc_ar = _as_text(row.get("desc_ar"))
+    details_ar = _as_text(row.get("details_ar"))
+    return {
+        "id": _as_text(row.get("id") or row.get("name") or row.get("slug")),
+        "slug": _as_text(row.get("slug") or row.get("name")),
+        "titleAr": title_ar,
+        "titleEn": _as_text(row.get("title_en"), default=_translated_text(title_ar)),
+        "descAr": desc_ar,
+        "descEn": _as_text(row.get("desc_en"), default=_translated_text(desc_ar)),
+        "detailsAr": details_ar,
+        "detailsEn": _as_text(row.get("details_en"), default=_translated_text(details_ar)),
+        "students": [],
+        "progress": row.get("progress"),
+        "year": row.get("year"),
+        "status": _as_text(row.get("status"), default="current"),
+        "type": "graduation",
+        "images": [],
+        "startDate": row.get("start_date"),
+        "endDate": row.get("end_date"),
+    }
+
+
+def _translated_text(value: str, lang: str = "en") -> str:
+    source = _as_text(value)
+    if not source:
+        return ""
+    translations = get_all_translations(lang) or {}
+    return _as_text(translations.get(source), default=source)
 
 
 def _slugify_news_value(value: str | None) -> str:

@@ -4,81 +4,81 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "section_hero_bilingual",
+  "section_hero",
   "hero_badge_ar",
-  "hero_badge_en",
   "hero_title_primary_ar",
-  "hero_title_primary_en",
   "hero_title_secondary_ar",
-  "hero_title_secondary_en",
   "hero_description_ar",
-  "hero_description_en",
   "hero_image",
-  "section_about_bilingual",
+  "section_about",
   "about_title_ar",
-  "about_title_en",
   "about_description_ar",
-  "about_description_en",
   "about_image",
+  "about_vision_ar",
+  "about_mission_ar",
+  "about_goals_ar",
+  "about_values_ar",
+  "about_highlight_title_ar",
+  "about_highlight_text_ar",
+  "president_message_intro_ar",
+  "president_message_body_ar",
+  "president_message_closing_ar",
+  "president_name_ar",
+  "president_role_ar",
   "section_statistics",
   "students_count",
   "faculty_count",
   "programs_count",
   "colleges_count",
   "stats_students_label_ar",
-  "stats_students_label_en",
   "stats_faculty_label_ar",
-  "stats_faculty_label_en",
   "stats_programs_label_ar",
-  "stats_programs_label_en",
   "stats_colleges_label_ar",
-  "stats_colleges_label_en"
+  "section_home_sections",
+  "campus_life_title_ar",
+  "campus_life_description_ar",
+  "projects_title_ar",
+  "projects_description_ar",
+  "colleges_title_ar",
+  "colleges_description_ar",
+  "news_title_ar",
+  "news_description_ar",
+  "events_title_ar",
+  "events_description_ar",
+  "faq_title_ar",
+  "faq_description_ar",
+  "video_title_ar",
+  "video_description_ar",
+  "video_overlay_title_ar",
+  "video_overlay_description_ar",
+  "contact_title_ar",
+  "contact_description_ar"
  ],
  "fields": [
   {
-   "fieldname": "section_hero_bilingual",
+   "fieldname": "section_hero",
    "fieldtype": "Section Break",
-   "label": "Hero (AR/EN)"
+   "label": "Hero"
   },
   {
    "fieldname": "hero_badge_ar",
    "fieldtype": "Data",
-   "label": "Hero Badge (AR)"
-  },
-  {
-   "fieldname": "hero_badge_en",
-   "fieldtype": "Data",
-   "label": "Hero Badge (EN)"
+   "label": "Hero Badge"
   },
   {
    "fieldname": "hero_title_primary_ar",
    "fieldtype": "Data",
-   "label": "Hero Title Primary (AR)"
-  },
-  {
-   "fieldname": "hero_title_primary_en",
-   "fieldtype": "Data",
-   "label": "Hero Title Primary (EN)"
+   "label": "Hero Title Primary"
   },
   {
    "fieldname": "hero_title_secondary_ar",
    "fieldtype": "Data",
-   "label": "Hero Title Secondary (AR)"
-  },
-  {
-   "fieldname": "hero_title_secondary_en",
-   "fieldtype": "Data",
-   "label": "Hero Title Secondary (EN)"
+   "label": "Hero Title Secondary"
   },
   {
    "fieldname": "hero_description_ar",
    "fieldtype": "Small Text",
-   "label": "Hero Description (AR)"
-  },
-  {
-   "fieldname": "hero_description_en",
-   "fieldtype": "Small Text",
-   "label": "Hero Description (EN)"
+   "label": "Hero Description"
   },
   {
    "fieldname": "hero_image",
@@ -86,34 +86,79 @@
    "label": "Hero Image"
   },
   {
-   "fieldname": "section_about_bilingual",
+   "fieldname": "section_about",
    "fieldtype": "Section Break",
-   "label": "About (AR/EN)"
+   "label": "About"
   },
   {
    "fieldname": "about_title_ar",
    "fieldtype": "Data",
-   "label": "About Title (AR)"
-  },
-  {
-   "fieldname": "about_title_en",
-   "fieldtype": "Data",
-   "label": "About Title (EN)"
+   "label": "About Title"
   },
   {
    "fieldname": "about_description_ar",
    "fieldtype": "Long Text",
-   "label": "About Description (AR)"
-  },
-  {
-   "fieldname": "about_description_en",
-   "fieldtype": "Long Text",
-   "label": "About Description (EN)"
+   "label": "About Description"
   },
   {
    "fieldname": "about_image",
    "fieldtype": "Attach Image",
    "label": "About Image"
+  },
+  {
+   "fieldname": "about_vision_ar",
+   "fieldtype": "Long Text",
+   "label": "Vision"
+  },
+  {
+   "fieldname": "about_mission_ar",
+   "fieldtype": "Long Text",
+   "label": "Mission"
+  },
+  {
+   "fieldname": "about_goals_ar",
+   "fieldtype": "Long Text",
+   "label": "Goals"
+  },
+  {
+   "fieldname": "about_values_ar",
+   "fieldtype": "Long Text",
+   "label": "Values"
+  },
+  {
+   "fieldname": "about_highlight_title_ar",
+   "fieldtype": "Data",
+   "label": "Highlight Title"
+  },
+  {
+   "fieldname": "about_highlight_text_ar",
+   "fieldtype": "Small Text",
+   "label": "Highlight Text"
+  },
+  {
+   "fieldname": "president_message_intro_ar",
+   "fieldtype": "Long Text",
+   "label": "President Message Intro"
+  },
+  {
+   "fieldname": "president_message_body_ar",
+   "fieldtype": "Long Text",
+   "label": "President Message Body"
+  },
+  {
+   "fieldname": "president_message_closing_ar",
+   "fieldtype": "Long Text",
+   "label": "President Message Closing"
+  },
+  {
+   "fieldname": "president_name_ar",
+   "fieldtype": "Data",
+   "label": "President Name"
+  },
+  {
+   "fieldname": "president_role_ar",
+   "fieldtype": "Data",
+   "label": "President Role"
   },
   {
    "fieldname": "section_statistics",
@@ -143,47 +188,123 @@
   {
    "fieldname": "stats_students_label_ar",
    "fieldtype": "Data",
-   "label": "Students Label (AR)"
-  },
-  {
-   "fieldname": "stats_students_label_en",
-   "fieldtype": "Data",
-   "label": "Students Label (EN)"
+   "label": "Students Label"
   },
   {
    "fieldname": "stats_faculty_label_ar",
    "fieldtype": "Data",
-   "label": "Faculty Label (AR)"
-  },
-  {
-   "fieldname": "stats_faculty_label_en",
-   "fieldtype": "Data",
-   "label": "Faculty Label (EN)"
+   "label": "Faculty Label"
   },
   {
    "fieldname": "stats_programs_label_ar",
    "fieldtype": "Data",
-   "label": "Programs Label (AR)"
-  },
-  {
-   "fieldname": "stats_programs_label_en",
-   "fieldtype": "Data",
-   "label": "Programs Label (EN)"
+   "label": "Programs Label"
   },
   {
    "fieldname": "stats_colleges_label_ar",
    "fieldtype": "Data",
-   "label": "Colleges Label (AR)"
+   "label": "Colleges Label"
   },
   {
-   "fieldname": "stats_colleges_label_en",
+   "fieldname": "section_home_sections",
+   "fieldtype": "Section Break",
+   "label": "Homepage Sections"
+  },
+  {
+   "fieldname": "campus_life_title_ar",
    "fieldtype": "Data",
-   "label": "Colleges Label (EN)"
+   "label": "Campus Life Title"
+  },
+  {
+   "fieldname": "campus_life_description_ar",
+   "fieldtype": "Small Text",
+   "label": "Campus Life Description"
+  },
+  {
+   "fieldname": "projects_title_ar",
+   "fieldtype": "Data",
+   "label": "Projects Title"
+  },
+  {
+   "fieldname": "projects_description_ar",
+   "fieldtype": "Small Text",
+   "label": "Projects Description"
+  },
+  {
+   "fieldname": "colleges_title_ar",
+   "fieldtype": "Data",
+   "label": "Colleges Title"
+  },
+  {
+   "fieldname": "colleges_description_ar",
+   "fieldtype": "Small Text",
+   "label": "Colleges Description"
+  },
+  {
+   "fieldname": "news_title_ar",
+   "fieldtype": "Data",
+   "label": "News Title"
+  },
+  {
+   "fieldname": "news_description_ar",
+   "fieldtype": "Small Text",
+   "label": "News Description"
+  },
+  {
+   "fieldname": "events_title_ar",
+   "fieldtype": "Data",
+   "label": "Events Title"
+  },
+  {
+   "fieldname": "events_description_ar",
+   "fieldtype": "Small Text",
+   "label": "Events Description"
+  },
+  {
+   "fieldname": "faq_title_ar",
+   "fieldtype": "Data",
+   "label": "FAQ Title"
+  },
+  {
+   "fieldname": "faq_description_ar",
+   "fieldtype": "Small Text",
+   "label": "FAQ Description"
+  },
+  {
+   "fieldname": "video_title_ar",
+   "fieldtype": "Data",
+   "label": "Video Title"
+  },
+  {
+   "fieldname": "video_description_ar",
+   "fieldtype": "Small Text",
+   "label": "Video Description"
+  },
+  {
+   "fieldname": "video_overlay_title_ar",
+   "fieldtype": "Data",
+   "label": "Video Overlay Title"
+  },
+  {
+   "fieldname": "video_overlay_description_ar",
+   "fieldtype": "Small Text",
+   "label": "Video Overlay Description"
+  },
+  {
+   "fieldname": "contact_title_ar",
+   "fieldtype": "Data",
+   "label": "Contact Title"
+  },
+  {
+   "fieldname": "contact_description_ar",
+   "fieldtype": "Small Text",
+   "label": "Contact Description"
   }
  ],
  "grid_page_length": 50,
+ "issingle": 1,
  "links": [],
- "modified": "2026-03-05 01:30:00.000000",
+ "modified": "2026-03-14 23:40:00.000000",
  "modified_by": "Administrator",
  "module": "AAU",
  "name": "Home Page",
@@ -204,6 +325,5 @@
  ],
  "row_format": "Dynamic",
  "rows_threshold_for_grid_search": 20,
- "states": [],
- "issingle": 1
+ "states": []
 }
