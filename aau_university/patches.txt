@@ -13,3 +13,4 @@ aau_university.patches.v1_5_home_page_bilingual_fields
 aau_university.patches.v1_6_home_page_single_cms
 aau_university.patches.v1_7_content_manager_access
 aau_university.patches.v1_8_about_university_single_cms
+aau_university.patches.v1_9_add_faculty_linked_college

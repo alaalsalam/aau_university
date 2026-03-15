@@ -319,6 +319,7 @@ def _doctype_specs() -> dict:
             "fields": [
                 _field("Full Name", "Data", "الاسم الكامل", reqd=1),
                 _field("Academic Title", "Data", "اللقب الأكاديمي"),
+                _field("Linked College", "Link", "الكلية المرتبطة", options="Colleges"),
                 _field("Department", "Link", "القسم", options="Academic Departments"),
                 _field("Biography", "Long Text", "نبذة/سيرة"),
                 _field("Photo", "Attach Image", "الصورة"),

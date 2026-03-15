@@ -91,6 +91,19 @@ def list_college_programs(college_id: str):
 
 @frappe.whitelist(allow_guest=True)
 @api_endpoint
+def list_college_faculty(college_id: str):
+    """List faculty members for a college."""
+    college_docname = _resolve_college_docname(college_id)
+    items = _list_faculty_payload(include_inactive=False, college_name=college_docname)
+    return {
+        "data": items,
+        "meta": {"page": 1, "limit": len(items) or 20, "total": len(items), "totalPages": 1 if items else 0},
+        "__meta__": True,
+    }
+
+
+@frappe.whitelist(allow_guest=True)
+@api_endpoint
 def list_programs():
     """List academic programs."""
     result = list_entities(
@@ -456,7 +469,7 @@ def _serialize_program_row(row: dict) -> dict:
     }
 
 
-def _list_faculty_payload(include_inactive: bool = False) -> list[dict]:
+def _list_faculty_payload(include_inactive: bool = False, college_name: str | None = None) -> list[dict]:
     filters: dict[str, object] = {}
     meta = frappe.get_meta("Faculty Members")
     if not include_inactive and meta.get_field("is_active"):
@@ -473,7 +486,7 @@ def _list_faculty_payload(include_inactive: bool = False) -> list[dict]:
     rows = frappe.get_all(
         "Faculty Members",
         filters=filters,
-        fields=["name", "full_name", "academic_title", "department", "biography", "photo", "is_active"],
+        fields=["name", "full_name", "academic_title", "department", "linked_college", "biography", "photo", "is_active"],
         order_by="modified desc",
         ignore_permissions=True,
         limit_page_length=0,
@@ -502,6 +515,9 @@ def _list_faculty_payload(include_inactive: bool = False) -> list[dict]:
             or (item.get("specializationAr") or "").casefold() == normalized
             or (item.get("specializationEn") or "").casefold() == normalized
         ]
+
+    if college_name:
+        items = [item for item in items if item.get("linkedCollege") == college_name]
 
     if q:
         needle = q.casefold()
@@ -549,10 +565,13 @@ def _serialize_faculty_row(row) -> dict:
     academic_title = _as_text(_doc_value(row, "academic_title"))
     biography = _as_text(_doc_value(row, "biography"))
     department_link = _as_text(_doc_value(row, "department"))
-    department_name, college_name = _resolve_department_names(department_link)
+    linked_college = _as_text(_doc_value(row, "linked_college"))
+    department_name, department_college_name = _resolve_department_names(department_link)
+    college_name = linked_college or department_college_name
+    college_label = _resolve_college_label(college_name)
     department_ar = department_name or department_link
     department_en = _translated_text(department_ar)
-    college_ar = college_name or department_ar
+    college_ar = college_label or department_ar
     college_en = _translated_text(college_ar)
 
     return {
@@ -565,6 +584,7 @@ def _serialize_faculty_row(row) -> dict:
         "specializationEn": department_en,
         "collegeAr": college_ar,
         "collegeEn": college_en,
+        "linkedCollege": college_name,
         "departmentAr": department_ar,
         "departmentEn": department_en,
         "email": _as_text(_doc_value(row, "email")),
@@ -587,6 +607,7 @@ def _normalize_faculty_payload(payload: dict, is_update: bool = False) -> dict:
     name_ar = _payload_value(payload, "nameAr", "name_ar", "full_name")
     degree_ar = _payload_value(payload, "degreeAr", "degree_ar", "academic_title")
     department = _payload_value(payload, "departmentAr", "department_ar", "department", "specializationAr", "specialization_ar", "collegeAr", "college_ar")
+    linked_college = _payload_value(payload, "linkedCollege", "linked_college")
     biography = _payload_value(payload, "bioAr", "bio_ar", "biography")
     photo = _payload_value(payload, "image", "photo")
     is_active = payload.get("is_active")
@@ -602,6 +623,8 @@ def _normalize_faculty_payload(payload: dict, is_update: bool = False) -> dict:
         normalized["academic_title"] = degree_ar
     if department:
         normalized["department"] = department
+    if linked_college:
+        normalized["linked_college"] = _resolve_college_docname(linked_college)
     if biography:
         normalized["biography"] = biography
     if photo:
@@ -626,6 +649,24 @@ def _resolve_department_names(department_name: str) -> tuple[str, str]:
         as_dict=True,
     ) or {}
     return _as_text(row.get("department_name"), default=department_name), _as_text(row.get("college"))
+
+
+def _resolve_college_label(college_name: str) -> str:
+    if not college_name or not frappe.db.exists("DocType", "Colleges"):
+        return ""
+
+    try:
+        college_docname = _resolve_college_docname(college_name)
+    except frappe.DoesNotExistError:
+        return college_name
+
+    row = frappe.db.get_value(
+        "Colleges",
+        college_docname,
+        ["name_ar", "college_name", "name_en"],
+        as_dict=True,
+    ) or {}
+    return _as_text(row.get("name_ar") or row.get("college_name") or row.get("name_en"), default=college_name)
 
 
 def _translated_text(value: str, lang: str = "en") -> str:

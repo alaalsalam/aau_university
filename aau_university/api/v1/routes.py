@@ -47,6 +47,7 @@ def ensure_routes():
         Rule("/colleges/<path:college_id>", methods=["PUT"], endpoint=academic.update_college),
         Rule("/colleges/<path:college_id>", methods=["DELETE"], endpoint=academic.delete_college),
         Rule("/colleges/<path:college_id>/programs", methods=["GET"], endpoint=academic.list_college_programs),
+        Rule("/colleges/<path:college_id>/faculty", methods=["GET"], endpoint=academic.list_college_faculty),
         Rule("/colleges/<path:college_id>/dean", methods=["GET"], endpoint=academic.get_college_dean),
         Rule("/college-deans/<path:dean_id>", methods=["PUT"], endpoint=academic.update_college_dean),
         Rule("/programs", methods=["GET"], endpoint=academic.list_programs),
