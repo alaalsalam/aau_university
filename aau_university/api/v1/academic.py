@@ -49,9 +49,44 @@ def get_college(slug: str):
 @api_endpoint
 def list_college_programs(college_id: str):
     """List programs for a college."""
-    frappe.form_dict["college_id"] = college_id
-    result = list_entities("academic_programs", public=True)
-    return {"data": result["data"], "meta": result["meta"], "__meta__": True}
+    doctype = "Academic Programs"
+    if not frappe.db.exists("DocType", doctype):
+        return {"data": [], "meta": {"page": 1, "limit": 20, "total": 0, "totalPages": 0}, "__meta__": True}
+
+    college_docname = _resolve_college_docname(college_id)
+    meta = frappe.get_meta(doctype)
+    available_fields = {
+        df.fieldname
+        for df in meta.fields
+        if df.fieldname and df.fieldtype not in {"Section Break", "Column Break", "Tab Break", "Fold", "HTML", "Button"}
+    }
+    desired = [
+        "name",
+        "program_name",
+        "degree_type",
+        "description",
+        "duration",
+        "is_active",
+        "college",
+    ]
+    fields = [field for field in desired if field == "name" or field in available_fields]
+    filters = {"college": college_docname}
+    if "is_active" in available_fields:
+        filters["is_active"] = 1
+
+    rows = frappe.get_all(
+        doctype,
+        fields=fields,
+        filters=filters,
+        order_by="modified desc",
+        ignore_permissions=True,
+    )
+    data = [_serialize_program_row(row) for row in rows]
+    return {
+        "data": data,
+        "meta": {"page": 1, "limit": len(data) or 20, "total": len(data), "totalPages": 1 if data else 0},
+        "__meta__": True,
+    }
 
 
 @frappe.whitelist(allow_guest=True)
@@ -389,6 +424,36 @@ def _iter_public_college_candidates() -> list[dict]:
         if row:
             normalized.append(row)
     return _deduplicate_public_colleges(normalized)
+
+
+def _resolve_college_docname(college_id: str) -> str:
+    if frappe.db.exists("Colleges", college_id):
+        return college_id
+
+    for filters in ({"slug": college_id}, {"id": college_id}, {"name_ar": college_id}, {"name_en": college_id}, {"college_name": college_id}):
+        resolved = frappe.db.get_value("Colleges", filters, "name")
+        if resolved:
+            return resolved
+
+    raise frappe.DoesNotExistError(f"College {college_id} not found")
+
+
+def _serialize_program_row(row: dict) -> dict:
+    description = row.get("description") or ""
+    return {
+        "id": row.get("name"),
+        "programName": row.get("program_name") or "",
+        "nameAr": row.get("program_name") or "",
+        "nameEn": row.get("program_name") or "",
+        "degreeType": row.get("degree_type"),
+        "description": description,
+        "descriptionAr": description,
+        "descriptionEn": description,
+        "duration": row.get("duration") or "",
+        "studyYears": row.get("duration") or "",
+        "isActive": cint(row.get("is_active")),
+        "college": row.get("college"),
+    }
 
 
 def _list_faculty_payload(include_inactive: bool = False) -> list[dict]:
