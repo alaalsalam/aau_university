@@ -35,8 +35,10 @@ def execute():
 def _activate_new_workspace():
     if frappe.db.exists("Workspace", "AAU"):
         frappe.db.set_value("Workspace", "AAU", "is_hidden", 1, update_modified=False)
+    if frappe.db.exists("Workspace", "aau"):
+        frappe.db.set_value("Workspace", "aau", "is_hidden", 0, update_modified=False)
     if frappe.db.exists("Workspace", "AAU Content Hub"):
-        frappe.db.set_value("Workspace", "AAU Content Hub", "is_hidden", 0, update_modified=False)
+        frappe.db.set_value("Workspace", "AAU Content Hub", "is_hidden", 1, update_modified=False)
 
 
 def _cleanup_unused_doctypes() -> dict:

@@ -4,8 +4,8 @@ import frappe
 
 CONTENT_MANAGER_ROLE = "AAU Content Manager"
 CONTENT_MANAGER_USER = "content.manager@edu.yemenfrappe.com"
-PRIMARY_WORKSPACE = "AAU"
-LEGACY_WORKSPACE = "AAU Content Hub"
+PRIMARY_WORKSPACE = "aau"
+LEGACY_WORKSPACES = ["AAU", "AAU Content Hub"]
 
 CONTENT_DOCTYPES = [
     "Home Page",
@@ -32,6 +32,9 @@ WORKSPACE_ROLES = [
     CONTENT_MANAGER_ROLE,
     "System Manager",
 ]
+
+PRIMARY_WORKSPACE_TITLE = "AAU"
+PRIMARY_WORKSPACE_LABEL = "مركز إدارة موقع الجامعة"
 
 
 def manager_permission(role: str = CONTENT_MANAGER_ROLE) -> dict:
@@ -100,6 +103,12 @@ def ensure_workspace_access(workspace_name: str = PRIMARY_WORKSPACE) -> bool:
     if doc.public:
         doc.public = 0
         changed = True
+    if getattr(doc, "title", None) != PRIMARY_WORKSPACE_TITLE:
+        doc.title = PRIMARY_WORKSPACE_TITLE
+        changed = True
+    if getattr(doc, "label", None) != PRIMARY_WORKSPACE_LABEL:
+        doc.label = PRIMARY_WORKSPACE_LABEL
+        changed = True
 
     existing_roles = {row.role for row in (doc.roles or [])}
     for role in WORKSPACE_ROLES:
@@ -112,7 +121,11 @@ def ensure_workspace_access(workspace_name: str = PRIMARY_WORKSPACE) -> bool:
     return changed
 
 
-def hide_legacy_workspace(workspace_name: str = LEGACY_WORKSPACE) -> bool:
+def normalize_primary_workspace() -> bool:
+    return ensure_workspace_access(PRIMARY_WORKSPACE)
+
+
+def hide_legacy_workspace(workspace_name: str) -> bool:
     if not frappe.db.exists("Workspace", workspace_name):
         return False
     changed = False

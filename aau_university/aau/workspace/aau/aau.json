@@ -1,0 +1,169 @@
+{
+  "doctype": "Workspace",
+  "name": "aau",
+  "title": "AAU",
+  "label": "مركز إدارة موقع الجامعة",
+  "module": "AAU",
+  "icon": "website",
+  "indicator_color": "blue",
+  "public": 0,
+  "is_hidden": 0,
+  "hide_custom": 0,
+  "content": "[{\"id\":\"aau_workspace_header\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">مركز إدارة محتوى موقع الجامعة (AAU)</span>\",\"col\":12}},{\"id\":\"aau_card_site_content\",\"type\":\"card\",\"data\":{\"card_name\":\"المحتوى الأساسي للموقع\",\"col\":4}},{\"id\":\"aau_card_academic\",\"type\":\"card\",\"data\":{\"card_name\":\"المحتوى الأكاديمي\",\"col\":4}},{\"id\":\"aau_card_community\",\"type\":\"card\",\"data\":{\"card_name\":\"الطلبات والتفاعل\",\"col\":4}},{\"id\":\"aau_card_system\",\"type\":\"card\",\"data\":{\"card_name\":\"الإعدادات والتنقل\",\"col\":12}}]",
+  "roles": [
+    {
+      "role": "AAU Content Manager"
+    },
+    {
+      "role": "System Manager"
+    }
+  ],
+  "links": [
+    {
+      "type": "Card Break",
+      "label": "المحتوى الأساسي للموقع",
+      "icon": "website"
+    },
+    {
+      "type": "Link",
+      "label": "الصفحة الرئيسية",
+      "link_type": "DocType",
+      "link_to": "Home Page"
+    },
+    {
+      "type": "Link",
+      "label": "الصفحات العامة",
+      "link_type": "DocType",
+      "link_to": "Pages"
+    },
+    {
+      "type": "Link",
+      "label": "صفحات AAU",
+      "link_type": "DocType",
+      "link_to": "AAU Page"
+    },
+    {
+      "type": "Link",
+      "label": "الأخبار",
+      "link_type": "DocType",
+      "link_to": "News"
+    },
+    {
+      "type": "Link",
+      "label": "الفعاليات",
+      "link_type": "DocType",
+      "link_to": "Events"
+    },
+    {
+      "type": "Link",
+      "label": "المشاريع",
+      "link_type": "DocType",
+      "link_to": "Projects"
+    },
+    {
+      "type": "Card Break",
+      "label": "المحتوى الأكاديمي",
+      "icon": "education"
+    },
+    {
+      "type": "Link",
+      "label": "الكليات",
+      "link_type": "DocType",
+      "link_to": "Colleges"
+    },
+    {
+      "type": "Link",
+      "label": "البرامج الأكاديمية",
+      "link_type": "DocType",
+      "link_to": "Academic Programs"
+    },
+    {
+      "type": "Link",
+      "label": "أعضاء هيئة التدريس",
+      "link_type": "DocType",
+      "link_to": "Faculty Members"
+    },
+    {
+      "type": "Link",
+      "label": "الخطط الدراسية",
+      "link_type": "DocType",
+      "link_to": "Study Plans"
+    },
+    {
+      "type": "Link",
+      "label": "مقررات الخطة",
+      "link_type": "DocType",
+      "link_to": "Study Plan Courses"
+    },
+    {
+      "type": "Card Break",
+      "label": "الطلبات والتفاعل",
+      "icon": "mail"
+    },
+    {
+      "type": "Link",
+      "label": "رسائل التواصل",
+      "link_type": "DocType",
+      "link_to": "Contact Us Messages"
+    },
+    {
+      "type": "Link",
+      "label": "طلبات الانضمام",
+      "link_type": "DocType",
+      "link_to": "Join Requests"
+    },
+    {
+      "type": "Link",
+      "label": "العروض",
+      "link_type": "DocType",
+      "link_to": "Offers"
+    },
+    {
+      "type": "Link",
+      "label": "الشركاء",
+      "link_type": "DocType",
+      "link_to": "Partners"
+    },
+    {
+      "type": "Link",
+      "label": "الفريق",
+      "link_type": "DocType",
+      "link_to": "Team Members"
+    },
+    {
+      "type": "Card Break",
+      "label": "الإعدادات والتنقل",
+      "icon": "setting"
+    },
+    {
+      "type": "Link",
+      "label": "إعدادات الموقع",
+      "link_type": "DocType",
+      "link_to": "Website Settings"
+    },
+    {
+      "type": "Link",
+      "label": "المكتبة الإعلامية",
+      "link_type": "DocType",
+      "link_to": "Media Library"
+    },
+    {
+      "type": "Link",
+      "label": "قوائم التنقل",
+      "link_type": "DocType",
+      "link_to": "AAU Menu"
+    },
+    {
+      "type": "Link",
+      "label": "السلايدر",
+      "link_type": "DocType",
+      "link_to": "Slider"
+    },
+    {
+      "type": "Link",
+      "label": "المؤشرات",
+      "link_type": "DocType",
+      "link_to": "Dashboard Metrics"
+    }
+  ]
+}

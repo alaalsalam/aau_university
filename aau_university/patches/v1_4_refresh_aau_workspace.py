@@ -1,13 +1,21 @@
 # -*- coding: utf-8 -*-
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 import frappe
-from frappe.modules.import_file import import_file_by_path
-from aau_university.content_access import ensure_workspace_access, hide_legacy_workspace
+from frappe.model.rename_doc import rename_doc
+from aau_university.content_access import (
+    PRIMARY_WORKSPACE_LABEL,
+    PRIMARY_WORKSPACE_TITLE,
+    ensure_workspace_access,
+    hide_legacy_workspace,
+)
 
 LOG_PREFIX = "[AAU WORKSPACE]"
+PRIMARY_WORKSPACE = "aau"
+LEGACY_WORKSPACES = ["AAU", "AAU Content Hub"]
 
 
 def execute():
@@ -35,16 +43,26 @@ def _sync_workspace_json():
     if not workspace_path.exists():
         frappe.throw(f"AAU workspace file not found: {workspace_path}")
 
-    import_file_by_path(str(workspace_path), force=True)
+    payload = json.loads(workspace_path.read_text())
+    workspace_name = payload["name"]
+    if frappe.db.exists("Workspace", workspace_name):
+        doc = frappe.get_doc("Workspace", workspace_name)
+        doc.update(payload)
+        doc.save(ignore_permissions=True)
+    else:
+        frappe.get_doc(payload).insert(ignore_permissions=True)
 
 
 def _activate_workspace():
-    if frappe.db.exists("Workspace", "AAU"):
-        frappe.db.set_value("Workspace", "AAU", "is_hidden", 0, update_modified=False)
-        frappe.db.set_value("Workspace", "AAU", "title", "AAU", update_modified=False)
-        frappe.db.set_value("Workspace", "AAU", "label", "مركز إدارة موقع الجامعة", update_modified=False)
-        ensure_workspace_access("AAU")
+    if frappe.db.exists("Workspace", "AAU") and not frappe.db.exists("Workspace", PRIMARY_WORKSPACE):
+        rename_doc("Workspace", "AAU", PRIMARY_WORKSPACE, force=True, ignore_permissions=True)
 
-    # Keep legacy workspace out of sidebar to avoid confusion.
-    if frappe.db.exists("Workspace", "AAU Content Hub"):
-        hide_legacy_workspace("AAU Content Hub")
+    if frappe.db.exists("Workspace", PRIMARY_WORKSPACE):
+        frappe.db.set_value("Workspace", PRIMARY_WORKSPACE, "is_hidden", 0, update_modified=False)
+        frappe.db.set_value("Workspace", PRIMARY_WORKSPACE, "title", PRIMARY_WORKSPACE_TITLE, update_modified=False)
+        frappe.db.set_value("Workspace", PRIMARY_WORKSPACE, "label", PRIMARY_WORKSPACE_LABEL, update_modified=False)
+        ensure_workspace_access(PRIMARY_WORKSPACE)
+
+    for workspace_name in LEGACY_WORKSPACES:
+        if workspace_name != PRIMARY_WORKSPACE and frappe.db.exists("Workspace", workspace_name):
+            hide_legacy_workspace(workspace_name)
