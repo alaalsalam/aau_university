@@ -519,7 +519,7 @@ def get_public_college(slug: str):
 @api_endpoint
 def get_public_page(slug: str):
     # WHY+WHAT: use one lightweight AAU Page doctype + endpoint for static website pages to keep admin editing simple and rollout low-risk.
-    doctype = _first_existing_doctype(["Pages", "AAU Page", "Static Page"])
+    doctype = _first_existing_doctype(["AAU Page", "Static Page", "Pages"])
     if not doctype:
         return {
             "slug": slug,

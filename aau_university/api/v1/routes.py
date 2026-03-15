@@ -135,6 +135,7 @@ def ensure_routes():
         Rule("/blog/slug/<path:slug>", methods=["GET"], endpoint=content.get_blog_post_by_slug),
         Rule("/blog/<path:post_id>/views", methods=["POST"], endpoint=content.increment_blog_views),
         # Pages
+        Rule("/pages", methods=["GET"], endpoint=content.list_pages),
         Rule("/pages/<path:slug>", methods=["GET"], endpoint=content.get_page),
         Rule("/pages/<path:slug>", methods=["PUT"], endpoint=content.update_page),
         # Media

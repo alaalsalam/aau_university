@@ -23,7 +23,7 @@ ENTITY_CONFIG = {
     "projects": {"doctype": "Projects", "id_field": "id", "slug_field": "slug"},
     "campus_life": {"doctype": "Campus Life", "id_field": "id"},
     "blog_posts": {"doctype": "Blog Posts", "id_field": "id", "slug_field": "slug"},
-    "pages": {"doctype": "Pages", "doctype_candidates": ["Pages", "AAU Page", "Static Page"], "id_field": "id", "slug_field": "slug"},
+    "pages": {"doctype": "AAU Page", "doctype_candidates": ["AAU Page", "Static Page", "Pages"], "id_field": "id", "slug_field": "slug"},
     "media": {"doctype": "Media Library", "id_field": "id"},
     "settings": {"doctype": "Website Settings", "id_field": "id"},
     "contact_messages": {

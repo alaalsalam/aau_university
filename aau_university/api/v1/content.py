@@ -740,9 +740,16 @@ def increment_blog_views(post_id: str):
 
 @frappe.whitelist(allow_guest=True)
 @api_endpoint
+def list_pages():
+    """List managed static pages."""
+    return list_entities("pages", search_fields=["slug", "title_ar", "title_en", "page_title"], public=False)
+
+
+@frappe.whitelist(allow_guest=True)
+@api_endpoint
 def get_page(slug: str):
     """Get a page by slug."""
-    return get_entity("pages", slug, by="slug", public=True)
+    return get_entity("pages", slug, by="slug", public=False)
 
 
 @frappe.whitelist()
