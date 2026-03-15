@@ -90,6 +90,7 @@ def ensure_routes():
         Rule("/offers/active", methods=["GET"], endpoint=content.list_offers_active),
         Rule("/offers/category/<path:category>", methods=["GET"], endpoint=content.list_offers_by_category),
         Rule("/offers/search", methods=["GET"], endpoint=content.search_offers),
+        Rule("/offers/<path:offer_id>", methods=["GET"], endpoint=content.get_offer),
         Rule("/offers/<path:offer_id>", methods=["PUT"], endpoint=content.update_offer),
         Rule("/offers/<path:offer_id>", methods=["DELETE"], endpoint=content.delete_offer),
         # FAQs

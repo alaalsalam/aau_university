@@ -443,6 +443,13 @@ def list_offers():
 
 @frappe.whitelist(allow_guest=True)
 @api_endpoint
+def get_offer(offer_id: str):
+    """Get offer by id."""
+    return get_entity("offers", offer_id, by="id", public=True)
+
+
+@frappe.whitelist(allow_guest=True)
+@api_endpoint
 def list_offers_active():
     """List active offers."""
     frappe.form_dict["is_active"] = 1
