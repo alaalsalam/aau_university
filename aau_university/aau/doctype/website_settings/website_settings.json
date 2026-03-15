@@ -512,7 +512,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2026-03-02 00:41:02.076133",
+ "modified": "2026-03-15 04:25:21.063587",
  "modified_by": "Administrator",
  "module": "AAU",
  "name": "Website Settings",
@@ -539,6 +539,16 @@
    "print": 1,
    "read": 1,
    "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "AAU Content Manager",
    "share": 1,
    "write": 1
   }

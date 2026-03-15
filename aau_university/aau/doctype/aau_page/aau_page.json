@@ -1,7 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
- "creation": "2026-02-04 22:00:00.000000",
+ "creation": "2026-02-04 22:00:00",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
@@ -60,7 +60,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-02-04 22:00:00.000000",
+ "modified": "2026-03-15 04:25:20.225618",
  "modified_by": "Administrator",
  "module": "AAU",
  "name": "AAU Page",
@@ -75,6 +75,18 @@
    "read": 1,
    "report": 1,
    "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "AAU Content Manager",
    "share": 1,
    "write": 1
   }
