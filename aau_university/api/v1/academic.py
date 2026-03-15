@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import frappe
 from frappe.translate import get_all_translations
+from frappe.utils import cint
 
 from .resources import (
     create_entity,
@@ -19,7 +20,15 @@ from .utils import ApiError, api_endpoint
 def list_colleges():
     """List colleges."""
     result = list_entities("colleges", search_fields=["name_ar", "name_en"], public=True)
-    result["data"] = [_enrich_college_payload(item) for item in result["data"]]
+    normalized = []
+    for item in result["data"]:
+        row = _normalize_public_college_row(_enrich_college_payload(item))
+        if row:
+            normalized.append(row)
+
+    result["data"] = _deduplicate_public_colleges(normalized)
+    result["meta"]["total"] = len(result["data"])
+    result["meta"]["totalPages"] = 1
     return {"data": result["data"], "meta": result["meta"], "__meta__": True}
 
 
@@ -27,7 +36,13 @@ def list_colleges():
 @api_endpoint
 def get_college(slug: str):
     """Get a college by slug."""
-    return _enrich_college_payload(get_entity("colleges", slug, by="slug", public=True))
+    try:
+        return _normalize_public_college_row(_enrich_college_payload(get_entity("colleges", slug, by="slug", public=True)))
+    except frappe.DoesNotExistError:
+        for row in _iter_public_college_candidates():
+            if row.get("slug") == slug:
+                return row
+        raise
 
 
 @frappe.whitelist(allow_guest=True)
@@ -306,6 +321,74 @@ def _enrich_college_payload(payload: dict) -> dict:
     if dean_name and not row.get("deanName"):
         row["deanName"] = dean_name
     return row
+
+
+def _public_college_slug(source: str | None) -> str:
+    if not source:
+        return ""
+    return frappe.scrub(source).replace("_", "-").strip("-")
+
+
+def _normalize_public_college_row(payload: dict | None) -> dict | None:
+    if not payload:
+        return None
+
+    row = dict(payload)
+    name_ar = (row.get("nameAr") or "").strip()
+    name_en = (row.get("nameEn") or "").strip()
+    college_name = (row.get("collegeName") or "").strip()
+    display_name = name_ar or name_en or college_name
+    is_active = cint(row.get("isActive"))
+
+    if not is_active or not display_name:
+        return None
+
+    slug = (row.get("slug") or "").strip() or _public_college_slug(display_name)
+    if not slug:
+        return None
+
+    row["slug"] = slug
+    row["id"] = row.get("id") or row.get("docname") or slug
+    if not row.get("collegeName"):
+        row["collegeName"] = college_name or name_ar or name_en
+    if not row.get("nameAr"):
+        row["nameAr"] = name_ar or college_name or name_en
+    if not row.get("nameEn"):
+        row["nameEn"] = name_en or college_name or name_ar
+    row["isActive"] = 1
+    row["displayOrder"] = cint(row.get("displayOrder"))
+    return row
+
+
+def _college_rank(row: dict) -> tuple[int, int, int]:
+    return (
+        cint(not bool(row.get("slug"))),
+        cint(not bool(row.get("nameAr") and row.get("nameEn"))),
+        cint(row.get("displayOrder") or 9999),
+    )
+
+
+def _deduplicate_public_colleges(rows: list[dict]) -> list[dict]:
+    by_slug: dict[str, dict] = {}
+    for row in rows:
+        slug = row.get("slug")
+        if not slug:
+            continue
+        current = by_slug.get(slug)
+        if not current or _college_rank(row) < _college_rank(current):
+            by_slug[slug] = row
+
+    return sorted(by_slug.values(), key=lambda row: (cint(row.get("displayOrder") or 9999), row.get("slug") or ""))
+
+
+def _iter_public_college_candidates() -> list[dict]:
+    result = list_entities("colleges", search_fields=["name_ar", "name_en"], public=True)
+    normalized = []
+    for item in result["data"]:
+        row = _normalize_public_college_row(_enrich_college_payload(item))
+        if row:
+            normalized.append(row)
+    return _deduplicate_public_colleges(normalized)
 
 
 def _list_faculty_payload(include_inactive: bool = False) -> list[dict]:
