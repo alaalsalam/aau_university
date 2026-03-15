@@ -123,6 +123,7 @@ def ensure_routes():
         Rule("/campus-life", methods=["GET"], endpoint=content.list_campus_life),
         Rule("/campus-life", methods=["POST"], endpoint=content.create_campus_life),
         Rule("/campus-life/category/<path:category>", methods=["GET"], endpoint=content.list_campus_life_by_category),
+        Rule("/campus-life/<path:slug>", methods=["GET"], endpoint=content.get_campus_life),
         Rule("/campus-life/<path:item_id>", methods=["PUT"], endpoint=content.update_campus_life),
         Rule("/campus-life/<path:item_id>", methods=["DELETE"], endpoint=content.delete_campus_life),
         # Blog

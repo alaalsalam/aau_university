@@ -408,6 +408,111 @@ def _payload_list_value(item) -> str:
     return _as_text(item)
 
 
+def _list_campus_life_payload() -> list[dict]:
+    if not frappe.db.exists("DocType", "Campus Life"):
+        return []
+
+    rows = frappe.get_all(
+        "Campus Life",
+        filters={"is_published": 1} if frappe.get_meta("Campus Life").get_field("is_published") else None,
+        fields=["name", "title", "content", "image", "display_order"],
+        order_by="display_order asc, modified desc, name asc",
+        ignore_permissions=True,
+    )
+
+    items: list[dict] = []
+    used_slugs: set[str] = set()
+    for row in rows:
+        items.append(_serialize_campus_life_row(row, used_slugs))
+    return items
+
+
+def _serialize_campus_life_row(row, used_slugs: set[str] | None = None) -> dict:
+    title_ar = _as_text(row.get("title"))
+    content_ar = _as_text(row.get("content"))
+    title_en = _translated_text(title_ar)
+    content_en = _translated_text(content_ar)
+    category = _infer_campus_life_category(title_ar, content_ar)
+
+    if used_slugs is None:
+        used_slugs = set()
+    slug = _unique_slug(_slugify_value(title_ar or row.get("name")), row.get("name"), used_slugs)
+
+    return {
+        "id": _as_text(row.get("name")),
+        "slug": slug,
+        "titleAr": title_ar,
+        "titleEn": title_en,
+        "descriptionAr": _excerpt_text(content_ar),
+        "descriptionEn": _excerpt_text(content_en),
+        "contentAr": content_ar,
+        "contentEn": content_en,
+        "category": category,
+        "image": row.get("image") or "",
+        "displayOrder": int(row.get("display_order") or 0),
+    }
+
+
+def _infer_campus_life_category(title: str, content: str) -> str:
+    haystack = f"{title} {content}".lower()
+    if any(keyword in haystack for keyword in ("نشاط", "فعالية", "نادي", "رياضي", "ثقافي", "تطوعي")):
+        return "activities"
+    if any(
+        keyword in haystack
+        for keyword in (
+            "مكتبة",
+            "مختبر",
+            "ملعب",
+            "مركز",
+            "قاعة",
+            "مطعم",
+            "كافتيريا",
+            "عيادة",
+            "تقنية",
+            "تقني",
+            "مرفق",
+        )
+    ):
+        return "facilities"
+    return "campus"
+
+
+def _excerpt_text(value: str, limit: int = 180) -> str:
+    text = " ".join(_as_text(value).split())
+    if not text:
+        return ""
+    if len(text) <= limit:
+        return text
+    return f"{text[: limit - 1].rstrip()}…"
+
+
+def _slugify_value(value: str | None) -> str:
+    source = _as_text(value)
+    if not source:
+        return ""
+    return frappe.scrub(source).replace("_", "-").strip("-")
+
+
+def _unique_slug(base_slug: str, fallback: str | None, used_slugs: set[str]) -> str:
+    candidate = base_slug or _slugify_value(fallback) or "item"
+    if candidate not in used_slugs:
+        used_slugs.add(candidate)
+        return candidate
+
+    suffix = _slugify_value(fallback) or "item"
+    unique_candidate = f"{candidate}-{suffix}"
+    if unique_candidate not in used_slugs:
+        used_slugs.add(unique_candidate)
+        return unique_candidate
+
+    index = 2
+    while f"{unique_candidate}-{index}" in used_slugs:
+        index += 1
+    final_candidate = f"{unique_candidate}-{index}"
+    used_slugs.add(final_candidate)
+    return final_candidate
+
+
 def _translated_text(value: str, lang: str = "en") -> str:
     source = _as_text(value)
     if not source:
@@ -637,17 +742,27 @@ def delete_project(project_id: str):
 @api_endpoint
 def list_campus_life():
     """List campus life items."""
-    result = list_entities("campus_life", public=True)
-    return {"data": result["data"], "meta": result["meta"], "__meta__": True}
+    items = _list_campus_life_payload()
+    return {"data": items, "meta": {"total": len(items)}, "__meta__": True}
+
+
+@frappe.whitelist(allow_guest=True)
+@api_endpoint
+def get_campus_life(slug: str):
+    """Get campus life item by derived slug."""
+    for item in _list_campus_life_payload():
+        if item.get("slug") == slug:
+            return item
+    raise ApiError("NOT_FOUND", "Campus life item not found", status_code=404)
 
 
 @frappe.whitelist(allow_guest=True)
 @api_endpoint
 def list_campus_life_by_category(category: str):
     """List campus life by category."""
-    frappe.form_dict["category"] = category
-    result = list_entities("campus_life", public=True)
-    return {"data": result["data"], "meta": result["meta"], "__meta__": True}
+    normalized_category = _as_text(category).lower()
+    items = [item for item in _list_campus_life_payload() if item.get("category") == normalized_category]
+    return {"data": items, "meta": {"total": len(items)}, "__meta__": True}
 
 
 @frappe.whitelist()
