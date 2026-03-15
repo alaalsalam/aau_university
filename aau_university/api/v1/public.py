@@ -453,9 +453,10 @@ def list_public_colleges(limit: int | None = None, page: int | None = None):
     sort_parts.append("modified desc")
     order_by = ", ".join(sort_parts)
 
+    fields = ["name", *sorted(db_fields)] if "name" not in db_fields else sorted(db_fields)
     rows = frappe.get_all(
         doctype,
-        fields=list(db_fields),
+        fields=fields,
         filters=filters,
         order_by=order_by,
         limit_start=offset,
@@ -492,12 +493,13 @@ def get_public_college(slug: str):
     if "is_active" in db_fields:
         filters["is_active"] = 1
 
-    row = frappe.db.get_value(doctype, filters, list(db_fields), as_dict=True)
+    fields = ["name", *sorted(db_fields)] if "name" not in db_fields else sorted(db_fields)
+    row = frappe.db.get_value(doctype, filters, fields, as_dict=True)
     if not row:
         fallback_filters = {"is_active": 1} if "is_active" in db_fields else {}
         candidates = frappe.get_all(
             doctype,
-            fields=list(db_fields),
+            fields=fields,
             filters=fallback_filters,
             ignore_permissions=True,
             limit_page_length=200,
@@ -1815,7 +1817,7 @@ def _get_college_programs_from_doctype(college_row: dict) -> list[dict]:
     if not doctype:
         return []
 
-    college_key = college_row.get("name")
+    college_key = college_row.get("name") or college_row.get("id") or college_row.get("slug")
     if not college_key:
         return []
 
@@ -1846,6 +1848,7 @@ def _get_college_programs_from_doctype(college_row: dict) -> list[dict]:
         "description_en",
         "image",
         "college",
+        "degree_type",
         "is_active",
     ]
     fields = [field for field in desired if field in available]
@@ -1877,9 +1880,10 @@ def _get_college_programs_from_doctype(college_row: dict) -> list[dict]:
                 "highSchoolType": program.get("high_school_type") or "علمي",
                 "highSchoolTypeEn": program.get("high_school_type_en") or "Scientific",
                 "studyYears": str(program.get("study_years") or program.get("duration") or ""),
+                "degreeType": _as_text(program.get("degree_type")),
                 "image": program.get("image"),
                 "descriptionAr": program.get("description_ar") or program.get("description") or "",
-                "descriptionEn": program.get("description_en") or program.get("description") or "",
+                "descriptionEn": program.get("description_en") or _translated_text(program.get("description_ar") or "") or program.get("description") or "",
                 "objectives": [],
                 "studyPlan": [],
                 "careerProspectsAr": [],
