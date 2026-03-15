@@ -13,6 +13,189 @@ from .utils import ApiError, api_endpoint, require_roles
 DOCTOR_ROLE = "Instructor"
 STUDENT_ROLE = "Student"
 
+PERMISSION_CATALOG = [
+    {
+        "id": "p1",
+        "key": "users.view",
+        "nameAr": "عرض المستخدمين",
+        "nameEn": "View Users",
+        "descriptionAr": "عرض قائمة المستخدمين",
+        "descriptionEn": "View users list",
+        "category": "users",
+    },
+    {
+        "id": "p2",
+        "key": "users.create",
+        "nameAr": "إضافة مستخدم",
+        "nameEn": "Create User",
+        "descriptionAr": "إضافة مستخدم جديد",
+        "descriptionEn": "Create new user",
+        "category": "users",
+    },
+    {
+        "id": "p3",
+        "key": "users.edit",
+        "nameAr": "تعديل مستخدم",
+        "nameEn": "Edit User",
+        "descriptionAr": "تعديل بيانات المستخدمين",
+        "descriptionEn": "Edit user data",
+        "category": "users",
+    },
+    {
+        "id": "p4",
+        "key": "users.delete",
+        "nameAr": "حذف مستخدم",
+        "nameEn": "Delete User",
+        "descriptionAr": "حذف المستخدمين",
+        "descriptionEn": "Delete users",
+        "category": "users",
+    },
+    {
+        "id": "p5",
+        "key": "roles.manage",
+        "nameAr": "إدارة الأدوار",
+        "nameEn": "Manage Roles",
+        "descriptionAr": "إضافة وتعديل الأدوار والصلاحيات",
+        "descriptionEn": "Add and edit roles and permissions",
+        "category": "users",
+    },
+    {
+        "id": "p6",
+        "key": "content.news",
+        "nameAr": "إدارة الأخبار",
+        "nameEn": "Manage News",
+        "descriptionAr": "إضافة وتعديل وحذف الأخبار",
+        "descriptionEn": "Add, edit and delete news",
+        "category": "content",
+    },
+    {
+        "id": "p7",
+        "key": "content.events",
+        "nameAr": "إدارة الفعاليات",
+        "nameEn": "Manage Events",
+        "descriptionAr": "إضافة وتعديل وحذف الفعاليات",
+        "descriptionEn": "Add, edit and delete events",
+        "category": "content",
+    },
+    {
+        "id": "p8",
+        "key": "content.projects",
+        "nameAr": "إدارة المشاريع",
+        "nameEn": "Manage Projects",
+        "descriptionAr": "إضافة وتعديل وحذف المشاريع",
+        "descriptionEn": "Add, edit and delete projects",
+        "category": "content",
+    },
+    {
+        "id": "p9",
+        "key": "content.media",
+        "nameAr": "إدارة الوسائط",
+        "nameEn": "Manage Media",
+        "descriptionAr": "رفع وحذف ملفات الوسائط",
+        "descriptionEn": "Upload and delete media files",
+        "category": "content",
+    },
+    {
+        "id": "p10",
+        "key": "settings.general",
+        "nameAr": "الإعدادات العامة",
+        "nameEn": "General Settings",
+        "descriptionAr": "تعديل إعدادات الموقع",
+        "descriptionEn": "Edit site settings",
+        "category": "settings",
+    },
+    {
+        "id": "p11",
+        "key": "settings.appearance",
+        "nameAr": "إعدادات المظهر",
+        "nameEn": "Appearance Settings",
+        "descriptionAr": "تعديل مظهر الموقع",
+        "descriptionEn": "Edit site appearance",
+        "category": "settings",
+    },
+    {
+        "id": "p12",
+        "key": "reports.view",
+        "nameAr": "عرض التقارير",
+        "nameEn": "View Reports",
+        "descriptionAr": "عرض تقارير النظام",
+        "descriptionEn": "View system reports",
+        "category": "reports",
+    },
+    {
+        "id": "p13",
+        "key": "reports.export",
+        "nameAr": "تصدير التقارير",
+        "nameEn": "Export Reports",
+        "descriptionAr": "تصدير التقارير",
+        "descriptionEn": "Export reports",
+        "category": "reports",
+    },
+]
+
+ALL_PERMISSION_KEYS = [item["key"] for item in PERMISSION_CATALOG]
+SYSTEM_ROLE_KEYS = {
+    "System Manager",
+    "Administrator",
+    "AAU Admin",
+    "AAU Content Manager",
+    "Website Manager",
+    "Blogger",
+    STUDENT_ROLE,
+    DOCTOR_ROLE,
+}
+
+ROLE_PERMISSION_MAP = {
+    "System Manager": ALL_PERMISSION_KEYS,
+    "Administrator": ALL_PERMISSION_KEYS,
+    "AAU Admin": ALL_PERMISSION_KEYS,
+    "AAU Content Manager": ["content.news", "content.events", "content.projects", "content.media", "settings.general"],
+    "Website Manager": ["content.news", "content.events", "content.projects", "content.media", "settings.general"],
+    "Blogger": ["content.news"],
+    DOCTOR_ROLE: ["reports.view"],
+    STUDENT_ROLE: [],
+}
+
+
+def _role_permissions(role_name: str) -> list[str]:
+    if role_name in ROLE_PERMISSION_MAP:
+        return ROLE_PERMISSION_MAP[role_name]
+    return []
+
+
+def _primary_role(user_roles: list[str]) -> str:
+    priority = ["System Manager", "Administrator", "AAU Admin", "AAU Content Manager", "Website Manager", DOCTOR_ROLE, STUDENT_ROLE]
+    for role_name in priority:
+        if role_name in user_roles:
+            return role_name
+    custom_roles = [role for role in user_roles if role not in {"All", "Guest"}]
+    return custom_roles[0] if custom_roles else ""
+
+
+def _user_payload(user_id: str) -> dict:
+    user = frappe.get_doc("User", user_id)
+    roles = [row.role for row in user.roles or [] if row.role not in {"All", "Guest"}]
+    primary_role = _primary_role(roles)
+    return {
+        "id": user.name,
+        "nameAr": user.full_name or user.first_name or user.name,
+        "nameEn": user.full_name or user.first_name or user.name,
+        "email": user.email,
+        "phone": user.mobile_no or user.phone,
+        "avatar": user.user_image,
+        "roleId": primary_role,
+        "status": "active" if user.enabled else "inactive",
+        "lastLogin": user.last_login,
+        "createdAt": user.creation,
+    }
+
+
+def _set_user_primary_role(user_doc, role_name: str | None):
+    next_role = (role_name or "").strip()
+    user_doc.roles = []
+    if next_role:
+        user_doc.append("roles", {"role": next_role})
+
 
 def _build_entity_permissions(user_roles: set[str]) -> dict:
     if user_roles.intersection(SUPER_ADMIN_ROLES):
@@ -65,24 +248,11 @@ def list_users():
     require_roles(ADMIN_ROLES)
     users = frappe.get_all(
         "User",
-        fields=["name", "email", "enabled", "last_login", "creation"],
+        fields=["name"],
         filters={"user_type": "System User"},
         ignore_permissions=True,
     )
-    data = []
-    for user in users:
-        data.append(
-            {
-                "id": user["name"],
-                "nameAr": user["name"],
-                "nameEn": user["name"],
-                "email": user["email"],
-                "status": "active" if user["enabled"] else "inactive",
-                "lastLogin": user["last_login"],
-                "createdAt": user["creation"],
-            }
-        )
-    return data
+    return [_user_payload(user["name"]) for user in users]
 
 
 @frappe.whitelist()
@@ -90,19 +260,7 @@ def list_users():
 def get_user(user_id: str):
     """Get user details."""
     require_roles(ADMIN_ROLES)
-    user = frappe.get_doc("User", user_id)
-    return {
-        "id": user.name,
-        "nameAr": user.full_name or user.name,
-        "nameEn": user.full_name or user.name,
-        "email": user.email,
-        "phone": user.phone,
-        "avatar": user.user_image,
-        "roleId": user.role_profile_name,
-        "status": "active" if user.enabled else "inactive",
-        "lastLogin": user.last_login,
-        "createdAt": user.creation,
-    }
+    return _user_payload(user_id)
 
 
 @frappe.whitelist()
@@ -113,6 +271,9 @@ def create_user(**payload):
     email = payload.get("email")
     if not email:
         raise ApiError("VALIDATION_ERROR", "Email is required", status_code=400)
+    role_id = (payload.get("roleId") or "").strip()
+    if role_id and not frappe.db.exists("Role", role_id):
+        raise ApiError("VALIDATION_ERROR", "Role does not exist", status_code=400)
     user = frappe.get_doc(
         {
             "doctype": "User",
@@ -120,8 +281,11 @@ def create_user(**payload):
             "first_name": payload.get("nameAr") or payload.get("nameEn") or email,
             "enabled": 1,
             "user_type": "System User",
+            "mobile_no": payload.get("phone"),
+            "send_welcome_email": 0,
         }
     )
+    _set_user_primary_role(user, role_id)
     user.insert(ignore_permissions=True)
     return get_user(user.name), 201
 
@@ -137,11 +301,16 @@ def update_user(user_id: str, **payload):
     if payload.get("email"):
         user.email = payload["email"]
     if payload.get("phone"):
-        user.phone = payload["phone"]
+        user.mobile_no = payload["phone"]
     if payload.get("avatar"):
         user.user_image = payload["avatar"]
     if payload.get("status") in ("active", "inactive", "suspended"):
         user.enabled = 1 if payload["status"] == "active" else 0
+    if "roleId" in payload:
+        role_id = (payload.get("roleId") or "").strip()
+        if role_id and not frappe.db.exists("Role", role_id):
+            raise ApiError("VALIDATION_ERROR", "Role does not exist", status_code=400)
+        _set_user_primary_role(user, role_id)
     user.save(ignore_permissions=True)
     return get_user(user.name)
 
@@ -160,7 +329,7 @@ def delete_user(user_id: str):
 def list_roles():
     """List roles."""
     require_roles(ADMIN_ROLES)
-    roles = frappe.get_all("Role", fields=["name"], ignore_permissions=True)
+    roles = frappe.get_all("Role", fields=["name", "creation"], ignore_permissions=True, order_by="name asc")
     return [
         {
             "id": role["name"],
@@ -169,9 +338,9 @@ def list_roles():
             "nameEn": role["name"],
             "descriptionAr": role["name"],
             "descriptionEn": role["name"],
-            "permissions": [],
-            "isSystem": True,
-            "createdAt": None,
+            "permissions": _role_permissions(role["name"]),
+            "isSystem": role["name"] in SYSTEM_ROLE_KEYS,
+            "createdAt": role["creation"],
         }
         for role in roles
     ]
@@ -190,9 +359,9 @@ def get_role(role_id: str):
         "nameEn": role.name,
         "descriptionAr": role.name,
         "descriptionEn": role.name,
-        "permissions": [],
-        "isSystem": True,
-        "createdAt": None,
+        "permissions": _role_permissions(role.name),
+        "isSystem": role.name in SYSTEM_ROLE_KEYS,
+        "createdAt": role.creation,
     }
 
 
@@ -215,6 +384,8 @@ def update_role(role_id: str, **payload):
     """Update role."""
     require_roles(ADMIN_ROLES)
     role = frappe.get_doc("Role", role_id)
+    if role.name in SYSTEM_ROLE_KEYS:
+        raise ApiError("FORBIDDEN", "System roles cannot be modified", status_code=403)
     role_name = payload.get("key") or payload.get("nameEn") or payload.get("nameAr")
     if role_name:
         role.role_name = role_name
@@ -227,6 +398,8 @@ def update_role(role_id: str, **payload):
 def delete_role(role_id: str):
     """Delete role."""
     require_roles(ADMIN_ROLES)
+    if role_id in SYSTEM_ROLE_KEYS:
+        raise ApiError("FORBIDDEN", "System roles cannot be deleted", status_code=403)
     frappe.delete_doc("Role", role_id, ignore_permissions=True)
     return {"deleted": True}
 
@@ -236,19 +409,10 @@ def delete_role(role_id: str):
 def list_permissions(category: str | None = None):
     """List permissions (mapped from Role)."""
     require_roles(ADMIN_ROLES)
-    roles = frappe.get_all("Role", fields=["name"], ignore_permissions=True)
-    return [
-        {
-            "id": role["name"],
-            "key": role["name"],
-            "nameAr": role["name"],
-            "nameEn": role["name"],
-            "descriptionAr": role["name"],
-            "descriptionEn": role["name"],
-            "category": category or "content",
-        }
-        for role in roles
-    ]
+    permissions = PERMISSION_CATALOG
+    if category:
+        permissions = [item for item in permissions if item["category"] == category]
+    return permissions
 
 
 def _resolve_entity_doctype(entity_key: str) -> str | None:
