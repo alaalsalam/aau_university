@@ -60,6 +60,7 @@ def ensure_routes():
         Rule("/program-objectives/<path:objective_id>", methods=["PUT"], endpoint=academic.update_program_objective),
         Rule("/program-objectives/<path:objective_id>", methods=["DELETE"], endpoint=academic.delete_program_objective),
         Rule("/programs/<path:program_id>/faculty", methods=["GET"], endpoint=academic.list_program_faculty),
+        Rule("/departments", methods=["GET"], endpoint=academic.list_departments),
         Rule("/program-faculty", methods=["POST"], endpoint=academic.create_program_faculty),
         Rule("/program-faculty/<path:program_faculty_id>", methods=["PUT"], endpoint=academic.update_program_faculty),
         Rule("/program-faculty/<path:program_faculty_id>", methods=["DELETE"], endpoint=academic.delete_program_faculty),

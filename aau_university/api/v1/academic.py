@@ -116,6 +116,40 @@ def list_programs():
 
 @frappe.whitelist(allow_guest=True)
 @api_endpoint
+def list_departments():
+    """List academic departments."""
+    if not frappe.db.exists("DocType", "Academic Departments"):
+        return {"data": [], "meta": {"page": 1, "limit": 20, "total": 0, "totalPages": 0}, "__meta__": True}
+
+    rows = frappe.get_all(
+        "Academic Departments",
+        fields=["name", "department_name", "college", "is_active"],
+        filters={"is_active": 1},
+        order_by="modified desc",
+        ignore_permissions=True,
+        limit_page_length=0,
+    )
+    data = []
+    for row in rows:
+        college_docname = _as_text(row.get("college"))
+        data.append(
+            {
+                "id": row.get("name"),
+                "nameAr": _as_text(row.get("department_name")),
+                "nameEn": _translated_text(_as_text(row.get("department_name"))),
+                "college": college_docname,
+                "collegeLabel": _resolve_college_label(college_docname),
+            }
+        )
+    return {
+        "data": data,
+        "meta": {"page": 1, "limit": len(data) or 20, "total": len(data), "totalPages": 1 if data else 0},
+        "__meta__": True,
+    }
+
+
+@frappe.whitelist(allow_guest=True)
+@api_endpoint
 def get_program(program_id: str):
     """Get a program by id."""
     return get_entity("academic_programs", program_id, by="id", public=True)
@@ -517,7 +551,7 @@ def _list_faculty_payload(include_inactive: bool = False, college_name: str | No
         ]
 
     if college_name:
-        items = [item for item in items if item.get("linkedCollege") == college_name]
+        items = [item for item in items if _faculty_matches_college(item, college_name)]
 
     if q:
         needle = q.casefold()
@@ -667,6 +701,37 @@ def _resolve_college_label(college_name: str) -> str:
         as_dict=True,
     ) or {}
     return _as_text(row.get("name_ar") or row.get("college_name") or row.get("name_en"), default=college_name)
+
+
+def _resolve_college_identity(college_name: str) -> tuple[str, str]:
+    if not college_name:
+        return "", ""
+    try:
+        college_docname = _resolve_college_docname(college_name)
+    except frappe.DoesNotExistError:
+        return "", _public_college_slug(college_name)
+    row = frappe.db.get_value(
+        "Colleges",
+        college_docname,
+        ["name_ar", "college_name", "name_en", "slug"],
+        as_dict=True,
+    ) or {}
+    label = _as_text(row.get("name_ar") or row.get("college_name") or row.get("name_en"), default=college_docname)
+    slug = _as_text(row.get("slug")) or _public_college_slug(label)
+    return label, slug
+
+
+def _faculty_matches_college(item: dict, college_name: str) -> bool:
+    linked_college = _as_text(item.get("linkedCollege"))
+    if not linked_college:
+        return False
+
+    if linked_college == college_name:
+        return True
+
+    target_label, target_slug = _resolve_college_identity(college_name)
+    linked_label, linked_slug = _resolve_college_identity(linked_college)
+    return bool(target_slug and linked_slug and target_slug == linked_slug) or bool(target_label and linked_label and target_label == linked_label)
 
 
 def _translated_text(value: str, lang: str = "en") -> str:
