@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import frappe
+from frappe.translate import get_all_translations
 
 from .resources import (
     create_entity,
@@ -11,7 +12,7 @@ from .resources import (
     list_entities,
     update_entity,
 )
-from .utils import api_endpoint
+from .utils import ApiError, api_endpoint
 
 
 @frappe.whitelist(allow_guest=True)
@@ -170,29 +171,34 @@ def delete_event(event_id: str):
 @api_endpoint
 def list_centers():
     """List centers."""
-    result = list_entities("centers", public=True)
-    return {"data": result["data"], "meta": result["meta"], "__meta__": True}
+    return {"data": _list_centers_payload(), "meta": _centers_meta(), "__meta__": True}
 
 
 @frappe.whitelist(allow_guest=True)
 @api_endpoint
 def get_center(center_id: str):
     """Get center by id."""
-    return get_entity("centers", center_id, by="id", public=True)
+    return _get_center_payload(center_id)
 
 
 @frappe.whitelist()
 @api_endpoint
 def create_center(**payload):
     """Create center."""
-    return create_entity("centers", payload), 201
+    doc = frappe.get_doc(_normalize_center_payload(payload))
+    doc.insert(ignore_permissions=True)
+    return _serialize_center_row(doc), 201
 
 
 @frappe.whitelist()
 @api_endpoint
 def update_center(center_id: str, **payload):
     """Update center."""
-    return update_entity("centers", center_id, payload, by="id")
+    docname = _resolve_center_docname(center_id)
+    doc = frappe.get_doc("Centers", docname)
+    doc.update(_normalize_center_payload(payload, is_update=True))
+    doc.save(ignore_permissions=True)
+    return _serialize_center_row(doc)
 
 
 @frappe.whitelist()
@@ -238,6 +244,193 @@ def update_partner(partner_id: str, **payload):
 def delete_partner(partner_id: str):
     """Delete partner."""
     return delete_entity("partners", partner_id, by="id")
+
+
+def _list_centers_payload(include_unpublished: bool = False) -> list[dict]:
+    filters: dict[str, object] = {}
+    if frappe.get_meta("Centers").get_field("is_published") and not include_unpublished:
+        filters["is_published"] = 1
+
+    rows = frappe.get_all(
+        "Centers",
+        filters=filters,
+        fields=[
+            "name",
+            "id",
+            "title_ar",
+            "title_en",
+            "desc_ar",
+            "desc_en",
+            "image",
+            "location",
+            "phone",
+            "email",
+            "display_order",
+        ],
+        order_by="display_order asc, modified desc",
+        ignore_permissions=True,
+        limit_page_length=0,
+    )
+
+    items = []
+    for row in rows:
+        doc = frappe.get_doc("Centers", row.get("name"))
+        items.append(_serialize_center_row(doc))
+
+    page = max(int(frappe.form_dict.get("page") or 1), 1)
+    limit = max(int(frappe.form_dict.get("limit") or frappe.form_dict.get("page_size") or 20), 1)
+    offset = (page - 1) * limit
+    paged = items[offset : offset + limit]
+    frappe.flags.aau_centers_meta = {
+        "page": page,
+        "limit": limit,
+        "total": len(items),
+        "totalPages": (len(items) + limit - 1) // limit if limit else 1,
+    }
+    return paged
+
+
+def _get_center_payload(center_id: str) -> dict:
+    docname = _resolve_center_docname(center_id)
+    doc = frappe.get_doc("Centers", docname)
+    if getattr(doc, "is_published", 1) in (0, "0", False):
+        raise frappe.DoesNotExistError
+    return _serialize_center_row(doc)
+
+
+def _centers_meta() -> dict:
+    return getattr(frappe.flags, "aau_centers_meta", {"page": 1, "limit": 20, "total": 0, "totalPages": 0})
+
+
+def _resolve_center_docname(center_id: str) -> str:
+    if frappe.db.exists("Centers", center_id):
+        return center_id
+    docname = frappe.db.get_value("Centers", {"id": center_id}, "name")
+    if docname:
+        return docname
+    raise frappe.DoesNotExistError
+
+
+def _serialize_center_row(doc) -> dict:
+    title_ar = _as_text(doc.get("title_ar"))
+    desc_ar = _as_text(doc.get("desc_ar"))
+    title_en = _as_text(doc.get("title_en"), default=_translated_text(title_ar))
+    desc_en = _as_text(doc.get("desc_en"), default=_translated_text(desc_ar))
+    services = _serialize_center_items(doc.get("services") or [])
+    programs = _serialize_center_items(doc.get("programs") or [])
+    identifier = _as_text(doc.get("id"), default=doc.name)
+
+    return {
+        "id": identifier,
+        "titleAr": title_ar,
+        "titleEn": title_en,
+        "descAr": desc_ar,
+        "descEn": desc_en,
+        "services": services,
+        "programs": programs,
+        "image": _as_text(doc.get("image")),
+        "location": _as_text(doc.get("location")),
+        "phone": _as_text(doc.get("phone")),
+        "email": _as_text(doc.get("email")),
+    }
+
+
+def _serialize_center_items(rows: list) -> list[dict]:
+    serialized = []
+    for row in rows:
+        value_ar = _as_text(row.get("value") if isinstance(row, dict) else row.value)
+        if not value_ar:
+            continue
+        serialized.append({"ar": value_ar, "en": _translated_text(value_ar)})
+    return serialized
+
+
+def _normalize_center_payload(payload: dict, is_update: bool = False) -> dict:
+    normalized = {}
+    if not is_update:
+        normalized["doctype"] = "Centers"
+
+    title_ar = _payload_value(payload, "titleAr", "title_ar")
+    title_en = _payload_value(payload, "titleEn", "title_en")
+    desc_ar = _payload_value(payload, "descAr", "desc_ar")
+    desc_en = _payload_value(payload, "descEn", "desc_en")
+    center_id = _payload_value(payload, "id")
+    image = _payload_value(payload, "image")
+    location = _payload_value(payload, "location")
+    phone = _payload_value(payload, "phone")
+    email = _payload_value(payload, "email")
+    display_order = payload.get("display_order", payload.get("displayOrder"))
+    is_published = payload.get("is_published", payload.get("isPublished"))
+
+    if title_ar:
+        normalized["title_ar"] = title_ar
+    if title_en:
+        normalized["title_en"] = title_en
+    if desc_ar:
+        normalized["desc_ar"] = desc_ar
+    if desc_en:
+        normalized["desc_en"] = desc_en
+    if center_id:
+        normalized["id"] = center_id
+    if image:
+        normalized["image"] = image
+    if location:
+        normalized["location"] = location
+    if phone:
+        normalized["phone"] = phone
+    if email:
+        normalized["email"] = email
+    if display_order is not None and str(display_order).strip():
+        normalized["display_order"] = int(display_order)
+    if is_published is not None:
+        normalized["is_published"] = 1 if str(is_published).lower() in {"1", "true", "yes"} else 0
+
+    services = payload.get("services")
+    if isinstance(services, list):
+        normalized["services"] = [{"value": _payload_list_value(item)} for item in services if _payload_list_value(item)]
+
+    programs = payload.get("programs")
+    if isinstance(programs, list):
+        normalized["programs"] = [{"value": _payload_list_value(item)} for item in programs if _payload_list_value(item)]
+
+    if not is_update and not normalized.get("title_ar"):
+        raise ApiError("VALIDATION_ERROR", "Center titleAr is required", status_code=400)
+    return normalized
+
+
+def _payload_list_value(item) -> str:
+    if isinstance(item, dict):
+        for key in ("ar", "value", "titleAr", "nameAr"):
+            value = item.get(key)
+            if value is not None and str(value).strip():
+                return str(value).strip()
+        return ""
+    return _as_text(item)
+
+
+def _translated_text(value: str, lang: str = "en") -> str:
+    source = _as_text(value)
+    if not source:
+        return ""
+    translations = get_all_translations(lang) or {}
+    return _as_text(translations.get(source), default=source)
+
+
+def _as_text(value, default: str = "") -> str:
+    if value is None:
+        return default
+    if isinstance(value, str):
+        cleaned = value.strip()
+        return cleaned if cleaned else default
+    return str(value).strip() or default
+
+
+def _payload_value(payload: dict, *keys: str) -> str:
+    for key in keys:
+        value = payload.get(key)
+        if value is not None and str(value).strip():
+            return str(value).strip()
+    return ""
 
 
 @frappe.whitelist(allow_guest=True)
