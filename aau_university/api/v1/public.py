@@ -1772,9 +1772,16 @@ def _serialize_college_item(row: dict) -> dict:
         or row.get("name")
     )
     name_ar = _as_text(row.get("name_ar") or row.get("college_name") or row.get("name"))
-    name_en = _as_text(row.get("name_en") or row.get("college_name") or row.get("name") or name_ar)
+    name_en = _as_text(row.get("name_en") or _translated_text(name_ar) or row.get("college_name") or row.get("name") or name_ar)
     description_ar = _as_text(row.get("description_ar") or row.get("description"))
-    description_en = _as_text(row.get("description_en") or row.get("description") or description_ar)
+    description_en = _as_text(row.get("description_en") or _translated_text(description_ar) or row.get("description") or description_ar)
+    vision_ar = _as_text(row.get("vision_ar"))
+    mission_ar = _as_text(row.get("mission_ar"))
+    goals_ar = _as_text(row.get("goals_ar"))
+    quality_ar = _as_text(row.get("quality_ar"))
+    values_ar = _as_text(row.get("values_ar"))
+    strategy_ar = _as_text(row.get("strategy_ar"))
+    admission_requirements_ar = _as_text(row.get("admission_requirements_ar"))
 
     return {
         "id": row.get("id") or slug or row.get("name"),
@@ -1783,14 +1790,20 @@ def _serialize_college_item(row: dict) -> dict:
         "nameEn": name_en,
         "descriptionAr": description_ar,
         "descriptionEn": description_en,
-        "visionAr": _as_text(row.get("vision_ar")),
-        "visionEn": _as_text(row.get("vision_en")),
-        "missionAr": _as_text(row.get("mission_ar")),
-        "missionEn": _as_text(row.get("mission_en")),
-        "goalsAr": _as_text(row.get("goals_ar")),
-        "goalsEn": _as_text(row.get("goals_en")),
-        "admissionRequirementsAr": _as_text(row.get("admission_requirements_ar")),
-        "admissionRequirementsEn": _as_text(row.get("admission_requirements_en")),
+        "visionAr": vision_ar,
+        "visionEn": _as_text(row.get("vision_en") or _translated_text(vision_ar)),
+        "missionAr": mission_ar,
+        "missionEn": _as_text(row.get("mission_en") or _translated_text(mission_ar)),
+        "goalsAr": goals_ar,
+        "goalsEn": _as_text(row.get("goals_en") or _translated_text(goals_ar)),
+        "qualityAr": quality_ar,
+        "qualityEn": _as_text(row.get("quality_en") or _translated_text(quality_ar)),
+        "valuesAr": values_ar,
+        "valuesEn": _as_text(row.get("values_en") or _translated_text(values_ar)),
+        "strategyAr": strategy_ar,
+        "strategyEn": _as_text(row.get("strategy_en") or _translated_text(strategy_ar)),
+        "admissionRequirementsAr": admission_requirements_ar,
+        "admissionRequirementsEn": _as_text(row.get("admission_requirements_en") or _translated_text(admission_requirements_ar)),
         "icon": _as_text(row.get("icon")),
         "image": _as_text(row.get("image")),
         "programs": programs,
