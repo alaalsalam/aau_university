@@ -19,6 +19,7 @@ from .utils import ApiError, api_endpoint
 def list_colleges():
     """List colleges."""
     result = list_entities("colleges", search_fields=["name_ar", "name_en"], public=True)
+    result["data"] = [_enrich_college_payload(item) for item in result["data"]]
     return {"data": result["data"], "meta": result["meta"], "__meta__": True}
 
 
@@ -26,7 +27,7 @@ def list_colleges():
 @api_endpoint
 def get_college(slug: str):
     """Get a college by slug."""
-    return get_entity("colleges", slug, by="slug", public=True)
+    return _enrich_college_payload(get_entity("colleges", slug, by="slug", public=True))
 
 
 @frappe.whitelist(allow_guest=True)
@@ -268,6 +269,43 @@ def get_college_dean(college_id: str):
     frappe.form_dict["college_id"] = college_id
     result = list_entities("college_deans", public=True)
     return result["data"][0] if result["data"] else None
+
+
+def _enrich_college_payload(payload: dict) -> dict:
+    if not payload:
+        return payload
+
+    row = dict(payload)
+    docname = row.get("docname")
+    if not docname:
+        college_id = row.get("id")
+        slug = row.get("slug")
+        if college_id and frappe.db.exists("Colleges", college_id):
+            docname = college_id
+        elif college_id:
+            resolved = frappe.db.get_value("Colleges", {"id": college_id}, "name")
+            docname = resolved or docname
+        if not docname and slug:
+            resolved = frappe.db.get_value("Colleges", {"slug": slug}, "name")
+            docname = resolved or docname
+
+    if not docname:
+        return row
+
+    extra = frappe.db.get_value(
+        "Colleges",
+        docname,
+        ["college_name", "dean_name"],
+        as_dict=True,
+    ) or {}
+
+    college_name = extra.get("college_name")
+    dean_name = extra.get("dean_name")
+    if college_name and not row.get("collegeName"):
+        row["collegeName"] = college_name
+    if dean_name and not row.get("deanName"):
+        row["deanName"] = dean_name
+    return row
 
 
 def _list_faculty_payload(include_inactive: bool = False) -> list[dict]:
