@@ -412,20 +412,43 @@ def upload_media():
     saved = save_file(fileobj.filename, fileobj.stream.read(), None, None, None)
     doctype = _resolve_doctype(ENTITY_CONFIG["media"])
     meta = _get_meta(doctype)
-    payload_fieldnames = _get_payload_fieldnames(doctype)
     table_fields = get_table_field_map(meta)
 
-    doc = frappe.get_doc(
-        {
-            "doctype": doctype,
-            "id": ensure_uuid(None),
-            "file_name": saved.file_name,
-            "file_path": saved.file_url,
-            "file_type": saved.file_type,
-            "file_size": saved.file_size,
-            "uploaded_by": frappe.session.user,
-            "created_at": now_ts(),
-        }
-    )
+    payload = {"doctype": doctype}
+    if meta.get_field("id"):
+        payload["id"] = ensure_uuid(None)
+    if meta.get_field("media_title"):
+        payload["media_title"] = saved.file_name
+    if meta.get_field("media_type"):
+        payload["media_type"] = _normalize_media_type(saved.file_type)
+    if meta.get_field("file"):
+        payload["file"] = saved.file_url
+    if meta.get_field("description"):
+        payload["description"] = saved.file_name
+    if meta.get_field("is_published"):
+        payload["is_published"] = 1
+    if meta.get_field("file_name"):
+        payload["file_name"] = saved.file_name
+    if meta.get_field("file_path"):
+        payload["file_path"] = saved.file_url
+    if meta.get_field("file_type"):
+        payload["file_type"] = saved.file_type
+    if meta.get_field("file_size"):
+        payload["file_size"] = saved.file_size
+    if meta.get_field("uploaded_by"):
+        payload["uploaded_by"] = frappe.session.user
+    if meta.get_field("created_at"):
+        payload["created_at"] = now_ts()
+
+    doc = frappe.get_doc(payload)
     doc.insert(ignore_permissions=True)
     return serialize_doc(doc.as_dict(), table_fields)
+
+
+def _normalize_media_type(content_type: str | None) -> str:
+    value = (content_type or "").lower()
+    if value.startswith("image/"):
+        return "Image"
+    if value.startswith("video/"):
+        return "Video"
+    return "Document"
