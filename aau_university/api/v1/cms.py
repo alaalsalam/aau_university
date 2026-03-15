@@ -12,6 +12,38 @@ from .resources import (
 )
 from .utils import api_endpoint
 
+SETTINGS_KEY_MAP = {
+    "siteName": "siteName",
+    "site_name": "siteName",
+    "siteNameAr": "siteNameAr",
+    "site_name_ar": "siteNameAr",
+    "siteDescriptionAr": "siteDescriptionAr",
+    "site_description_ar": "siteDescriptionAr",
+    "siteDescriptionEn": "siteDescriptionEn",
+    "site_description_en": "siteDescriptionEn",
+    "contactPhone": "contactPhone",
+    "contact_phone": "contactPhone",
+    "contactEmail": "contactEmail",
+    "contact_email": "contactEmail",
+    "addressAr": "addressAr",
+    "address_ar": "addressAr",
+    "addressEn": "addressEn",
+    "address_en": "addressEn",
+    "mapLocation": "mapLocation",
+    "map_location": "mapLocation",
+    "facebook": "facebook",
+    "twitter": "twitter",
+    "instagram": "instagram",
+    "linkedin": "linkedin",
+    "youtube": "youtube",
+}
+
+
+def _site_profile_payload() -> dict:
+    from .public import _build_site_profile_payload
+
+    return _build_site_profile_payload()
+
 
 @frappe.whitelist(allow_guest=True)
 @api_endpoint
@@ -47,20 +79,36 @@ def delete_media(media_id: str):
 @frappe.whitelist(allow_guest=True)
 @api_endpoint
 def list_settings():
-    """List settings."""
-    result = list_entities("settings", public=True)
-    return {"data": result["data"], "meta": result["meta"], "__meta__": True}
+    """Return the stable site profile settings payload."""
+    return _site_profile_payload()
 
 
 @frappe.whitelist(allow_guest=True)
 @api_endpoint
 def get_setting(key: str):
-    """Get a setting by key."""
-    return get_entity_by_field("settings", "key", key, public=True)
+    """Get a single setting value by key from the site profile payload."""
+    profile = _site_profile_payload()
+    profile_key = SETTINGS_KEY_MAP.get(key)
+    if not profile_key:
+        raise frappe.DoesNotExistError(f"Unknown setting key: {key}")
+    return {"key": key, "value": profile.get(profile_key)}
 
 
 @frappe.whitelist()
 @api_endpoint
 def update_setting(key: str, **payload):
-    """Update a setting by key."""
-    return update_entity_by_field("settings", "key", key, payload)
+    """Update a single site profile setting value by key."""
+    from .public import update_site_profile
+
+    profile_key = SETTINGS_KEY_MAP.get(key)
+    if not profile_key:
+        raise frappe.DoesNotExistError(f"Unknown setting key: {key}")
+
+    value = payload.get("value")
+    if value is None and profile_key in payload:
+        value = payload.get(profile_key)
+
+    if value is None:
+        return get_setting(key)
+
+    return update_site_profile.__wrapped__(**{profile_key: value})
