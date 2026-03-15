@@ -217,6 +217,23 @@ def get_home():
 
 @frappe.whitelist(allow_guest=True)
 @api_endpoint
+def get_about_page():
+    try:
+        return _build_about_page_payload()
+    except Exception:
+        frappe.log_error(frappe.get_traceback(), "AAU About API get_about_page failure")
+        return {
+            "pageHeader": {},
+            "intro": {},
+            "identity": [],
+            "presidentMessage": {},
+            "team": {"titleAr": "", "titleEn": "", "descriptionAr": "", "descriptionEn": "", "groups": []},
+            "meta": {"generated_at": now_ts(), "source": "About University"},
+        }
+
+
+@frappe.whitelist(allow_guest=True)
+@api_endpoint
 def list_public_news(limit: int | None = None, page: int | None = None):
     # WHY+WHAT: keep separate list/detail news endpoints so listing stays lightweight while detail fetches one record, which is low-risk and scales cleanly.
     doctype = _first_existing_doctype(["News"])
@@ -845,6 +862,123 @@ def _build_site_profile_payload() -> dict:
         "addressEn": _as_text(settings.get("address_en") or settings.get("address")),
         "mapLocation": _as_text(settings.get("map_location")),
         "socialLinks": social_links,
+    }
+
+
+def _build_about_page_payload() -> dict:
+    if not frappe.db.exists("DocType", "About University"):
+        return {
+            "pageHeader": {},
+            "intro": {},
+            "identity": [],
+            "presidentMessage": {},
+            "team": {"titleAr": "", "titleEn": "", "descriptionAr": "", "descriptionEn": "", "groups": []},
+            "meta": {"generated_at": now_ts(), "source": "About University"},
+        }
+
+    row = frappe.get_doc("About University", "About University")
+
+    def _translated(value: str, fallback: str = "") -> str:
+        translated = _translated_text(value)
+        return translated or fallback or value
+
+    page_badge_ar = _as_text(row.get("page_badge_ar"), default="تعرف علينا")
+    page_title_ar = _as_text(row.get("page_title_ar"), default="عن جامعة الجيل الجديد")
+    page_description_ar = _as_text(row.get("page_description_ar"))
+    intro_body_ar = _as_text(row.get("intro_body_ar"))
+
+    identity = [
+        {
+            "key": "vision",
+            "titleAr": _as_text(row.get("vision_title_ar"), default="الرؤية"),
+            "titleEn": _translated(_as_text(row.get("vision_title_ar"), default="الرؤية"), "Vision"),
+            "descriptionAr": _as_text(row.get("vision_description_ar")),
+            "descriptionEn": _translated(_as_text(row.get("vision_description_ar"))),
+        },
+        {
+            "key": "mission",
+            "titleAr": _as_text(row.get("mission_title_ar"), default="الرسالة"),
+            "titleEn": _translated(_as_text(row.get("mission_title_ar"), default="الرسالة"), "Mission"),
+            "descriptionAr": _as_text(row.get("mission_description_ar")),
+            "descriptionEn": _translated(_as_text(row.get("mission_description_ar"))),
+        },
+        {
+            "key": "goals",
+            "titleAr": _as_text(row.get("goals_title_ar"), default="الأهداف"),
+            "titleEn": _translated(_as_text(row.get("goals_title_ar"), default="الأهداف"), "Goals"),
+            "descriptionAr": _as_text(row.get("goals_description_ar")),
+            "descriptionEn": _translated(_as_text(row.get("goals_description_ar"))),
+        },
+        {
+            "key": "values",
+            "titleAr": _as_text(row.get("values_title_ar"), default="القيم"),
+            "titleEn": _translated(_as_text(row.get("values_title_ar"), default="القيم"), "Values"),
+            "descriptionAr": _as_text(row.get("values_description_ar")),
+            "descriptionEn": _translated(_as_text(row.get("values_description_ar"))),
+        },
+    ]
+
+    team_groups: dict[str, list[dict]] = {}
+    for member in sorted(row.get("team_members") or [], key=lambda item: int(item.get("display_order") or 0)):
+        group_name_ar = _as_text(member.get("group_name_ar"), default="الفريق الإداري")
+        team_groups.setdefault(group_name_ar, []).append(
+            {
+                "nameAr": _as_text(member.get("full_name_ar")),
+                "nameEn": _translated(_as_text(member.get("full_name_ar"))),
+                "roleAr": _as_text(member.get("job_title_ar")),
+                "roleEn": _translated(_as_text(member.get("job_title_ar"))),
+                "image": _as_text(member.get("member_image")),
+                "displayOrder": int(member.get("display_order") or 0),
+            }
+        )
+
+    groups = [
+        {
+            "titleAr": group_name_ar,
+            "titleEn": _translated(group_name_ar),
+            "members": members,
+        }
+        for group_name_ar, members in team_groups.items()
+    ]
+
+    return {
+        "pageHeader": {
+            "badgeAr": page_badge_ar,
+            "badgeEn": _translated(page_badge_ar, "About Us"),
+            "titleAr": page_title_ar,
+            "titleEn": _translated(page_title_ar, "About AJ JEEL ALJADEED UNIVERSITY"),
+            "descriptionAr": page_description_ar,
+            "descriptionEn": _translated(page_description_ar),
+        },
+        "intro": {
+            "bodyAr": intro_body_ar,
+            "bodyEn": _translated(intro_body_ar),
+            "image": _as_text(row.get("intro_image")),
+        },
+        "identity": identity,
+        "presidentMessage": {
+            "sectionTitleAr": _as_text(row.get("president_section_title_ar"), default="كلمة رئيس الجامعة"),
+            "sectionTitleEn": _translated(_as_text(row.get("president_section_title_ar"), default="كلمة رئيس الجامعة"), "President's Message"),
+            "introAr": _as_text(row.get("president_message_intro_ar")),
+            "introEn": _translated(_as_text(row.get("president_message_intro_ar"))),
+            "bodyAr": _as_text(row.get("president_message_body_ar")),
+            "bodyEn": _translated(_as_text(row.get("president_message_body_ar"))),
+            "closingAr": _as_text(row.get("president_message_closing_ar")),
+            "closingEn": _translated(_as_text(row.get("president_message_closing_ar"))),
+            "nameAr": _as_text(row.get("president_name_ar")),
+            "nameEn": _translated(_as_text(row.get("president_name_ar"))),
+            "roleAr": _as_text(row.get("president_role_ar")),
+            "roleEn": _translated(_as_text(row.get("president_role_ar"))),
+            "image": _as_text(row.get("president_image")),
+        },
+        "team": {
+            "titleAr": _as_text(row.get("team_section_title_ar"), default="الفريق الإداري"),
+            "titleEn": _translated(_as_text(row.get("team_section_title_ar"), default="الفريق الإداري"), "Administrative Team"),
+            "descriptionAr": _as_text(row.get("team_section_description_ar")),
+            "descriptionEn": _translated(_as_text(row.get("team_section_description_ar"))),
+            "groups": groups,
+        },
+        "meta": {"generated_at": now_ts(), "source": "About University"},
     }
 
 def _list_home_section(entity_key: str, limit: int, filters: dict | None = None) -> list[dict]:
