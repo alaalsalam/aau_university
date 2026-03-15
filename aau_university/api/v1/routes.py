@@ -126,6 +126,9 @@ def ensure_routes():
         Rule("/campus-life/<path:slug>", methods=["GET"], endpoint=content.get_campus_life),
         Rule("/campus-life/<path:item_id>", methods=["PUT"], endpoint=content.update_campus_life),
         Rule("/campus-life/<path:item_id>", methods=["DELETE"], endpoint=content.delete_campus_life),
+        # Research publications
+        Rule("/research-publications", methods=["GET"], endpoint=content.list_research_publications),
+        Rule("/research-publications/<path:publication_id>", methods=["GET"], endpoint=content.get_research_publication),
         # Blog
         Rule("/blog", methods=["GET"], endpoint=content.list_blog_posts),
         Rule("/blog", methods=["POST"], endpoint=content.create_blog_post),

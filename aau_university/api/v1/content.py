@@ -427,6 +427,52 @@ def _list_campus_life_payload() -> list[dict]:
     return items
 
 
+def _list_research_publications_payload() -> list[dict]:
+    if not frappe.db.exists("DocType", "Research and Publications"):
+        return []
+
+    filters: dict[str, object] = {}
+    if frappe.get_meta("Research and Publications").get_field("is_published"):
+        filters["is_published"] = 1
+
+    rows = frappe.get_all(
+        "Research and Publications",
+        filters=filters or None,
+        fields=["name", "title", "content", "image", "creation", "modified", "display_order"],
+        order_by="display_order asc, creation desc, name asc",
+        ignore_permissions=True,
+    )
+    return [_serialize_research_publication_row(row) for row in rows]
+
+
+def _serialize_research_publication_row(row) -> dict:
+    title_ar = _as_text(row.get("title"))
+    title_en = _translated_text(title_ar)
+    content_ar = _as_text(row.get("content"))
+    content_en = _translated_text(content_ar)
+    created_on = row.get("creation") or row.get("modified")
+    publish_date = str(created_on.date()) if hasattr(created_on, "date") else _as_text(created_on)
+
+    return {
+        "id": _as_text(row.get("name")),
+        "titleAr": title_ar,
+        "titleEn": title_en,
+        "authorAr": "",
+        "authorEn": "",
+        "categoryAr": "البحث العلمي",
+        "categoryEn": "Research",
+        "summaryAr": _excerpt_text(content_ar, limit=220),
+        "summaryEn": _excerpt_text(content_en, limit=220),
+        "contentAr": content_ar,
+        "contentEn": content_en,
+        "publishDateAr": publish_date,
+        "publishDateEn": publish_date,
+        "image": row.get("image") or "",
+        "tags": [],
+        "displayOrder": int(row.get("display_order") or 0),
+    }
+
+
 def _serialize_campus_life_row(row, used_slugs: set[str] | None = None) -> dict:
     title_ar = _as_text(row.get("title"))
     content_ar = _as_text(row.get("content"))
@@ -792,6 +838,24 @@ def list_blog_posts():
     """List blog posts."""
     result = list_entities("blog_posts", public=True)
     return {"data": result["data"], "meta": result["meta"], "__meta__": True}
+
+
+@frappe.whitelist(allow_guest=True)
+@api_endpoint
+def list_research_publications():
+    """List public research publications."""
+    items = _list_research_publications_payload()
+    return {"data": items, "meta": {"total": len(items)}, "__meta__": True}
+
+
+@frappe.whitelist(allow_guest=True)
+@api_endpoint
+def get_research_publication(publication_id: str):
+    """Get research publication by document name."""
+    for item in _list_research_publications_payload():
+        if item.get("id") == publication_id:
+            return item
+    raise ApiError("NOT_FOUND", "Research publication not found", status_code=404)
 
 
 @frappe.whitelist(allow_guest=True)
