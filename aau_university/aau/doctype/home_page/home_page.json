@@ -7,50 +7,69 @@
   "section_hero",
   "hero_badge_ar",
   "hero_title_primary_ar",
+  "hero_column_break",
   "hero_title_secondary_ar",
   "hero_description_ar",
   "hero_image",
   "section_about",
   "about_title_ar",
+  "about_intro_column_break",
   "about_description_ar",
   "about_image",
+  "section_about_identity",
   "about_vision_ar",
+  "about_identity_column_break",
   "about_mission_ar",
   "about_goals_ar",
   "about_values_ar",
+  "section_about_highlight",
   "about_highlight_title_ar",
+  "about_highlight_column_break",
   "about_highlight_text_ar",
+  "section_president_message",
   "president_message_intro_ar",
   "president_message_body_ar",
   "president_message_closing_ar",
+  "president_identity_column_break",
   "president_name_ar",
   "president_role_ar",
   "section_statistics",
   "students_count",
+  "stats_counts_column_break",
   "faculty_count",
   "programs_count",
   "colleges_count",
+  "section_stats_labels",
   "stats_students_label_ar",
+  "stats_labels_column_break",
   "stats_faculty_label_ar",
   "stats_programs_label_ar",
   "stats_colleges_label_ar",
-  "section_home_sections",
+  "section_campus_life",
   "campus_life_title_ar",
   "campus_life_description_ar",
+  "section_projects",
   "projects_title_ar",
   "projects_description_ar",
+  "section_colleges",
   "colleges_title_ar",
   "colleges_description_ar",
+  "section_news",
   "news_title_ar",
   "news_description_ar",
+  "section_events",
   "events_title_ar",
   "events_description_ar",
+  "section_faq",
   "faq_title_ar",
   "faq_description_ar",
+  "section_video",
   "video_title_ar",
   "video_description_ar",
+  "video_overlay_column_break",
   "video_overlay_title_ar",
   "video_overlay_description_ar",
+  "section_contact",
   "contact_title_ar",
   "contact_description_ar"
  ],
@@ -58,247 +77,334 @@
   {
    "fieldname": "section_hero",
    "fieldtype": "Section Break",
-   "label": "Hero"
+   "label": "قسم الهيرو"
   },
   {
    "fieldname": "hero_badge_ar",
    "fieldtype": "Data",
-   "label": "Hero Badge"
+   "label": "شارة الهيرو"
   },
   {
    "fieldname": "hero_title_primary_ar",
    "fieldtype": "Data",
-   "label": "Hero Title Primary"
+   "label": "العنوان الرئيسي"
+  },
+  {
+   "fieldname": "hero_column_break",
+   "fieldtype": "Column Break"
   },
   {
    "fieldname": "hero_title_secondary_ar",
    "fieldtype": "Data",
-   "label": "Hero Title Secondary"
+   "label": "العنوان الثانوي"
   },
   {
    "fieldname": "hero_description_ar",
    "fieldtype": "Small Text",
-   "label": "Hero Description"
+   "label": "وصف الهيرو"
   },
   {
    "fieldname": "hero_image",
    "fieldtype": "Attach Image",
-   "label": "Hero Image"
+   "label": "صورة الهيرو"
   },
   {
    "fieldname": "section_about",
    "fieldtype": "Section Break",
-   "label": "About"
+   "label": "قسم عن الجامعة"
   },
   {
    "fieldname": "about_title_ar",
    "fieldtype": "Data",
-   "label": "About Title"
+   "label": "عنوان القسم"
+  },
+  {
+   "fieldname": "about_intro_column_break",
+   "fieldtype": "Column Break"
   },
   {
    "fieldname": "about_description_ar",
    "fieldtype": "Long Text",
-   "label": "About Description"
+   "label": "الوصف الرئيسي"
   },
   {
    "fieldname": "about_image",
    "fieldtype": "Attach Image",
-   "label": "About Image"
+   "label": "صورة القسم"
+  },
+  {
+   "fieldname": "section_about_identity",
+   "fieldtype": "Section Break",
+   "label": "الرؤية والرسالة والهوية"
   },
   {
    "fieldname": "about_vision_ar",
    "fieldtype": "Long Text",
-   "label": "Vision"
+   "label": "الرؤية"
+  },
+  {
+   "fieldname": "about_identity_column_break",
+   "fieldtype": "Column Break"
   },
   {
    "fieldname": "about_mission_ar",
    "fieldtype": "Long Text",
-   "label": "Mission"
+   "label": "الرسالة"
   },
   {
    "fieldname": "about_goals_ar",
    "fieldtype": "Long Text",
-   "label": "Goals"
+   "label": "الأهداف"
   },
   {
    "fieldname": "about_values_ar",
    "fieldtype": "Long Text",
-   "label": "Values"
+   "label": "القيم"
+  },
+  {
+   "fieldname": "section_about_highlight",
+   "fieldtype": "Section Break",
+   "label": "النص المميز"
   },
   {
    "fieldname": "about_highlight_title_ar",
    "fieldtype": "Data",
-   "label": "Highlight Title"
+   "label": "عنوان النص المميز"
+  },
+  {
+   "fieldname": "about_highlight_column_break",
+   "fieldtype": "Column Break"
   },
   {
    "fieldname": "about_highlight_text_ar",
    "fieldtype": "Small Text",
-   "label": "Highlight Text"
+   "label": "محتوى النص المميز"
+  },
+  {
+   "fieldname": "section_president_message",
+   "fieldtype": "Section Break",
+   "label": "رسالة رئيس الجامعة"
   },
   {
    "fieldname": "president_message_intro_ar",
    "fieldtype": "Long Text",
-   "label": "President Message Intro"
+   "label": "مقدمة الرسالة"
   },
   {
    "fieldname": "president_message_body_ar",
    "fieldtype": "Long Text",
-   "label": "President Message Body"
+   "label": "نص الرسالة"
   },
   {
    "fieldname": "president_message_closing_ar",
    "fieldtype": "Long Text",
-   "label": "President Message Closing"
+   "label": "خاتمة الرسالة"
+  },
+  {
+   "fieldname": "president_identity_column_break",
+   "fieldtype": "Column Break"
   },
   {
    "fieldname": "president_name_ar",
    "fieldtype": "Data",
-   "label": "President Name"
+   "label": "اسم رئيس الجامعة"
   },
   {
    "fieldname": "president_role_ar",
    "fieldtype": "Data",
-   "label": "President Role"
+   "label": "الصفة الوظيفية"
   },
   {
    "fieldname": "section_statistics",
    "fieldtype": "Section Break",
-   "label": "Statistics"
+   "label": "قسم الإحصائيات"
   },
   {
    "fieldname": "students_count",
    "fieldtype": "Int",
-   "label": "Students Count"
+   "label": "عدد الطلاب"
+  },
+  {
+   "fieldname": "stats_counts_column_break",
+   "fieldtype": "Column Break"
   },
   {
    "fieldname": "faculty_count",
    "fieldtype": "Int",
-   "label": "Faculty Count"
+   "label": "عدد أعضاء هيئة التدريس"
   },
   {
    "fieldname": "programs_count",
    "fieldtype": "Int",
-   "label": "Programs Count"
+   "label": "عدد البرامج"
   },
   {
    "fieldname": "colleges_count",
    "fieldtype": "Int",
-   "label": "Colleges Count"
+   "label": "عدد الكليات"
+  },
+  {
+   "fieldname": "section_stats_labels",
+   "fieldtype": "Section Break",
+   "label": "تسميات الإحصائيات"
   },
   {
    "fieldname": "stats_students_label_ar",
    "fieldtype": "Data",
-   "label": "Students Label"
+   "label": "تسمية الطلاب"
+  },
+  {
+   "fieldname": "stats_labels_column_break",
+   "fieldtype": "Column Break"
   },
   {
    "fieldname": "stats_faculty_label_ar",
    "fieldtype": "Data",
-   "label": "Faculty Label"
+   "label": "تسمية هيئة التدريس"
   },
   {
    "fieldname": "stats_programs_label_ar",
    "fieldtype": "Data",
-   "label": "Programs Label"
+   "label": "تسمية البرامج"
   },
   {
    "fieldname": "stats_colleges_label_ar",
    "fieldtype": "Data",
-   "label": "Colleges Label"
+   "label": "تسمية الكليات"
   },
   {
-   "fieldname": "section_home_sections",
+   "fieldname": "section_campus_life",
    "fieldtype": "Section Break",
-   "label": "Homepage Sections"
+   "label": "قسم الحياة الجامعية"
   },
   {
    "fieldname": "campus_life_title_ar",
    "fieldtype": "Data",
-   "label": "Campus Life Title"
+   "label": "عنوان الحياة الجامعية"
   },
   {
    "fieldname": "campus_life_description_ar",
    "fieldtype": "Small Text",
-   "label": "Campus Life Description"
+   "label": "وصف الحياة الجامعية"
+  },
+  {
+   "fieldname": "section_projects",
+   "fieldtype": "Section Break",
+   "label": "قسم المشاريع"
   },
   {
    "fieldname": "projects_title_ar",
    "fieldtype": "Data",
-   "label": "Projects Title"
+   "label": "عنوان المشاريع"
   },
   {
    "fieldname": "projects_description_ar",
    "fieldtype": "Small Text",
-   "label": "Projects Description"
+   "label": "وصف المشاريع"
+  },
+  {
+   "fieldname": "section_colleges",
+   "fieldtype": "Section Break",
+   "label": "قسم الكليات"
   },
   {
    "fieldname": "colleges_title_ar",
    "fieldtype": "Data",
-   "label": "Colleges Title"
+   "label": "عنوان الكليات"
   },
   {
    "fieldname": "colleges_description_ar",
    "fieldtype": "Small Text",
-   "label": "Colleges Description"
+   "label": "وصف الكليات"
+  },
+  {
+   "fieldname": "section_news",
+   "fieldtype": "Section Break",
+   "label": "قسم الأخبار"
   },
   {
    "fieldname": "news_title_ar",
    "fieldtype": "Data",
-   "label": "News Title"
+   "label": "عنوان الأخبار"
   },
   {
    "fieldname": "news_description_ar",
    "fieldtype": "Small Text",
-   "label": "News Description"
+   "label": "وصف الأخبار"
+  },
+  {
+   "fieldname": "section_events",
+   "fieldtype": "Section Break",
+   "label": "قسم الفعاليات"
   },
   {
    "fieldname": "events_title_ar",
    "fieldtype": "Data",
-   "label": "Events Title"
+   "label": "عنوان الفعاليات"
   },
   {
    "fieldname": "events_description_ar",
    "fieldtype": "Small Text",
-   "label": "Events Description"
+   "label": "وصف الفعاليات"
+  },
+  {
+   "fieldname": "section_faq",
+   "fieldtype": "Section Break",
+   "label": "قسم الأسئلة المتكررة"
   },
   {
    "fieldname": "faq_title_ar",
    "fieldtype": "Data",
-   "label": "FAQ Title"
+   "label": "عنوان الأسئلة المتكررة"
   },
   {
    "fieldname": "faq_description_ar",
    "fieldtype": "Small Text",
-   "label": "FAQ Description"
+   "label": "وصف الأسئلة المتكررة"
+  },
+  {
+   "fieldname": "section_video",
+   "fieldtype": "Section Break",
+   "label": "قسم الفيديو"
   },
   {
    "fieldname": "video_title_ar",
    "fieldtype": "Data",
-   "label": "Video Title"
+   "label": "عنوان الفيديو"
   },
   {
    "fieldname": "video_description_ar",
    "fieldtype": "Small Text",
-   "label": "Video Description"
+   "label": "وصف الفيديو"
+  },
+  {
+   "fieldname": "video_overlay_column_break",
+   "fieldtype": "Column Break"
   },
   {
    "fieldname": "video_overlay_title_ar",
    "fieldtype": "Data",
-   "label": "Video Overlay Title"
+   "label": "عنوان طبقة الفيديو"
   },
   {
    "fieldname": "video_overlay_description_ar",
    "fieldtype": "Small Text",
-   "label": "Video Overlay Description"
+   "label": "وصف طبقة الفيديو"
+  },
+  {
+   "fieldname": "section_contact",
+   "fieldtype": "Section Break",
+   "label": "قسم التواصل"
   },
   {
    "fieldname": "contact_title_ar",
    "fieldtype": "Data",
-   "label": "Contact Title"
+   "label": "عنوان التواصل"
   },
   {
    "fieldname": "contact_description_ar",
    "fieldtype": "Small Text",
-   "label": "Contact Description"
+   "label": "وصف التواصل"
   }
  ],
  "grid_page_length": 50,
