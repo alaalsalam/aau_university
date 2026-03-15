@@ -125,6 +125,8 @@ def _get_query_fieldnames(doctype: str) -> list[str]:
     get_valid_columns = getattr(meta, "get_valid_columns", None)
     if callable(get_valid_columns):
         columns = [c for c in get_valid_columns() if c and c not in _SYSTEM_FIELDNAMES]
+        if "name" not in columns:
+            columns.insert(0, "name")
         return columns
 
     # Fallback for older meta implementations: exclude non-column fieldtypes.
@@ -146,6 +148,8 @@ def _get_query_fieldnames(doctype: str) -> list[str]:
         for df in meta.fields
         if df.fieldname and df.fieldtype not in non_column_fieldtypes and df.fieldname not in _SYSTEM_FIELDNAMES
     ]
+    if "name" not in columns:
+        columns.insert(0, "name")
     return columns
 
 

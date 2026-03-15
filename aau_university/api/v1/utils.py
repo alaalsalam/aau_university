@@ -173,7 +173,7 @@ def build_filters(allowed_fields: Iterable[str]) -> list:
 
 
 def serialize_doc(doc: dict, table_fields: dict[str, str]) -> dict:
-    output = {}
+    output = {"docname": doc.get("name")}
     for key, value in doc.items():
         if key in ("doctype", "name", "owner", "creation", "modified", "modified_by"):
             continue
@@ -181,6 +181,8 @@ def serialize_doc(doc: dict, table_fields: dict[str, str]) -> dict:
             output[to_camel(key)] = serialize_child_rows(value, table_fields[key])
         else:
             output[to_camel(key)] = value
+    if "id" not in output and doc.get("name"):
+        output["id"] = doc.get("name")
     return output
 
 
