@@ -956,6 +956,7 @@ def get_doctor_profile():
     """Get doctor profile from Instructor doctype (with Faculty Members fallback)."""
     ctx = _ensure_doctor_context(require_mapping=True)
     identity = ctx["identity"]
+    user_phone = _clean(frappe.db.get_value("User", identity["user"], "mobile_no"))
 
     if frappe.db.exists("DocType", "Instructor"):
         if ctx["matched_instructors"]:
@@ -974,7 +975,7 @@ def get_doctor_profile():
                 "departmentAr": _clean(instructor.get("department")),
                 "departmentEn": _clean(instructor.get("department")),
                 "email": identity["email"],
-                "phone": "",
+                "phone": user_phone,
                 "officeHoursAr": "",
                 "officeHoursEn": "",
                 "bioAr": "",
@@ -1005,7 +1006,7 @@ def get_doctor_profile():
                 "departmentAr": _clean(row.get("department")),
                 "departmentEn": _clean(row.get("department")),
                 "email": identity["email"],
-                "phone": "",
+                "phone": user_phone,
                 "officeHoursAr": "",
                 "officeHoursEn": "",
                 "bioAr": _clean(row.get("biography")),
@@ -1026,7 +1027,7 @@ def get_doctor_profile():
         "departmentAr": "",
         "departmentEn": "",
         "email": identity["email"],
-        "phone": "",
+        "phone": user_phone,
         "officeHoursAr": "",
         "officeHoursEn": "",
         "bioAr": "",
@@ -1045,6 +1046,8 @@ def update_doctor_profile(**payload):
 
     if payload.get("email"):
         user_doc.email = payload.get("email")
+    if payload.get("phone") and hasattr(user_doc, "mobile_no"):
+        user_doc.mobile_no = payload.get("phone")
     if payload.get("nameAr") or payload.get("nameEn"):
         user_doc.full_name = payload.get("nameAr") or payload.get("nameEn")
     if payload.get("image"):
