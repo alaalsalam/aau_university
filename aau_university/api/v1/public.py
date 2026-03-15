@@ -234,6 +234,22 @@ def get_about_page():
 
 @frappe.whitelist(allow_guest=True)
 @api_endpoint
+def get_contact_page():
+    try:
+        return _build_contact_page_payload()
+    except Exception:
+        frappe.log_error(frappe.get_traceback(), "AAU Contact API get_contact_page failure")
+        return {
+            "pageHeader": {},
+            "form": {},
+            "social": {},
+            "siteProfile": _build_site_profile_payload(),
+            "meta": {"generated_at": now_ts(), "source": "Website Settings"},
+        }
+
+
+@frappe.whitelist(allow_guest=True)
+@api_endpoint
 def list_public_news(limit: int | None = None, page: int | None = None):
     # WHY+WHAT: keep separate list/detail news endpoints so listing stays lightweight while detail fetches one record, which is low-risk and scales cleanly.
     doctype = _first_existing_doctype(["News"])
@@ -851,17 +867,55 @@ def _get_home_sections() -> dict:
 def _build_site_profile_payload() -> dict:
     settings = _get_website_settings_payload()
     social_links = _get_social_links_from_menu()
+    site_name_ar = _as_text(settings.get("site_name_ar") or settings.get("site_name") or settings.get("app_name"))
+    site_description_ar = _as_text(settings.get("site_description_ar") or settings.get("about_short"))
+    address_ar = _as_text(settings.get("address_ar") or settings.get("address"))
     return {
-        "siteName": _as_text(settings.get("site_name") or settings.get("app_name")),
-        "siteNameAr": _as_text(settings.get("site_name_ar") or settings.get("site_name")),
-        "siteDescriptionAr": _as_text(settings.get("site_description_ar") or settings.get("about_short")),
-        "siteDescriptionEn": _as_text(settings.get("site_description_en") or settings.get("about_short_en")),
+        "siteName": _as_text(settings.get("site_name") or settings.get("app_name") or site_name_ar),
+        "siteNameAr": site_name_ar,
+        "siteDescriptionAr": site_description_ar,
+        "siteDescriptionEn": _as_text(settings.get("site_description_en") or settings.get("about_short_en") or _translated_text(site_description_ar)),
         "contactPhone": _as_text(settings.get("contact_phone") or settings.get("phone")),
         "contactEmail": _as_text(settings.get("contact_email") or settings.get("email")),
-        "addressAr": _as_text(settings.get("address_ar") or settings.get("address")),
-        "addressEn": _as_text(settings.get("address_en") or settings.get("address")),
+        "addressAr": address_ar,
+        "addressEn": _as_text(settings.get("address_en") or _translated_text(address_ar)),
         "mapLocation": _as_text(settings.get("map_location")),
         "socialLinks": social_links,
+    }
+
+
+def _build_contact_page_payload() -> dict:
+    settings = _get_website_settings_payload()
+    profile = _build_site_profile_payload()
+
+    badge_ar = _as_text(settings.get("contact_page_badge_ar"), default="تواصل معنا")
+    title_ar = _as_text(settings.get("contact_page_title_ar"), default="نحن هنا للإجابة على استفساراتكم")
+    description_ar = _as_text(
+        settings.get("contact_page_description_ar"),
+        default="تواصل مع جامعة الجيل الجديد للاستفسار عن القبول والبرامج الأكاديمية والخدمات الطلابية.",
+    )
+    form_title_ar = _as_text(settings.get("contact_form_title_ar"), default="أرسل رسالة")
+    social_title_ar = _as_text(settings.get("social_section_title_ar"), default="تابعنا على")
+
+    return {
+        "pageHeader": {
+            "badgeAr": badge_ar,
+            "badgeEn": _translated_text(badge_ar, "en") or "Contact Us",
+            "titleAr": title_ar,
+            "titleEn": _translated_text(title_ar, "en") or "Contact AJ JEEL ALJADEED UNIVERSITY",
+            "descriptionAr": description_ar,
+            "descriptionEn": _translated_text(description_ar, "en"),
+        },
+        "form": {
+            "titleAr": form_title_ar,
+            "titleEn": _translated_text(form_title_ar, "en") or "Send a Message",
+        },
+        "social": {
+            "titleAr": social_title_ar,
+            "titleEn": _translated_text(social_title_ar, "en") or "Follow Us",
+        },
+        "siteProfile": profile,
+        "meta": {"generated_at": now_ts(), "source": "Website Settings"},
     }
 
 
@@ -1448,10 +1502,16 @@ def _get_website_settings_payload() -> dict:
         "address_ar",
         "address_en",
         "map_location",
+        "contact_page_badge_ar",
+        "contact_page_title_ar",
+        "contact_page_description_ar",
+        "contact_form_title_ar",
+        "social_section_title_ar",
         "facebook",
         "twitter",
         "instagram",
         "linkedin",
+        "youtube",
     ]
     available = [field for field in candidate_fields if meta.get_field(field)]
     if not available:

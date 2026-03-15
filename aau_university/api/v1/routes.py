@@ -162,6 +162,7 @@ def ensure_routes():
         Rule("/search", methods=["GET"], endpoint=public.search),
         Rule("/aau/home", methods=["GET"], endpoint=public.get_home),
         Rule("/aau/about", methods=["GET"], endpoint=public.get_about_page),
+        Rule("/aau/contact", methods=["GET"], endpoint=public.get_contact_page),
         Rule("/aau/news", methods=["GET"], endpoint=public.list_public_news),
         Rule("/aau/news/<path:slug>", methods=["GET"], endpoint=public.get_public_news),
         Rule("/aau/events", methods=["GET"], endpoint=public.list_public_events),
