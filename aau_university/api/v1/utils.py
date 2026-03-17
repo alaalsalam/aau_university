@@ -561,6 +561,99 @@ def account_linking_smoke_test(admin_user: str | None = None) -> dict:
     }
 
 
+def admin_workflow_smoke_test(admin_user: str | None = None) -> dict:
+    """Admin dashboard + list endpoints + one safe CRUD roundtrip on News."""
+    from . import access, content
+
+    original_user = frappe.session.user
+    checks: list[dict] = []
+    cleanup: dict[str, str] = {}
+
+    if not admin_user:
+        admin_user = _find_user_with_roles({"System Manager", "Administrator", "AAU Admin"}) or "Administrator"
+
+    def run_check(name: str, fn):
+        try:
+            details = fn()
+            checks.append({"name": name, "passed": True, "details": details})
+        except Exception as exc:
+            checks.append({"name": name, "passed": False, "error": str(exc)})
+
+    def check_access_flags():
+        payload = _call_api_method(access.get_current_access) or {}
+        if not payload.get("canAccessAdmin"):
+            raise Exception("admin access flags not granted")
+        return {"user": payload.get("user"), "adminRoles": payload.get("adminRoles") or []}
+
+    def check_dashboard():
+        payload = _call_api_method(access.get_admin_dashboard) or {}
+        summary = payload.get("summary") or {}
+        if "usersTotal" not in summary or "studentsTotal" not in summary:
+            raise Exception("admin dashboard summary is incomplete")
+        return {"summary": summary, "recentActivity": len(payload.get("recentActivity") or [])}
+
+    def check_admin_lists():
+        users = _call_api_method(access.list_users) or []
+        roles = _call_api_method(access.list_roles) or []
+        permissions = _call_api_method(access.list_permissions) or []
+        if not users or not roles or not permissions:
+            raise Exception("users/roles/permissions list returned empty payload")
+        return {"users": len(users), "roles": len(roles), "permissions": len(permissions)}
+
+    def check_news_roundtrip():
+        marker = uuid.uuid4().hex[:8]
+        slug = f"admin-smoke-{marker}"
+        created = _call_api_method(
+            content.create_news,
+            title=f"خبر اختبار الإدارة {marker}",
+            summary=f"ملخص اختبار الإدارة {marker}",
+            content=f"محتوى اختبار الإدارة {marker}",
+            slug=slug,
+            publish_date=now()[:10],
+        ) or {}
+        news_id = created.get("id") or created.get("docname") or created.get("name")
+        if not news_id:
+            raise Exception("create_news did not return identifier")
+
+        cleanup["news_id"] = news_id
+        updated_title = f"خبر اختبار الإدارة المحدث {marker}"
+        updated = _call_api_method(content.update_news, news_id=news_id, title=updated_title) or {}
+        if (updated.get("title") or "").strip() != updated_title:
+            raise Exception("update_news did not persist title")
+
+        deleted = _call_api_method(content.delete_news, news_id=news_id) or {}
+        if not deleted.get("deleted"):
+            raise Exception("delete_news did not confirm deletion")
+        cleanup.pop("news_id", None)
+        return {"createdId": news_id, "slug": slug, "updatedTitle": updated_title}
+
+    try:
+        frappe.set_user(admin_user)
+        run_check("access_flags", check_access_flags)
+        run_check("dashboard", check_dashboard)
+        run_check("admin_lists", check_admin_lists)
+        run_check("news_crud_roundtrip", check_news_roundtrip)
+    finally:
+        try:
+            if cleanup.get("news_id"):
+                frappe.set_user(admin_user)
+                _call_api_method(content.delete_news, news_id=cleanup["news_id"])
+        except Exception:
+            pass
+        frappe.set_user(original_user)
+
+    return {
+        "ok": all(item.get("passed") for item in checks),
+        "adminUser": admin_user,
+        "summary": {
+            "checks": len(checks),
+            "passed": sum(1 for item in checks if item.get("passed")),
+            "failed": sum(1 for item in checks if not item.get("passed")),
+        },
+        "checks": checks,
+    }
+
+
 def launch_readiness_e2e_check() -> dict:
     """End-to-end launch readiness checks for backend-backed CMS/public flow."""
     from . import cms, content, public
