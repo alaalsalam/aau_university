@@ -32,15 +32,44 @@
     },
     {
       "type": "Link",
-      "label": "الصفحات العامة",
+      "label": "عن الجامعة",
       "link_type": "DocType",
-      "link_to": "Pages"
+      "link_to": "About University"
     },
     {
       "type": "Link",
       "label": "صفحات AAU",
       "link_type": "DocType",
       "link_to": "AAU Page"
+    },
+    {
+      "type": "Link",
+      "label": "إعدادات الموقع",
+      "link_type": "DocType",
+      "link_to": "Website Settings"
+    },
+    {
+      "type": "Link",
+      "label": "قوائم التنقل",
+      "link_type": "DocType",
+      "link_to": "AAU Menu"
+    },
+    {
+      "type": "Link",
+      "label": "السلايدر",
+      "link_type": "DocType",
+      "link_to": "Slider"
+    },
+    {
+      "type": "Link",
+      "label": "المكتبة الإعلامية",
+      "link_type": "DocType",
+      "link_to": "Media Library"
+    },
+    {
+      "type": "Card Break",
+      "label": "المحتوى المنشور",
+      "icon": "file"
     },
     {
       "type": "Link",
@@ -56,9 +85,45 @@
     },
     {
       "type": "Link",
+      "label": "المدونة",
+      "link_type": "DocType",
+      "link_to": "Blog Posts"
+    },
+    {
+      "type": "Link",
+      "label": "الأسئلة الشائعة",
+      "link_type": "DocType",
+      "link_to": "FAQ"
+    },
+    {
+      "type": "Link",
       "label": "المشاريع",
       "link_type": "DocType",
       "link_to": "Projects"
+    },
+    {
+      "type": "Link",
+      "label": "الحياة الجامعية",
+      "link_type": "DocType",
+      "link_to": "Campus Life"
+    },
+    {
+      "type": "Link",
+      "label": "المراكز",
+      "link_type": "DocType",
+      "link_to": "Centers"
+    },
+    {
+      "type": "Link",
+      "label": "العروض",
+      "link_type": "DocType",
+      "link_to": "Offers"
+    },
+    {
+      "type": "Link",
+      "label": "الشركاء",
+      "link_type": "DocType",
+      "link_to": "Partners"
     },
     {
       "type": "Card Break",
@@ -84,18 +149,6 @@
       "link_to": "Faculty Members"
     },
     {
-      "type": "Link",
-      "label": "الخطط الدراسية",
-      "link_type": "DocType",
-      "link_to": "Study Plans"
-    },
-    {
-      "type": "Link",
-      "label": "مقررات الخطة",
-      "link_type": "DocType",
-      "link_to": "Study Plan Courses"
-    },
-    {
       "type": "Card Break",
       "label": "الطلبات والتفاعل",
       "icon": "mail"
@@ -111,59 +164,6 @@
       "label": "طلبات الانضمام",
       "link_type": "DocType",
       "link_to": "Join Requests"
-    },
-    {
-      "type": "Link",
-      "label": "العروض",
-      "link_type": "DocType",
-      "link_to": "Offers"
-    },
-    {
-      "type": "Link",
-      "label": "الشركاء",
-      "link_type": "DocType",
-      "link_to": "Partners"
-    },
-    {
-      "type": "Link",
-      "label": "الفريق",
-      "link_type": "DocType",
-      "link_to": "Team Members"
-    },
-    {
-      "type": "Card Break",
-      "label": "الإعدادات والتنقل",
-      "icon": "setting"
-    },
-    {
-      "type": "Link",
-      "label": "إعدادات الموقع",
-      "link_type": "DocType",
-      "link_to": "Website Settings"
-    },
-    {
-      "type": "Link",
-      "label": "المكتبة الإعلامية",
-      "link_type": "DocType",
-      "link_to": "Media Library"
-    },
-    {
-      "type": "Link",
-      "label": "قوائم التنقل",
-      "link_type": "DocType",
-      "link_to": "AAU Menu"
-    },
-    {
-      "type": "Link",
-      "label": "السلايدر",
-      "link_type": "DocType",
-      "link_to": "Slider"
-    },
-    {
-      "type": "Link",
-      "label": "المؤشرات",
-      "link_type": "DocType",
-      "link_to": "Dashboard Metrics"
     }
   ]
 }

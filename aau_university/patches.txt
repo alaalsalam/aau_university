@@ -16,3 +16,4 @@ aau_university.patches.v1_8_about_university_single_cms
 aau_university.patches.v1_9_add_faculty_linked_college
 aau_university.patches.v1_10_normalize_cms_content_doctypes
 aau_university.patches.v1_11_normalize_blog_and_faculty_cms
+aau_university.patches.v1_12_finalize_aau_workspace
