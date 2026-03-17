@@ -335,10 +335,20 @@ def _serialize_center_row(doc) -> dict:
     }
 
 
-def _serialize_center_items(rows: list) -> list[dict]:
+def _serialize_center_items(rows) -> list[dict]:
+    if isinstance(rows, str):
+        rows = [line.strip() for line in rows.splitlines() if line and line.strip()]
+
     serialized = []
     for row in rows:
-        value_ar = _as_text(row.get("value") if isinstance(row, dict) else row.value)
+        if isinstance(row, dict):
+            raw_value = row.get("value")
+        elif isinstance(row, str):
+            raw_value = row
+        else:
+            raw_value = row.value
+
+        value_ar = _as_text(raw_value)
         if not value_ar:
             continue
         serialized.append({"ar": value_ar, "en": _translated_text(value_ar)})
@@ -388,10 +398,14 @@ def _normalize_center_payload(payload: dict, is_update: bool = False) -> dict:
     services = payload.get("services")
     if isinstance(services, list):
         normalized["services"] = [{"value": _payload_list_value(item)} for item in services if _payload_list_value(item)]
+    elif isinstance(services, str) and services.strip():
+        normalized["services"] = services.strip()
 
     programs = payload.get("programs")
     if isinstance(programs, list):
         normalized["programs"] = [{"value": _payload_list_value(item)} for item in programs if _payload_list_value(item)]
+    elif isinstance(programs, str) and programs.strip():
+        normalized["programs"] = programs.strip()
 
     if not is_update and not normalized.get("title_ar"):
         raise ApiError("VALIDATION_ERROR", "Center titleAr is required", status_code=400)
