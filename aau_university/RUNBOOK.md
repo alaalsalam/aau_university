@@ -95,6 +95,9 @@ bench --site edu.yemenfrappe.com execute aau_university.api.v1.utils.payload_val
 ## 11) Launch readiness E2E (admin update -> public read)
 ```bash
 bench --site edu.yemenfrappe.com execute aau_university.api.v1.utils.launch_readiness_e2e_check
+
+# Final content readiness summary
+bench --site edu.yemenfrappe.com execute aau_university.api.v1.utils.content_readiness_report
 ```
 
 ## 12) Portal identity mapping + RBAC smoke

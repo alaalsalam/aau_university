@@ -277,8 +277,9 @@ def _list_centers_payload(include_unpublished: bool = False) -> list[dict]:
         doc = frappe.get_doc("Centers", row.get("name"))
         items.append(_serialize_center_row(doc))
 
-    page = max(int(frappe.form_dict.get("page") or 1), 1)
-    limit = max(int(frappe.form_dict.get("limit") or frappe.form_dict.get("page_size") or 20), 1)
+    form_dict = frappe._dict(getattr(frappe.local, "form_dict", None) or {})
+    page = max(int(form_dict.get("page") or 1), 1)
+    limit = max(int(form_dict.get("limit") or form_dict.get("page_size") or 20), 1)
     offset = (page - 1) * limit
     paged = items[offset : offset + limit]
     frappe.flags.aau_centers_meta = {

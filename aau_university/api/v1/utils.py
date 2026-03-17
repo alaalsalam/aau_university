@@ -748,3 +748,60 @@ def launch_readiness_e2e_check() -> dict:
         },
         "checks": checks,
     }
+
+
+def content_readiness_report() -> dict:
+    """Summarize public content readiness using internal API calls."""
+    from . import academic, content, public
+
+    checks: list[dict] = []
+
+    def _payload_size(payload) -> int:
+        if isinstance(payload, list):
+            return len(payload)
+        if isinstance(payload, dict):
+            if isinstance(payload.get("items"), list):
+                return len(payload["items"])
+            if isinstance(payload.get("results"), list):
+                return len(payload["results"])
+            if payload:
+                return 1
+        return 0
+
+    def run_count(name: str, method, *, expected_min: int = 1, form_dict: dict | None = None, **kwargs):
+        payload = _call_api_method(method, form_dict=form_dict, **kwargs)
+        size = _payload_size(payload)
+        checks.append(
+            {
+                "name": name,
+                "count": size,
+                "expectedMin": expected_min,
+                "passed": size >= expected_min,
+            }
+        )
+
+    run_count("home", public.get_home, expected_min=1)
+    run_count("about", public.get_about_page, expected_min=1)
+    run_count("contact", public.get_contact_page, expected_min=1)
+    run_count("news", content.list_news, expected_min=1)
+    run_count("events", content.list_events, expected_min=1)
+    run_count("colleges", academic.list_colleges, expected_min=1)
+    run_count("programs", academic.list_programs, expected_min=1)
+    run_count("faculty", academic.list_faculty, expected_min=1)
+    run_count("centers", content.list_centers, expected_min=1)
+    run_count("offers", content.list_offers, expected_min=1)
+    run_count("partners", content.list_partners, expected_min=1)
+    run_count("blog", content.list_blog_posts, expected_min=1)
+    run_count("research_publications", content.list_research_publications, expected_min=1)
+    run_count("campus_life", content.list_campus_life, expected_min=1)
+    run_count("projects", content.list_projects, expected_min=1)
+
+    return {
+        "ok": all(item.get("passed") for item in checks),
+        "summary": {
+            "total": len(checks),
+            "passed": sum(1 for item in checks if item.get("passed")),
+            "failed": sum(1 for item in checks if not item.get("passed")),
+        },
+        "checks": checks,
+    }
