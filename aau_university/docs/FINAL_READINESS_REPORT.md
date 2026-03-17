@@ -15,7 +15,7 @@ bench --site edu.yemenfrappe.com execute aau_university.api.v1.utils.admin_workf
 bench --site edu.yemenfrappe.com execute aau_university.api.v1.utils.launch_readiness_e2e_check
 ```
 
-Current content readiness result:
+Current baseline content readiness result:
 
 - `home`: 1
 - `about`: 1
@@ -24,7 +24,7 @@ Current content readiness result:
 - `events`: 10
 - `colleges`: 5
 - `programs`: 7
-- `faculty`: 1
+- `faculty`: 5
 - `centers`: 3
 - `offers`: 3
 - `partners`: 3
@@ -59,20 +59,31 @@ curl -I https://edu.yemenfrappe.com/api/faculty
 curl -I https://edu.yemenfrappe.com/api/offers
 ```
 
-## Remaining Content Notes
+## Final Seed and Editorial Completion
 
-These are not code blockers, but content-management notes:
+Run:
 
-- `Faculty Members` currently contains only one public record.
-- `Website Settings` contact profile still has empty address/map fields.
-- English public content currently falls back to Arabic where no `Translation` entry exists.
+```bash
+bench --site edu.yemenfrappe.com execute aau_university.setup.final_project_readiness_seed.run
+```
+
+This provisions:
+
+- baseline English `Translation` records for key public sections
+- contact address and map fields in `Website Settings`
+- additional `Faculty Members` showcase content
+- ready-to-use content manager, student, and doctor test accounts
+
+Reference:
+
+- `docs/FINAL_USAGE_AND_TEST_GUIDE.md`
 
 ## Delivery Decision
 
 Technical readiness is acceptable for final delivery.
 
-Remaining work, if desired, is editorial only:
+Remaining work, if desired, is editorial refinement only:
 
-1. Add more faculty records.
-2. Complete contact address and map fields.
-3. Add translation entries for English content refinement.
+1. Expand translations beyond the seeded baseline.
+2. Add more faculty records and academic media if needed.
+3. Refine long-form English copy from the `Translation` screen.

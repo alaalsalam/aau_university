@@ -100,6 +100,15 @@ bench --site edu.yemenfrappe.com execute aau_university.api.v1.utils.launch_read
 bench --site edu.yemenfrappe.com execute aau_university.api.v1.utils.content_readiness_report
 ```
 
+## 11.1) Final seed for translations, address, faculty, and test accounts
+```bash
+bench --site edu.yemenfrappe.com execute aau_university.setup.final_project_readiness_seed.run
+```
+
+Reference guide:
+
+- `docs/FINAL_USAGE_AND_TEST_GUIDE.md`
+
 ## 12) Portal identity mapping + RBAC smoke
 ```bash
 bench --site edu.yemenfrappe.com execute aau_university.api.v1.utils.portal_smoke_test
