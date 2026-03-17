@@ -5,56 +5,87 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "content_management_tab",
   "slug",
   "title_ar",
-  "title_en",
+  "page_header_column",
   "content_ar",
-  "content_en",
   "hero_image",
-  "published"
+  "publishing_section",
+  "published",
+  "translation_note_section",
+  "translation_note",
+  "title_en",
+  "content_en"
  ],
  "fields": [
+  {
+   "fieldname": "content_management_tab",
+   "fieldtype": "Tab Break",
+   "label": "محتوى الصفحة"
+  },
   {
    "fieldname": "slug",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Slug",
+   "label": "المسار",
    "reqd": 1,
    "unique": 1
   },
   {
+   "fieldname": "page_header_column",
+   "fieldtype": "Column Break"
+  },
+  {
    "fieldname": "title_ar",
    "fieldtype": "Data",
-   "label": "Title (AR)",
+   "label": "عنوان الصفحة",
    "reqd": 1
   },
   {
    "fieldname": "title_en",
    "fieldtype": "Data",
-   "label": "Title (EN)",
-   "reqd": 1
+   "hidden": 1,
+   "label": "Title (EN)"
   },
   {
    "fieldname": "content_ar",
    "fieldtype": "Text Editor",
-   "label": "Content (AR)"
+   "label": "المحتوى"
   },
   {
    "fieldname": "content_en",
    "fieldtype": "Text Editor",
+   "hidden": 1,
    "label": "Content (EN)"
   },
   {
    "fieldname": "hero_image",
    "fieldtype": "Attach Image",
-   "label": "Hero Image"
+   "label": "صورة الصفحة"
+  },
+  {
+   "fieldname": "publishing_section",
+   "fieldtype": "Section Break",
+   "label": "النشر"
   },
   {
    "default": "1",
    "fieldname": "published",
    "fieldtype": "Check",
    "in_list_view": 1,
-   "label": "Published"
+   "label": "منشور"
+  },
+  {
+   "fieldname": "translation_note_section",
+   "fieldtype": "Section Break",
+   "label": "الترجمة"
+  },
+  {
+   "fieldname": "translation_note",
+   "fieldtype": "HTML",
+   "label": "تنبيه الترجمة",
+   "options": "<div class='text-muted small'>يتم إدخال المحتوى بالعربية فقط. النسخة الإنجليزية تعتمد على نظام الترجمة في الموقع عند العرض.</div>"
   }
  ],
  "grid_page_length": 50,

@@ -1938,12 +1938,14 @@ def _json_fallback_enabled() -> bool:
 
 
 def _serialize_page_item(row: dict) -> dict:
+    title_ar = row.get("title_ar") or row.get("page_title") or ""
+    content_ar = row.get("content_ar") or row.get("content") or ""
     return {
         "slug": row.get("slug"),
-        "titleAr": row.get("title_ar") or row.get("page_title") or "",
-        "titleEn": row.get("title_en") or row.get("page_title") or "",
-        "contentAr": row.get("content_ar") or row.get("content") or "",
-        "contentEn": row.get("content_en") or row.get("content") or "",
+        "titleAr": title_ar,
+        "titleEn": row.get("title_en") or _translated_text(title_ar) or title_ar,
+        "contentAr": content_ar,
+        "contentEn": row.get("content_en") or _translated_text(content_ar) or content_ar,
         "heroImage": row.get("hero_image") or row.get("banner_image"),
     }
 

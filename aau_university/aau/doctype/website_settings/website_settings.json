@@ -11,6 +11,19 @@
  "document_type": "Other",
  "engine": "InnoDB",
  "field_order": [
+  "aau_content_tab",
+  "contact_page_section",
+  "contact_page_badge_ar",
+  "contact_page_title_ar",
+  "contact_page_description_ar",
+  "contact_content_section",
+  "address_ar",
+  "contact_details_column",
+  "map_location",
+  "contact_form_title_ar",
+  "social_section_title_ar",
+  "contact_email",
+  "contact_phone",
   "home_tab",
   "sb0",
   "home_page",
@@ -80,20 +93,14 @@
   "redirects_tab",
   "route_redirects",
   "site_name",
-  "logo",
-  "contact_page_section",
-  "contact_page_badge_ar",
-  "contact_page_title_ar",
-  "contact_page_description_ar",
-  "contact_content_section",
-  "address_ar",
-  "map_location",
-  "contact_form_title_ar",
-  "social_section_title_ar",
-  "contact_email",
-  "contact_phone"
+  "logo"
  ],
  "fields": [
+  {
+   "fieldname": "aau_content_tab",
+   "fieldtype": "Tab Break",
+   "label": "محتوى الموقع"
+  },
   {
    "fieldname": "home_tab",
    "fieldtype": "Tab Break",
@@ -506,66 +513,70 @@
   {
    "fieldname": "contact_page_section",
    "fieldtype": "Section Break",
-   "label": "Contact Page"
+   "label": "صفحة التواصل"
   },
   {
    "description": "\u0634\u0627\u0631\u0629 \u0635\u0641\u062d\u0629 \u0627\u0644\u062a\u0648\u0627\u0635\u0644",
    "fieldname": "contact_page_badge_ar",
    "fieldtype": "Data",
-   "label": "Contact Page Badge"
+   "label": "شارة الصفحة"
   },
   {
    "description": "\u0639\u0646\u0648\u0627\u0646 \u0635\u0641\u062d\u0629 \u0627\u0644\u062a\u0648\u0627\u0635\u0644",
    "fieldname": "contact_page_title_ar",
    "fieldtype": "Data",
-   "label": "Contact Page Title"
+   "label": "عنوان الصفحة"
   },
   {
    "description": "\u0648\u0635\u0641 \u0635\u0641\u062d\u0629 \u0627\u0644\u062a\u0648\u0627\u0635\u0644",
    "fieldname": "contact_page_description_ar",
    "fieldtype": "Long Text",
-   "label": "Contact Page Description"
+   "label": "وصف الصفحة"
   },
   {
    "fieldname": "contact_content_section",
    "fieldtype": "Section Break",
-   "label": "Contact Content"
+   "label": "بيانات التواصل"
   },
   {
    "description": "\u0627\u0644\u0639\u0646\u0648\u0627\u0646 \u0627\u0644\u0628\u0631\u064a\u062f\u064a",
    "fieldname": "address_ar",
    "fieldtype": "Long Text",
-   "label": "Address"
+   "label": "العنوان"
+  },
+  {
+   "fieldname": "contact_details_column",
+   "fieldtype": "Column Break"
   },
   {
    "description": "\u0631\u0627\u0628\u0637 \u0627\u0644\u062e\u0631\u064a\u0637\u0629",
    "fieldname": "map_location",
    "fieldtype": "Data",
-   "label": "Map Location"
+   "label": "رابط الخريطة"
   },
   {
    "description": "\u0639\u0646\u0648\u0627\u0646 \u0646\u0645\u0648\u0630\u062c \u0627\u0644\u062a\u0648\u0627\u0635\u0644",
    "fieldname": "contact_form_title_ar",
    "fieldtype": "Data",
-   "label": "Contact Form Title"
+   "label": "عنوان نموذج التواصل"
   },
   {
    "description": "\u0639\u0646\u0648\u0627\u0646 \u0648\u0633\u0627\u0626\u0644 \u0627\u0644\u062a\u0648\u0627\u0635\u0644",
    "fieldname": "social_section_title_ar",
    "fieldtype": "Data",
-   "label": "Social Section Title"
+   "label": "عنوان وسائل التواصل"
   },
   {
    "description": "\u0628\u0631\u064a\u062f \u0627\u0644\u062a\u0648\u0627\u0635\u0644",
    "fieldname": "contact_email",
    "fieldtype": "Data",
-   "label": "Contact Email"
+   "label": "البريد الإلكتروني"
   },
   {
    "description": "\u0647\u0627\u062a\u0641 \u0627\u0644\u062a\u0648\u0627\u0635\u0644",
    "fieldname": "contact_phone",
    "fieldtype": "Data",
-   "label": "Contact Phone"
+   "label": "رقم الهاتف"
   }
  ],
  "icon": "fa fa-cog",
