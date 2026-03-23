@@ -464,7 +464,8 @@ def _upsert_dashboard_chart(
 
     based_on_field = based_on if _field_exists(document_type, based_on) else "creation"
 
-    filters_json = json.dumps(_sanitize_filters(document_type, filters), ensure_ascii=False)
+    sanitized_filters = _sanitize_filters(document_type, filters)
+    filters_json = json.dumps(_to_dashboard_chart_filters(document_type, sanitized_filters), ensure_ascii=False)
 
     payload = {
         "chart_name": chart_name,
@@ -499,6 +500,16 @@ def _upsert_dashboard_chart(
         }
     ).insert(ignore_permissions=True)
     return doc.name
+
+
+def _to_dashboard_chart_filters(document_type: str, filters: dict[str, Any]) -> list[list[Any]]:
+    if not filters:
+        return []
+
+    normalized: list[list[Any]] = []
+    for fieldname, value in filters.items():
+        normalized.append([document_type, fieldname, "=", value, False])
+    return normalized
 
 
 def _upsert_workspace(definition: dict[str, Any]) -> str:
