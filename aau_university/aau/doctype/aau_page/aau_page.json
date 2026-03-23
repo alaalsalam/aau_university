@@ -22,13 +22,13 @@
   {
    "fieldname": "content_management_tab",
    "fieldtype": "Tab Break",
-   "label": "محتوى الصفحة"
+   "label": "\u0645\u062d\u062a\u0648\u0649 \u0627\u0644\u0635\u0641\u062d\u0629"
   },
   {
    "fieldname": "slug",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "المسار",
+   "label": "\u0627\u0644\u0645\u0633\u0627\u0631",
    "reqd": 1,
    "unique": 1
   },
@@ -39,7 +39,7 @@
   {
    "fieldname": "title_ar",
    "fieldtype": "Data",
-   "label": "عنوان الصفحة",
+   "label": "\u0639\u0646\u0648\u0627\u0646 \u0627\u0644\u0635\u0641\u062d\u0629",
    "reqd": 1
   },
   {
@@ -51,7 +51,7 @@
   {
    "fieldname": "content_ar",
    "fieldtype": "Text Editor",
-   "label": "المحتوى"
+   "label": "\u0627\u0644\u0645\u062d\u062a\u0648\u0649"
   },
   {
    "fieldname": "content_en",
@@ -62,36 +62,36 @@
   {
    "fieldname": "hero_image",
    "fieldtype": "Attach Image",
-   "label": "صورة الصفحة"
+   "label": "\u0635\u0648\u0631\u0629 \u0627\u0644\u0635\u0641\u062d\u0629"
   },
   {
    "fieldname": "publishing_section",
    "fieldtype": "Section Break",
-   "label": "النشر"
+   "label": "\u0627\u0644\u0646\u0634\u0631"
   },
   {
    "default": "1",
    "fieldname": "published",
    "fieldtype": "Check",
    "in_list_view": 1,
-   "label": "منشور"
+   "label": "\u0645\u0646\u0634\u0648\u0631"
   },
   {
    "fieldname": "translation_note_section",
    "fieldtype": "Section Break",
-   "label": "الترجمة"
+   "label": "\u0627\u0644\u062a\u0631\u062c\u0645\u0629"
   },
   {
    "fieldname": "translation_note",
    "fieldtype": "HTML",
-   "label": "تنبيه الترجمة",
-   "options": "<div class='text-muted small'>يتم إدخال المحتوى بالعربية فقط. النسخة الإنجليزية تعتمد على نظام الترجمة في الموقع عند العرض.</div>"
+   "label": "\u062a\u0646\u0628\u064a\u0647 \u0627\u0644\u062a\u0631\u062c\u0645\u0629",
+   "options": "<div class=\"text-muted small\">\u064a\u062a\u0645 \u0625\u062f\u062e\u0627\u0644 \u0627\u0644\u0645\u062d\u062a\u0648\u0649 \u0628\u0627\u0644\u0639\u0631\u0628\u064a\u0629 \u0641\u0642\u0637. \u0627\u0644\u0646\u0633\u062e\u0629 \u0627\u0644\u0625\u0646\u062c\u0644\u064a\u0632\u064a\u0629 \u062a\u0639\u062a\u0645\u062f \u0639\u0644\u0649 \u0646\u0638\u0627\u0645 \u0627\u0644\u062a\u0631\u062c\u0645\u0629 \u0641\u064a \u0627\u0644\u0645\u0648\u0642\u0639 \u0639\u0646\u062f \u0627\u0644\u0639\u0631\u0636.</div>"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-03-15 04:25:20.225618",
+ "modified": "2026-03-17 15:01:42.597962",
  "modified_by": "Administrator",
  "module": "AAU",
  "name": "AAU Page",

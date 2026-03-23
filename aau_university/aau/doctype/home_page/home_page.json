@@ -77,17 +77,17 @@
   {
    "fieldname": "section_hero",
    "fieldtype": "Section Break",
-   "label": "قسم الهيرو"
+   "label": "\u0642\u0633\u0645 \u0627\u0644\u0647\u064a\u0631\u0648"
   },
   {
    "fieldname": "hero_badge_ar",
    "fieldtype": "Data",
-   "label": "شارة الهيرو"
+   "label": "\u0634\u0627\u0631\u0629 \u0627\u0644\u0647\u064a\u0631\u0648"
   },
   {
    "fieldname": "hero_title_primary_ar",
    "fieldtype": "Data",
-   "label": "العنوان الرئيسي"
+   "label": "\u0627\u0644\u0639\u0646\u0648\u0627\u0646 \u0627\u0644\u0631\u0626\u064a\u0633\u064a"
   },
   {
    "fieldname": "hero_column_break",
@@ -96,27 +96,27 @@
   {
    "fieldname": "hero_title_secondary_ar",
    "fieldtype": "Data",
-   "label": "العنوان الثانوي"
+   "label": "\u0627\u0644\u0639\u0646\u0648\u0627\u0646 \u0627\u0644\u062b\u0627\u0646\u0648\u064a"
   },
   {
    "fieldname": "hero_description_ar",
    "fieldtype": "Small Text",
-   "label": "وصف الهيرو"
+   "label": "\u0648\u0635\u0641 \u0627\u0644\u0647\u064a\u0631\u0648"
   },
   {
    "fieldname": "hero_image",
    "fieldtype": "Attach Image",
-   "label": "صورة الهيرو"
+   "label": "\u0635\u0648\u0631\u0629 \u0627\u0644\u0647\u064a\u0631\u0648"
   },
   {
    "fieldname": "section_about",
    "fieldtype": "Section Break",
-   "label": "قسم عن الجامعة"
+   "label": "\u0642\u0633\u0645 \u0639\u0646 \u0627\u0644\u062c\u0627\u0645\u0639\u0629"
   },
   {
    "fieldname": "about_title_ar",
    "fieldtype": "Data",
-   "label": "عنوان القسم"
+   "label": "\u0639\u0646\u0648\u0627\u0646 \u0627\u0644\u0642\u0633\u0645"
   },
   {
    "fieldname": "about_intro_column_break",
@@ -125,22 +125,22 @@
   {
    "fieldname": "about_description_ar",
    "fieldtype": "Long Text",
-   "label": "الوصف الرئيسي"
+   "label": "\u0627\u0644\u0648\u0635\u0641 \u0627\u0644\u0631\u0626\u064a\u0633\u064a"
   },
   {
    "fieldname": "about_image",
    "fieldtype": "Attach Image",
-   "label": "صورة القسم"
+   "label": "\u0635\u0648\u0631\u0629 \u0627\u0644\u0642\u0633\u0645"
   },
   {
    "fieldname": "section_about_identity",
    "fieldtype": "Section Break",
-   "label": "الرؤية والرسالة والهوية"
+   "label": "\u0627\u0644\u0631\u0624\u064a\u0629 \u0648\u0627\u0644\u0631\u0633\u0627\u0644\u0629 \u0648\u0627\u0644\u0647\u0648\u064a\u0629"
   },
   {
    "fieldname": "about_vision_ar",
    "fieldtype": "Long Text",
-   "label": "الرؤية"
+   "label": "\u0627\u0644\u0631\u0624\u064a\u0629"
   },
   {
    "fieldname": "about_identity_column_break",
@@ -149,27 +149,27 @@
   {
    "fieldname": "about_mission_ar",
    "fieldtype": "Long Text",
-   "label": "الرسالة"
+   "label": "\u0627\u0644\u0631\u0633\u0627\u0644\u0629"
   },
   {
    "fieldname": "about_goals_ar",
    "fieldtype": "Long Text",
-   "label": "الأهداف"
+   "label": "\u0627\u0644\u0623\u0647\u062f\u0627\u0641"
   },
   {
    "fieldname": "about_values_ar",
    "fieldtype": "Long Text",
-   "label": "القيم"
+   "label": "\u0627\u0644\u0642\u064a\u0645"
   },
   {
    "fieldname": "section_about_highlight",
    "fieldtype": "Section Break",
-   "label": "النص المميز"
+   "label": "\u0627\u0644\u0646\u0635 \u0627\u0644\u0645\u0645\u064a\u0632"
   },
   {
    "fieldname": "about_highlight_title_ar",
    "fieldtype": "Data",
-   "label": "عنوان النص المميز"
+   "label": "\u0639\u0646\u0648\u0627\u0646 \u0627\u0644\u0646\u0635 \u0627\u0644\u0645\u0645\u064a\u0632"
   },
   {
    "fieldname": "about_highlight_column_break",
@@ -178,27 +178,27 @@
   {
    "fieldname": "about_highlight_text_ar",
    "fieldtype": "Small Text",
-   "label": "محتوى النص المميز"
+   "label": "\u0645\u062d\u062a\u0648\u0649 \u0627\u0644\u0646\u0635 \u0627\u0644\u0645\u0645\u064a\u0632"
   },
   {
    "fieldname": "section_president_message",
    "fieldtype": "Section Break",
-   "label": "رسالة رئيس الجامعة"
+   "label": "\u0631\u0633\u0627\u0644\u0629 \u0631\u0626\u064a\u0633 \u0627\u0644\u062c\u0627\u0645\u0639\u0629"
   },
   {
    "fieldname": "president_message_intro_ar",
    "fieldtype": "Long Text",
-   "label": "مقدمة الرسالة"
+   "label": "\u0645\u0642\u062f\u0645\u0629 \u0627\u0644\u0631\u0633\u0627\u0644\u0629"
   },
   {
    "fieldname": "president_message_body_ar",
    "fieldtype": "Long Text",
-   "label": "نص الرسالة"
+   "label": "\u0646\u0635 \u0627\u0644\u0631\u0633\u0627\u0644\u0629"
   },
   {
    "fieldname": "president_message_closing_ar",
    "fieldtype": "Long Text",
-   "label": "خاتمة الرسالة"
+   "label": "\u062e\u0627\u062a\u0645\u0629 \u0627\u0644\u0631\u0633\u0627\u0644\u0629"
   },
   {
    "fieldname": "president_identity_column_break",
@@ -207,22 +207,22 @@
   {
    "fieldname": "president_name_ar",
    "fieldtype": "Data",
-   "label": "اسم رئيس الجامعة"
+   "label": "\u0627\u0633\u0645 \u0631\u0626\u064a\u0633 \u0627\u0644\u062c\u0627\u0645\u0639\u0629"
   },
   {
    "fieldname": "president_role_ar",
    "fieldtype": "Data",
-   "label": "الصفة الوظيفية"
+   "label": "\u0627\u0644\u0635\u0641\u0629 \u0627\u0644\u0648\u0638\u064a\u0641\u064a\u0629"
   },
   {
    "fieldname": "section_statistics",
    "fieldtype": "Section Break",
-   "label": "قسم الإحصائيات"
+   "label": "\u0642\u0633\u0645 \u0627\u0644\u0625\u062d\u0635\u0627\u0626\u064a\u0627\u062a"
   },
   {
    "fieldname": "students_count",
    "fieldtype": "Int",
-   "label": "عدد الطلاب"
+   "label": "\u0639\u062f\u062f \u0627\u0644\u0637\u0644\u0627\u0628"
   },
   {
    "fieldname": "stats_counts_column_break",
@@ -231,27 +231,27 @@
   {
    "fieldname": "faculty_count",
    "fieldtype": "Int",
-   "label": "عدد أعضاء هيئة التدريس"
+   "label": "\u0639\u062f\u062f \u0623\u0639\u0636\u0627\u0621 \u0647\u064a\u0626\u0629 \u0627\u0644\u062a\u062f\u0631\u064a\u0633"
   },
   {
    "fieldname": "programs_count",
    "fieldtype": "Int",
-   "label": "عدد البرامج"
+   "label": "\u0639\u062f\u062f \u0627\u0644\u0628\u0631\u0627\u0645\u062c"
   },
   {
    "fieldname": "colleges_count",
    "fieldtype": "Int",
-   "label": "عدد الكليات"
+   "label": "\u0639\u062f\u062f \u0627\u0644\u0643\u0644\u064a\u0627\u062a"
   },
   {
    "fieldname": "section_stats_labels",
    "fieldtype": "Section Break",
-   "label": "تسميات الإحصائيات"
+   "label": "\u062a\u0633\u0645\u064a\u0627\u062a \u0627\u0644\u0625\u062d\u0635\u0627\u0626\u064a\u0627\u062a"
   },
   {
    "fieldname": "stats_students_label_ar",
    "fieldtype": "Data",
-   "label": "تسمية الطلاب"
+   "label": "\u062a\u0633\u0645\u064a\u0629 \u0627\u0644\u0637\u0644\u0627\u0628"
   },
   {
    "fieldname": "stats_labels_column_break",
@@ -260,122 +260,122 @@
   {
    "fieldname": "stats_faculty_label_ar",
    "fieldtype": "Data",
-   "label": "تسمية هيئة التدريس"
+   "label": "\u062a\u0633\u0645\u064a\u0629 \u0647\u064a\u0626\u0629 \u0627\u0644\u062a\u062f\u0631\u064a\u0633"
   },
   {
    "fieldname": "stats_programs_label_ar",
    "fieldtype": "Data",
-   "label": "تسمية البرامج"
+   "label": "\u062a\u0633\u0645\u064a\u0629 \u0627\u0644\u0628\u0631\u0627\u0645\u062c"
   },
   {
    "fieldname": "stats_colleges_label_ar",
    "fieldtype": "Data",
-   "label": "تسمية الكليات"
+   "label": "\u062a\u0633\u0645\u064a\u0629 \u0627\u0644\u0643\u0644\u064a\u0627\u062a"
   },
   {
    "fieldname": "section_campus_life",
    "fieldtype": "Section Break",
-   "label": "قسم الحياة الجامعية"
+   "label": "\u0642\u0633\u0645 \u0627\u0644\u062d\u064a\u0627\u0629 \u0627\u0644\u062c\u0627\u0645\u0639\u064a\u0629"
   },
   {
    "fieldname": "campus_life_title_ar",
    "fieldtype": "Data",
-   "label": "عنوان الحياة الجامعية"
+   "label": "\u0639\u0646\u0648\u0627\u0646 \u0627\u0644\u062d\u064a\u0627\u0629 \u0627\u0644\u062c\u0627\u0645\u0639\u064a\u0629"
   },
   {
    "fieldname": "campus_life_description_ar",
    "fieldtype": "Small Text",
-   "label": "وصف الحياة الجامعية"
+   "label": "\u0648\u0635\u0641 \u0627\u0644\u062d\u064a\u0627\u0629 \u0627\u0644\u062c\u0627\u0645\u0639\u064a\u0629"
   },
   {
    "fieldname": "section_projects",
    "fieldtype": "Section Break",
-   "label": "قسم المشاريع"
+   "label": "\u0642\u0633\u0645 \u0627\u0644\u0645\u0634\u0627\u0631\u064a\u0639"
   },
   {
    "fieldname": "projects_title_ar",
    "fieldtype": "Data",
-   "label": "عنوان المشاريع"
+   "label": "\u0639\u0646\u0648\u0627\u0646 \u0627\u0644\u0645\u0634\u0627\u0631\u064a\u0639"
   },
   {
    "fieldname": "projects_description_ar",
    "fieldtype": "Small Text",
-   "label": "وصف المشاريع"
+   "label": "\u0648\u0635\u0641 \u0627\u0644\u0645\u0634\u0627\u0631\u064a\u0639"
   },
   {
    "fieldname": "section_colleges",
    "fieldtype": "Section Break",
-   "label": "قسم الكليات"
+   "label": "\u0642\u0633\u0645 \u0627\u0644\u0643\u0644\u064a\u0627\u062a"
   },
   {
    "fieldname": "colleges_title_ar",
    "fieldtype": "Data",
-   "label": "عنوان الكليات"
+   "label": "\u0639\u0646\u0648\u0627\u0646 \u0627\u0644\u0643\u0644\u064a\u0627\u062a"
   },
   {
    "fieldname": "colleges_description_ar",
    "fieldtype": "Small Text",
-   "label": "وصف الكليات"
+   "label": "\u0648\u0635\u0641 \u0627\u0644\u0643\u0644\u064a\u0627\u062a"
   },
   {
    "fieldname": "section_news",
    "fieldtype": "Section Break",
-   "label": "قسم الأخبار"
+   "label": "\u0642\u0633\u0645 \u0627\u0644\u0623\u062e\u0628\u0627\u0631"
   },
   {
    "fieldname": "news_title_ar",
    "fieldtype": "Data",
-   "label": "عنوان الأخبار"
+   "label": "\u0639\u0646\u0648\u0627\u0646 \u0627\u0644\u0623\u062e\u0628\u0627\u0631"
   },
   {
    "fieldname": "news_description_ar",
    "fieldtype": "Small Text",
-   "label": "وصف الأخبار"
+   "label": "\u0648\u0635\u0641 \u0627\u0644\u0623\u062e\u0628\u0627\u0631"
   },
   {
    "fieldname": "section_events",
    "fieldtype": "Section Break",
-   "label": "قسم الفعاليات"
+   "label": "\u0642\u0633\u0645 \u0627\u0644\u0641\u0639\u0627\u0644\u064a\u0627\u062a"
   },
   {
    "fieldname": "events_title_ar",
    "fieldtype": "Data",
-   "label": "عنوان الفعاليات"
+   "label": "\u0639\u0646\u0648\u0627\u0646 \u0627\u0644\u0641\u0639\u0627\u0644\u064a\u0627\u062a"
   },
   {
    "fieldname": "events_description_ar",
    "fieldtype": "Small Text",
-   "label": "وصف الفعاليات"
+   "label": "\u0648\u0635\u0641 \u0627\u0644\u0641\u0639\u0627\u0644\u064a\u0627\u062a"
   },
   {
    "fieldname": "section_faq",
    "fieldtype": "Section Break",
-   "label": "قسم الأسئلة المتكررة"
+   "label": "\u0642\u0633\u0645 \u0627\u0644\u0623\u0633\u0626\u0644\u0629 \u0627\u0644\u0645\u062a\u0643\u0631\u0631\u0629"
   },
   {
    "fieldname": "faq_title_ar",
    "fieldtype": "Data",
-   "label": "عنوان الأسئلة المتكررة"
+   "label": "\u0639\u0646\u0648\u0627\u0646 \u0627\u0644\u0623\u0633\u0626\u0644\u0629 \u0627\u0644\u0645\u062a\u0643\u0631\u0631\u0629"
   },
   {
    "fieldname": "faq_description_ar",
    "fieldtype": "Small Text",
-   "label": "وصف الأسئلة المتكررة"
+   "label": "\u0648\u0635\u0641 \u0627\u0644\u0623\u0633\u0626\u0644\u0629 \u0627\u0644\u0645\u062a\u0643\u0631\u0631\u0629"
   },
   {
    "fieldname": "section_video",
    "fieldtype": "Section Break",
-   "label": "قسم الفيديو"
+   "label": "\u0642\u0633\u0645 \u0627\u0644\u0641\u064a\u062f\u064a\u0648"
   },
   {
    "fieldname": "video_title_ar",
    "fieldtype": "Data",
-   "label": "عنوان الفيديو"
+   "label": "\u0639\u0646\u0648\u0627\u0646 \u0627\u0644\u0641\u064a\u062f\u064a\u0648"
   },
   {
    "fieldname": "video_description_ar",
    "fieldtype": "Small Text",
-   "label": "وصف الفيديو"
+   "label": "\u0648\u0635\u0641 \u0627\u0644\u0641\u064a\u062f\u064a\u0648"
   },
   {
    "fieldname": "video_overlay_column_break",
@@ -384,33 +384,33 @@
   {
    "fieldname": "video_overlay_title_ar",
    "fieldtype": "Data",
-   "label": "عنوان طبقة الفيديو"
+   "label": "\u0639\u0646\u0648\u0627\u0646 \u0637\u0628\u0642\u0629 \u0627\u0644\u0641\u064a\u062f\u064a\u0648"
   },
   {
    "fieldname": "video_overlay_description_ar",
    "fieldtype": "Small Text",
-   "label": "وصف طبقة الفيديو"
+   "label": "\u0648\u0635\u0641 \u0637\u0628\u0642\u0629 \u0627\u0644\u0641\u064a\u062f\u064a\u0648"
   },
   {
    "fieldname": "section_contact",
    "fieldtype": "Section Break",
-   "label": "قسم التواصل"
+   "label": "\u0642\u0633\u0645 \u0627\u0644\u062a\u0648\u0627\u0635\u0644"
   },
   {
    "fieldname": "contact_title_ar",
    "fieldtype": "Data",
-   "label": "عنوان التواصل"
+   "label": "\u0639\u0646\u0648\u0627\u0646 \u0627\u0644\u062a\u0648\u0627\u0635\u0644"
   },
   {
    "fieldname": "contact_description_ar",
    "fieldtype": "Small Text",
-   "label": "وصف التواصل"
+   "label": "\u0648\u0635\u0641 \u0627\u0644\u062a\u0648\u0627\u0635\u0644"
   }
  ],
  "grid_page_length": 50,
  "issingle": 1,
  "links": [],
- "modified": "2026-03-15 04:25:19.380614",
+ "modified": "2026-03-17 15:16:59.393927",
  "modified_by": "Administrator",
  "module": "AAU",
  "name": "Home Page",

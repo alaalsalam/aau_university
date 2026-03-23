@@ -1,0 +1,189 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-01-15 21:09:34.304706",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "main_section",
+  "title",
+  "content",
+  "image",
+  "is_published",
+  "display_order",
+  "id",
+  "type",
+  "full_name",
+  "email",
+  "phone",
+  "specialty",
+  "experience",
+  "cv_file",
+  "message",
+  "status",
+  "reviewed_at",
+  "created_at"
+ ],
+ "fields": [
+  {
+   "fieldname": "main_section",
+   "fieldtype": "Section Break",
+   "label": "Main Section"
+  },
+  {
+   "description": "\u0639\u0646\u0648\u0627\u0646 \u062f\u0627\u062e\u0644\u064a",
+   "fieldname": "title",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Title"
+  },
+  {
+   "description": "\u0627\u0644\u0645\u062d\u062a\u0648\u0649",
+   "fieldname": "content",
+   "fieldtype": "Long Text",
+   "label": "Content"
+  },
+  {
+   "description": "\u0627\u0644\u0635\u0648\u0631\u0629",
+   "fieldname": "image",
+   "fieldtype": "Attach Image",
+   "label": "Image"
+  },
+  {
+   "default": "0",
+   "description": "\u062d\u0627\u0644\u0629 \u0627\u0644\u0646\u0634\u0631",
+   "fieldname": "is_published",
+   "fieldtype": "Check",
+   "label": "Is Published"
+  },
+  {
+   "description": "\u062a\u0631\u062a\u064a\u0628 \u0627\u0644\u0639\u0631\u0636",
+   "fieldname": "display_order",
+   "fieldtype": "Int",
+   "label": "Display Order"
+  },
+  {
+   "description": "\u0627\u0644\u0645\u0639\u0631\u0641 \u0627\u0644\u0641\u0631\u064a\u062f",
+   "fieldname": "id",
+   "fieldtype": "Data",
+   "label": "ID",
+   "reqd": 1
+  },
+  {
+   "description": "\u0646\u0648\u0639 \u0627\u0644\u0637\u0644\u0628",
+   "fieldname": "type",
+   "fieldtype": "Select",
+   "label": "Type",
+   "options": "student\nemployee",
+   "reqd": 1
+  },
+  {
+   "description": "\u0627\u0644\u0627\u0633\u0645 \u0627\u0644\u0643\u0627\u0645\u0644",
+   "fieldname": "full_name",
+   "fieldtype": "Data",
+   "label": "Name",
+   "reqd": 1
+  },
+  {
+   "description": "\u0627\u0644\u0628\u0631\u064a\u062f \u0627\u0644\u0625\u0644\u0643\u062a\u0631\u0648\u0646\u064a",
+   "fieldname": "email",
+   "fieldtype": "Data",
+   "label": "Email",
+   "reqd": 1
+  },
+  {
+   "description": "\u0631\u0642\u0645 \u0627\u0644\u0647\u0627\u062a\u0641",
+   "fieldname": "phone",
+   "fieldtype": "Data",
+   "label": "Phone",
+   "reqd": 1
+  },
+  {
+   "description": "\u0627\u0644\u062a\u062e\u0635\u0635",
+   "fieldname": "specialty",
+   "fieldtype": "Data",
+   "label": "Specialty",
+   "reqd": 1
+  },
+  {
+   "description": "\u0627\u0644\u062e\u0628\u0631\u0629",
+   "fieldname": "experience",
+   "fieldtype": "Long Text",
+   "label": "Experience"
+  },
+  {
+   "description": "\u0627\u0644\u0633\u064a\u0631\u0629 \u0627\u0644\u0630\u0627\u062a\u064a\u0629",
+   "fieldname": "cv_file",
+   "fieldtype": "Attach",
+   "label": "Cv File"
+  },
+  {
+   "description": "\u0631\u0633\u0627\u0644\u0629 \u0625\u0636\u0627\u0641\u064a\u0629",
+   "fieldname": "message",
+   "fieldtype": "Long Text",
+   "label": "Message"
+  },
+  {
+   "description": "\u062d\u0627\u0644\u0629 \u0627\u0644\u0637\u0644\u0628",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "pending\nreviewed\naccepted\nrejected",
+   "reqd": 1
+  },
+  {
+   "description": "\u062a\u0627\u0631\u064a\u062e \u0627\u0644\u0645\u0631\u0627\u062c\u0639\u0629",
+   "fieldname": "reviewed_at",
+   "fieldtype": "Datetime",
+   "label": "Reviewed At"
+  },
+  {
+   "description": "\u062a\u0627\u0631\u064a\u062e \u0627\u0644\u0625\u0631\u0633\u0627\u0644",
+   "fieldname": "created_at",
+   "fieldtype": "Datetime",
+   "label": "Created At",
+   "reqd": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-03-15 04:25:20.780812",
+ "modified_by": "Administrator",
+ "module": "AAU",
+ "name": "Join Requests",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "AAU Content Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

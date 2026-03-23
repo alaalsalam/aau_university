@@ -1,0 +1,104 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-01-15 21:09:33.680837",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "main_section",
+  "full_name",
+  "academic_title",
+  "department",
+  "biography",
+  "photo",
+  "is_active"
+ ],
+ "fields": [
+  {
+   "fieldname": "main_section",
+   "fieldtype": "Section Break",
+   "label": "\u0628\u064a\u0627\u0646\u0627\u062a \u0639\u0636\u0648 \u0647\u064a\u0626\u0629 \u0627\u0644\u062a\u062f\u0631\u064a\u0633"
+  },
+  {
+   "description": "\u0627\u0644\u0627\u0633\u0645 \u0627\u0644\u0643\u0627\u0645\u0644",
+   "fieldname": "full_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "\u0627\u0644\u0627\u0633\u0645 \u0627\u0644\u0643\u0627\u0645\u0644",
+   "reqd": 1
+  },
+  {
+   "description": "\u0627\u0644\u0644\u0642\u0628 \u0627\u0644\u0623\u0643\u0627\u062f\u064a\u0645\u064a",
+   "fieldname": "academic_title",
+   "fieldtype": "Data",
+   "label": "\u0627\u0644\u0644\u0642\u0628 \u0627\u0644\u0623\u0643\u0627\u062f\u064a\u0645\u064a"
+  },
+  {
+   "description": "\u0627\u0644\u0642\u0633\u0645",
+   "fieldname": "department",
+   "fieldtype": "Link",
+   "label": "\u0627\u0644\u0642\u0633\u0645 \u0627\u0644\u0623\u0643\u0627\u062f\u064a\u0645\u064a",
+   "options": "Academic Departments"
+  },
+  {
+   "description": "\u0646\u0628\u0630\u0629/\u0633\u064a\u0631\u0629",
+   "fieldname": "biography",
+   "fieldtype": "Long Text",
+   "label": "\u0627\u0644\u0646\u0628\u0630\u0629 \u0627\u0644\u062a\u0639\u0631\u064a\u0641\u064a\u0629"
+  },
+  {
+   "description": "\u0627\u0644\u0635\u0648\u0631\u0629",
+   "fieldname": "photo",
+   "fieldtype": "Attach Image",
+   "label": "\u0627\u0644\u0635\u0648\u0631\u0629 \u0627\u0644\u0634\u062e\u0635\u064a\u0629"
+  },
+  {
+   "default": "0",
+   "description": "\u0645\u0641\u0639\u0644",
+   "fieldname": "is_active",
+   "fieldtype": "Check",
+   "label": "\u0645\u0641\u0639\u0644"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-03-17 15:11:00.733280",
+ "modified_by": "Administrator",
+ "module": "AAU",
+ "name": "Faculty Members",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "AAU Content Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

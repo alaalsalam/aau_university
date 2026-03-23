@@ -1,0 +1,87 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-01-15 21:09:33.508587",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "main_section",
+  "plan_name",
+  "academic_program",
+  "total_credits",
+  "description",
+  "is_active"
+ ],
+ "fields": [
+  {
+   "fieldname": "main_section",
+   "fieldtype": "Section Break",
+   "label": "Main Section"
+  },
+  {
+   "description": "\u0627\u0633\u0645 \u0627\u0644\u062e\u0637\u0629",
+   "fieldname": "plan_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Plan Name",
+   "reqd": 1
+  },
+  {
+   "description": "\u0627\u0644\u0628\u0631\u0646\u0627\u0645\u062c \u0627\u0644\u0623\u0643\u0627\u062f\u064a\u0645\u064a",
+   "fieldname": "academic_program",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Academic Program",
+   "options": "Academic Programs",
+   "reqd": 1
+  },
+  {
+   "description": "\u0645\u062c\u0645\u0648\u0639 \u0627\u0644\u0633\u0627\u0639\u0627\u062a",
+   "fieldname": "total_credits",
+   "fieldtype": "Int",
+   "label": "Total Credits"
+  },
+  {
+   "description": "\u0648\u0635\u0641 \u0627\u0644\u062e\u0637\u0629",
+   "fieldname": "description",
+   "fieldtype": "Long Text",
+   "label": "Description"
+  },
+  {
+   "default": "0",
+   "description": "\u0645\u0641\u0639\u0644",
+   "fieldname": "is_active",
+   "fieldtype": "Check",
+   "label": "Is Active"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-03-02 00:40:59.571076",
+ "modified_by": "Administrator",
+ "module": "AAU",
+ "name": "Study Plans",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

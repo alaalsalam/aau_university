@@ -1,0 +1,230 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-03-02 00:38:58.514633",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "main_section",
+  "id",
+  "slug",
+  "title_ar",
+  "title_en",
+  "excerpt_ar",
+  "excerpt_en",
+  "content_ar",
+  "content_en",
+  "author_name_ar",
+  "author_name_en",
+  "author_avatar",
+  "author_role_ar",
+  "author_role_en",
+  "category",
+  "category_ar",
+  "category_en",
+  "image",
+  "published_at",
+  "read_time",
+  "views",
+  "tags",
+  "is_published",
+  "display_order"
+ ],
+ "fields": [
+  {
+   "fieldname": "main_section",
+   "fieldtype": "Section Break",
+   "label": "\u0628\u064a\u0627\u0646\u0627\u062a \u0627\u0644\u0645\u0642\u0627\u0644"
+  },
+  {
+   "description": "\u0627\u0644\u0645\u0639\u0631\u0641 \u0627\u0644\u0641\u0631\u064a\u062f",
+   "fieldname": "id",
+   "fieldtype": "Data",
+   "label": "\u0627\u0644\u0645\u0639\u0631\u0641"
+  },
+  {
+   "description": "\u0627\u0644\u0631\u0627\u0628\u0637 \u0627\u0644\u0645\u062e\u062a\u0635\u0631",
+   "fieldname": "slug",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "\u0627\u0644\u0631\u0627\u0628\u0637 \u0627\u0644\u0645\u062e\u062a\u0635\u0631",
+   "reqd": 1
+  },
+  {
+   "description": "\u0639\u0646\u0648\u0627\u0646 \u0627\u0644\u0645\u0642\u0627\u0644 \u0628\u0627\u0644\u0639\u0631\u0628\u064a\u0629",
+   "fieldname": "title_ar",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "\u0639\u0646\u0648\u0627\u0646 \u0627\u0644\u0645\u0642\u0627\u0644",
+   "reqd": 1
+  },
+  {
+   "description": "\u0639\u0646\u0648\u0627\u0646 \u0627\u0644\u0645\u0642\u0627\u0644 \u0628\u0627\u0644\u0625\u0646\u062c\u0644\u064a\u0632\u064a\u0629",
+   "fieldname": "title_en",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Title En"
+  },
+  {
+   "description": "\u0627\u0644\u0645\u0644\u062e\u0635 \u0628\u0627\u0644\u0639\u0631\u0628\u064a\u0629",
+   "fieldname": "excerpt_ar",
+   "fieldtype": "Long Text",
+   "label": "\u0627\u0644\u0645\u0644\u062e\u0635"
+  },
+  {
+   "description": "\u0627\u0644\u0645\u0644\u062e\u0635 \u0628\u0627\u0644\u0625\u0646\u062c\u0644\u064a\u0632\u064a\u0629",
+   "fieldname": "excerpt_en",
+   "fieldtype": "Long Text",
+   "hidden": 1,
+   "label": "Excerpt En"
+  },
+  {
+   "description": "\u0645\u062d\u062a\u0648\u0649 \u0627\u0644\u0645\u0642\u0627\u0644 \u0628\u0627\u0644\u0639\u0631\u0628\u064a\u0629",
+   "fieldname": "content_ar",
+   "fieldtype": "Long Text",
+   "label": "\u0627\u0644\u0645\u062d\u062a\u0648\u0649"
+  },
+  {
+   "description": "\u0645\u062d\u062a\u0648\u0649 \u0627\u0644\u0645\u0642\u0627\u0644 \u0628\u0627\u0644\u0625\u0646\u062c\u0644\u064a\u0632\u064a\u0629",
+   "fieldname": "content_en",
+   "fieldtype": "Long Text",
+   "hidden": 1,
+   "label": "Content En"
+  },
+  {
+   "description": "\u0627\u0633\u0645 \u0627\u0644\u0643\u0627\u062a\u0628 \u0628\u0627\u0644\u0639\u0631\u0628\u064a\u0629",
+   "fieldname": "author_name_ar",
+   "fieldtype": "Data",
+   "label": "\u0627\u0633\u0645 \u0627\u0644\u0643\u0627\u062a\u0628"
+  },
+  {
+   "description": "\u0627\u0633\u0645 \u0627\u0644\u0643\u0627\u062a\u0628 \u0628\u0627\u0644\u0625\u0646\u062c\u0644\u064a\u0632\u064a\u0629",
+   "fieldname": "author_name_en",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Author Name En"
+  },
+  {
+   "description": "\u0635\u0648\u0631\u0629 \u0627\u0644\u0643\u0627\u062a\u0628",
+   "fieldname": "author_avatar",
+   "fieldtype": "Attach Image",
+   "label": "\u0635\u0648\u0631\u0629 \u0627\u0644\u0643\u0627\u062a\u0628"
+  },
+  {
+   "description": "\u0648\u0638\u064a\u0641\u0629 \u0627\u0644\u0643\u0627\u062a\u0628 \u0628\u0627\u0644\u0639\u0631\u0628\u064a\u0629",
+   "fieldname": "author_role_ar",
+   "fieldtype": "Data",
+   "label": "\u0635\u0641\u0629 \u0627\u0644\u0643\u0627\u062a\u0628"
+  },
+  {
+   "description": "\u0648\u0638\u064a\u0641\u0629 \u0627\u0644\u0643\u0627\u062a\u0628 \u0628\u0627\u0644\u0625\u0646\u062c\u0644\u064a\u0632\u064a\u0629",
+   "fieldname": "author_role_en",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Author Role En"
+  },
+  {
+   "description": "\u0627\u0644\u0641\u0626\u0629",
+   "fieldname": "category",
+   "fieldtype": "Data",
+   "label": "\u0645\u0639\u0631\u0641 \u0627\u0644\u0641\u0626\u0629"
+  },
+  {
+   "description": "\u0627\u0644\u0641\u0626\u0629 \u0628\u0627\u0644\u0639\u0631\u0628\u064a\u0629",
+   "fieldname": "category_ar",
+   "fieldtype": "Data",
+   "label": "\u0627\u0633\u0645 \u0627\u0644\u0641\u0626\u0629"
+  },
+  {
+   "description": "\u0627\u0644\u0641\u0626\u0629 \u0628\u0627\u0644\u0625\u0646\u062c\u0644\u064a\u0632\u064a\u0629",
+   "fieldname": "category_en",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Category En"
+  },
+  {
+   "description": "\u0635\u0648\u0631\u0629 \u0627\u0644\u0645\u0642\u0627\u0644",
+   "fieldname": "image",
+   "fieldtype": "Attach Image",
+   "label": "\u0635\u0648\u0631\u0629 \u0627\u0644\u0645\u0642\u0627\u0644"
+  },
+  {
+   "description": "\u062a\u0627\u0631\u064a\u062e \u0627\u0644\u0646\u0634\u0631",
+   "fieldname": "published_at",
+   "fieldtype": "Date",
+   "label": "\u062a\u0627\u0631\u064a\u062e \u0627\u0644\u0646\u0634\u0631"
+  },
+  {
+   "description": "\u0645\u062f\u0629 \u0627\u0644\u0642\u0631\u0627\u0621\u0629 \u0628\u0627\u0644\u062f\u0642\u0627\u0626\u0642",
+   "fieldname": "read_time",
+   "fieldtype": "Int",
+   "label": "\u0648\u0642\u062a \u0627\u0644\u0642\u0631\u0627\u0621\u0629"
+  },
+  {
+   "description": "\u0639\u062f\u062f \u0627\u0644\u0645\u0634\u0627\u0647\u062f\u0627\u062a",
+   "fieldname": "views",
+   "fieldtype": "Int",
+   "label": "\u0639\u062f\u062f \u0627\u0644\u0645\u0634\u0627\u0647\u062f\u0627\u062a"
+  },
+  {
+   "description": "\u0627\u0644\u0648\u0633\u0648\u0645",
+   "fieldname": "tags",
+   "fieldtype": "Long Text",
+   "label": "\u0627\u0644\u0648\u0633\u0648\u0645"
+  },
+  {
+   "default": "0",
+   "description": "\u0645\u0646\u0634\u0648\u0631",
+   "fieldname": "is_published",
+   "fieldtype": "Check",
+   "label": "\u0645\u0646\u0634\u0648\u0631"
+  },
+  {
+   "description": "\u062a\u0631\u062a\u064a\u0628 \u0627\u0644\u0639\u0631\u0636",
+   "fieldname": "display_order",
+   "fieldtype": "Int",
+   "label": "\u062a\u0631\u062a\u064a\u0628 \u0627\u0644\u0639\u0631\u0636"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-03-17 15:11:00.594980",
+ "modified_by": "Administrator",
+ "module": "AAU",
+ "name": "Blog Posts",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "AAU Content Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

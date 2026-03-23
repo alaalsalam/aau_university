@@ -1,0 +1,169 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-03-02 00:38:58.410513",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "main_section",
+  "id",
+  "slug",
+  "title_ar",
+  "title_en",
+  "desc_ar",
+  "desc_en",
+  "details_ar",
+  "details_en",
+  "start_date",
+  "end_date",
+  "year",
+  "progress",
+  "status",
+  "is_published",
+  "display_order"
+ ],
+ "fields": [
+  {
+   "fieldname": "main_section",
+   "fieldtype": "Section Break",
+   "label": "Main Section"
+  },
+  {
+   "description": "\u0627\u0644\u0645\u0639\u0631\u0641 \u0627\u0644\u0641\u0631\u064a\u062f",
+   "fieldname": "id",
+   "fieldtype": "Data",
+   "label": "ID"
+  },
+  {
+   "description": "\u0627\u0644\u0631\u0627\u0628\u0637 \u0627\u0644\u0645\u062e\u062a\u0635\u0631",
+   "fieldname": "slug",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Slug",
+   "reqd": 1
+  },
+  {
+   "description": "\u0639\u0646\u0648\u0627\u0646 \u0627\u0644\u0645\u0634\u0631\u0648\u0639 \u0628\u0627\u0644\u0639\u0631\u0628\u064a\u0629",
+   "fieldname": "title_ar",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Title Ar",
+   "reqd": 1
+  },
+  {
+   "description": "\u0639\u0646\u0648\u0627\u0646 \u0627\u0644\u0645\u0634\u0631\u0648\u0639 \u0628\u0627\u0644\u0625\u0646\u062c\u0644\u064a\u0632\u064a\u0629",
+   "fieldname": "title_en",
+   "fieldtype": "Data",
+   "label": "Title En"
+  },
+  {
+   "description": "\u0648\u0635\u0641 \u0645\u062e\u062a\u0635\u0631 \u0628\u0627\u0644\u0639\u0631\u0628\u064a\u0629",
+   "fieldname": "desc_ar",
+   "fieldtype": "Long Text",
+   "label": "Desc Ar"
+  },
+  {
+   "description": "\u0648\u0635\u0641 \u0645\u062e\u062a\u0635\u0631 \u0628\u0627\u0644\u0625\u0646\u062c\u0644\u064a\u0632\u064a\u0629",
+   "fieldname": "desc_en",
+   "fieldtype": "Long Text",
+   "label": "Desc En"
+  },
+  {
+   "description": "\u062a\u0641\u0627\u0635\u064a\u0644 \u0627\u0644\u0645\u0634\u0631\u0648\u0639 \u0628\u0627\u0644\u0639\u0631\u0628\u064a\u0629",
+   "fieldname": "details_ar",
+   "fieldtype": "Long Text",
+   "label": "Details Ar"
+  },
+  {
+   "description": "\u062a\u0641\u0627\u0635\u064a\u0644 \u0627\u0644\u0645\u0634\u0631\u0648\u0639 \u0628\u0627\u0644\u0625\u0646\u062c\u0644\u064a\u0632\u064a\u0629",
+   "fieldname": "details_en",
+   "fieldtype": "Long Text",
+   "label": "Details En"
+  },
+  {
+   "description": "\u062a\u0627\u0631\u064a\u062e \u0627\u0644\u0628\u062f\u0627\u064a\u0629",
+   "fieldname": "start_date",
+   "fieldtype": "Date",
+   "label": "Start Date"
+  },
+  {
+   "description": "\u062a\u0627\u0631\u064a\u062e \u0627\u0644\u0646\u0647\u0627\u064a\u0629",
+   "fieldname": "end_date",
+   "fieldtype": "Date",
+   "label": "End Date"
+  },
+  {
+   "description": "\u0627\u0644\u0633\u0646\u0629",
+   "fieldname": "year",
+   "fieldtype": "Int",
+   "label": "Year"
+  },
+  {
+   "description": "\u0646\u0633\u0628\u0629 \u0627\u0644\u0625\u0646\u062c\u0627\u0632",
+   "fieldname": "progress",
+   "fieldtype": "Int",
+   "label": "Progress"
+  },
+  {
+   "description": "\u0627\u0644\u062d\u0627\u0644\u0629",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "current\ncompleted\nplanned"
+  },
+  {
+   "default": "0",
+   "description": "\u0645\u0646\u0634\u0648\u0631",
+   "fieldname": "is_published",
+   "fieldtype": "Check",
+   "label": "Is Published"
+  },
+  {
+   "description": "\u062a\u0631\u062a\u064a\u0628 \u0627\u0644\u0639\u0631\u0636",
+   "fieldname": "display_order",
+   "fieldtype": "Int",
+   "label": "Display Order"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-03-15 04:25:20.046292",
+ "modified_by": "Administrator",
+ "module": "AAU",
+ "name": "Projects",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "AAU Content Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}
