@@ -203,7 +203,7 @@ doc_events = {
 # Request Events
 # ----------------
 before_request = ["aau_university.api.v1.routes.ensure_routes"]
-# after_request = ["aau_university.utils.after_request"]
+after_request = ["aau_university.utils.cors.apply_cors_headers"]
 
 try:
     # WHY+WHAT: eagerly register API URL rules while loading hooks so /api/aau/* paths are available for live HTTP requests without relying on late lazy registration.
