@@ -7,6 +7,7 @@ from decimal import Decimal
 from typing import Any
 
 import frappe
+from frappe.utils import cint
 from frappe.utils.file_manager import save_file
 
 from .utils import ApiError, api_endpoint, require_auth
@@ -2454,7 +2455,29 @@ def list_student_admission_requests():
     rows = frappe.get_all(
         "Join Requests",
         filters={"email": ["in", sorted(candidate_emails)]},
-        fields=["name", "id", "full_name", "email", "phone", "specialty", "type", "status", "message", "created_at", "creation"],
+        fields=[
+            "name",
+            "id",
+            "full_name",
+            "email",
+            "phone",
+            "specialty",
+            "college_id",
+            "college_name",
+            "program_id",
+            "program_name",
+            "education_status",
+            "has_required_documents",
+            "high_school_document_name",
+            "id_document_name",
+            "personal_photo_name",
+            "serial_number",
+            "type",
+            "status",
+            "message",
+            "created_at",
+            "creation",
+        ],
         order_by="creation desc",
         ignore_permissions=True,
         limit_page_length=200,
@@ -2470,6 +2493,16 @@ def list_student_admission_requests():
                 "email": _clean(row.get("email")),
                 "phone": _clean(row.get("phone")),
                 "specialty": _clean(row.get("specialty")),
+                "collegeId": _clean(row.get("college_id")),
+                "collegeName": _clean(row.get("college_name")),
+                "programId": _clean(row.get("program_id")),
+                "programName": _clean(row.get("program_name")),
+                "educationStatus": _clean(row.get("education_status") or "graduate"),
+                "hasRequiredDocuments": cint(row.get("has_required_documents") or 0) == 1,
+                "highSchoolDocumentName": _clean(row.get("high_school_document_name")),
+                "idDocumentName": _clean(row.get("id_document_name")),
+                "personalPhotoName": _clean(row.get("personal_photo_name")),
+                "serialNumber": _clean(row.get("serial_number")),
                 "type": _clean(row.get("type") or "student"),
                 "status": _clean(row.get("status") or "pending"),
                 "message": _clean(row.get("message")),

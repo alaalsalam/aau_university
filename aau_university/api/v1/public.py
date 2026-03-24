@@ -73,6 +73,16 @@ def create_join_request(**payload):
     payload = _merge_request_payload(payload)
     key_aliases = {
         "fullName": "full_name",
+        "collegeId": "college_id",
+        "collegeName": "college_name",
+        "programId": "program_id",
+        "programName": "program_name",
+        "educationStatus": "education_status",
+        "hasRequiredDocuments": "has_required_documents",
+        "highSchoolDocumentName": "high_school_document_name",
+        "idDocumentName": "id_document_name",
+        "personalPhotoName": "personal_photo_name",
+        "serialNumber": "serial_number",
         "cvFile": "cv_file",
         "reviewedAt": "reviewed_at",
         "createdAt": "created_at",
@@ -84,10 +94,42 @@ def create_join_request(**payload):
             payload[target_key] = payload.get(source_key)
     if payload.get("name") and not payload.get("full_name"):
         payload["full_name"] = payload.get("name")
+    if payload.get("college") and not payload.get("college_id"):
+        payload["college_id"] = payload.get("college")
+    if payload.get("program") and not payload.get("program_id"):
+        payload["program_id"] = payload.get("program")
     if payload.get("program") and not payload.get("specialty"):
         payload["specialty"] = payload.get("program")
     if payload.get("major") and not payload.get("specialty"):
         payload["specialty"] = payload.get("major")
+    if payload.get("program_name") and not payload.get("specialty"):
+        payload["specialty"] = payload.get("program_name")
+    if payload.get("program") and not payload.get("program_name"):
+        payload["program_name"] = payload.get("program")
+    if payload.get("college") and not payload.get("college_name"):
+        payload["college_name"] = payload.get("college")
+    if payload.get("educationStatus") and not payload.get("education_status"):
+        payload["education_status"] = payload.get("educationStatus")
+
+    documents = payload.get("documents")
+    if isinstance(documents, dict):
+        if documents.get("highSchool") and not payload.get("high_school_document_name"):
+            payload["high_school_document_name"] = str(documents.get("highSchool"))
+        if documents.get("id") and not payload.get("id_document_name"):
+            payload["id_document_name"] = str(documents.get("id"))
+        if documents.get("photo") and not payload.get("personal_photo_name"):
+            payload["personal_photo_name"] = str(documents.get("photo"))
+
+    has_docs = all(
+        [
+            payload.get("high_school_document_name"),
+            payload.get("id_document_name"),
+            payload.get("personal_photo_name"),
+        ]
+    )
+    if payload.get("has_required_documents") in (None, ""):
+        payload["has_required_documents"] = 1 if has_docs else 0
+
     payload.setdefault("title", payload.get("full_name") or payload.get("name"))
     payload.setdefault("status", "pending")
     payload.setdefault("type", "student")
@@ -105,6 +147,16 @@ def create_join_request(**payload):
         "email",
         "phone",
         "specialty",
+        "college_id",
+        "college_name",
+        "program_id",
+        "program_name",
+        "education_status",
+        "has_required_documents",
+        "high_school_document_name",
+        "id_document_name",
+        "personal_photo_name",
+        "serial_number",
         "experience",
         "cv_file",
         "message",
