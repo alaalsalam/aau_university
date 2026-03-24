@@ -71,6 +71,7 @@ def delete_contact_message(message_id: str):
 def create_join_request(**payload):
     """Create a join request."""
     payload = _merge_request_payload(payload)
+    payload = _unwrap_wrapped_payload(payload)
     key_aliases = {
         "fullName": "full_name",
         "collegeId": "college_id",
@@ -1673,7 +1674,47 @@ def _merge_request_payload(payload: dict | None) -> frappe._dict:
         if isinstance(parsed, dict):
             for key, value in parsed.items():
                 merged.setdefault(key, value)
+    elif isinstance(data_payload, dict):
+        for key, value in data_payload.items():
+            merged.setdefault(key, value)
+
+    # WHY+WHAT: tolerate older frontend bundles that send wrapped payloads such as
+    # {"data": {...}} or {"payload": {...}} or {"message": {...}}.
+    for wrapper_key in ("data", "payload", "message"):
+        wrapped = merged.get(wrapper_key)
+        if isinstance(wrapped, dict):
+            for key, value in wrapped.items():
+                merged.setdefault(key, value)
+            nested_data = wrapped.get("data")
+            if isinstance(nested_data, dict):
+                for key, value in nested_data.items():
+                    merged.setdefault(key, value)
+
     return merged
+
+
+def _unwrap_wrapped_payload(payload: frappe._dict) -> frappe._dict:
+    """Flatten older wrapped request shapes like {'data': {...}}."""
+    flattened = frappe._dict(payload or {})
+    for wrapper_key in ("data", "payload", "message"):
+        wrapped = flattened.get(wrapper_key)
+        parsed = None
+        if isinstance(wrapped, str):
+            try:
+                parsed = frappe.parse_json(wrapped)
+            except Exception:
+                parsed = None
+        elif isinstance(wrapped, dict):
+            parsed = wrapped
+
+        if isinstance(parsed, dict):
+            for key, value in parsed.items():
+                flattened.setdefault(key, value)
+            nested_data = parsed.get("data")
+            if isinstance(nested_data, dict):
+                for key, value in nested_data.items():
+                    flattened.setdefault(key, value)
+    return flattened
 
 
 def _as_text(value, default: str = "") -> str:
