@@ -71,6 +71,17 @@ def delete_contact_message(message_id: str):
 def create_join_request(**payload):
     """Create a join request."""
     payload = _merge_request_payload(payload)
+    key_aliases = {
+        "fullName": "full_name",
+        "cvFile": "cv_file",
+        "reviewedAt": "reviewed_at",
+        "createdAt": "created_at",
+        "isPublished": "is_published",
+        "displayOrder": "display_order",
+    }
+    for source_key, target_key in key_aliases.items():
+        if payload.get(source_key) and not payload.get(target_key):
+            payload[target_key] = payload.get(source_key)
     if payload.get("name") and not payload.get("full_name"):
         payload["full_name"] = payload.get("name")
     if payload.get("program") and not payload.get("specialty"):
@@ -80,6 +91,28 @@ def create_join_request(**payload):
     payload.setdefault("title", payload.get("full_name") or payload.get("name"))
     payload.setdefault("status", "pending")
     payload.setdefault("type", "student")
+    # Keep this public endpoint tolerant to older frontend bundles that may still
+    # send extra UI-only fields such as college/program/documents/educationStatus.
+    allowed_fields = {
+        "id",
+        "title",
+        "content",
+        "image",
+        "is_published",
+        "display_order",
+        "type",
+        "full_name",
+        "email",
+        "phone",
+        "specialty",
+        "experience",
+        "cv_file",
+        "message",
+        "status",
+        "reviewed_at",
+        "created_at",
+    }
+    payload = frappe._dict({key: value for key, value in payload.items() if key in allowed_fields and value not in (None, "")})
     return create_entity("join_requests", payload, public=True), 201
 
 
