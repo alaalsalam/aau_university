@@ -2426,6 +2426,61 @@ def list_student_notifications():
 
 @frappe.whitelist()
 @api_endpoint
+def list_student_admission_requests():
+    """List current student's admission requests based on linked student emails."""
+    if not frappe.db.exists("DocType", "Join Requests"):
+        return []
+
+    identity = _user_identity()
+    student = _find_student_by_current_user(required=False)
+
+    candidate_emails = {
+        _normalize(identity.get("email")),
+        _normalize(identity.get("user")),
+    }
+    if student:
+        candidate_emails.update(
+            {
+                _normalize(student.get("student_email_id")),
+                _normalize(student.get("personal_email")),
+                _normalize(student.get("user")),
+            }
+        )
+
+    candidate_emails.discard("")
+    if not candidate_emails:
+        return []
+
+    rows = frappe.get_all(
+        "Join Requests",
+        filters={"email": ["in", sorted(candidate_emails)]},
+        fields=["name", "id", "full_name", "email", "phone", "specialty", "type", "status", "message", "created_at", "creation"],
+        order_by="creation desc",
+        ignore_permissions=True,
+        limit_page_length=200,
+    )
+
+    output = []
+    for row in rows:
+        output.append(
+            {
+                "id": _clean(row.get("id") or row.get("name")),
+                "requestName": _clean(row.get("name")),
+                "fullName": _clean(row.get("full_name")),
+                "email": _clean(row.get("email")),
+                "phone": _clean(row.get("phone")),
+                "specialty": _clean(row.get("specialty")),
+                "type": _clean(row.get("type") or "student"),
+                "status": _clean(row.get("status") or "pending"),
+                "message": _clean(row.get("message")),
+                "createdAt": _iso(row.get("created_at")) or _iso(row.get("creation")),
+            }
+        )
+    return output
+
+
+@frappe.whitelist()
+@api_endpoint
 def mark_student_notification_read(notification_id: str):
     """Mark student notification as read."""
     return _mark_notification(notification_id)

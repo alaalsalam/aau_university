@@ -234,6 +234,7 @@ def ensure_routes():
         Rule("/student/finance", methods=["GET"], endpoint=portal.get_student_finance),
         Rule("/student/materials", methods=["GET"], endpoint=portal.list_student_materials),
         Rule("/student/announcements", methods=["GET"], endpoint=portal.list_student_announcements),
+        Rule("/student/admission-requests", methods=["GET"], endpoint=portal.list_student_admission_requests),
         Rule("/student/notifications", methods=["GET"], endpoint=portal.list_student_notifications),
         Rule("/student/notifications/<path:notification_id>/read", methods=["PUT"], endpoint=portal.mark_student_notification_read),
         # Messages
