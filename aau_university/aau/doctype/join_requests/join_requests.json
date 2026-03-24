@@ -6,30 +6,27 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "main_section",
-  "title",
-  "content",
-  "image",
-  "is_published",
-  "display_order",
+  "request_identity_section",
   "id",
   "type",
+  "applicant_info_section",
   "full_name",
   "email",
- "phone",
- "specialty",
+  "phone",
+  "specialty",
+  "academic_info_section",
   "college_id",
   "college_name",
   "program_id",
   "program_name",
   "education_status",
+  "documents_section",
   "has_required_documents",
   "high_school_document_name",
   "id_document_name",
   "personal_photo_name",
   "serial_number",
-  "experience",
-  "cv_file",
+  "workflow_section",
   "message",
   "status",
   "reviewed_at",
@@ -37,41 +34,9 @@
  ],
  "fields": [
   {
-   "fieldname": "main_section",
+   "fieldname": "request_identity_section",
    "fieldtype": "Section Break",
-   "label": "Main Section"
-  },
-  {
-   "description": "\u0639\u0646\u0648\u0627\u0646 \u062f\u0627\u062e\u0644\u064a",
-   "fieldname": "title",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "Title"
-  },
-  {
-   "description": "\u0627\u0644\u0645\u062d\u062a\u0648\u0649",
-   "fieldname": "content",
-   "fieldtype": "Long Text",
-   "label": "Content"
-  },
-  {
-   "description": "\u0627\u0644\u0635\u0648\u0631\u0629",
-   "fieldname": "image",
-   "fieldtype": "Attach Image",
-   "label": "Image"
-  },
-  {
-   "default": "0",
-   "description": "\u062d\u0627\u0644\u0629 \u0627\u0644\u0646\u0634\u0631",
-   "fieldname": "is_published",
-   "fieldtype": "Check",
-   "label": "Is Published"
-  },
-  {
-   "description": "\u062a\u0631\u062a\u064a\u0628 \u0627\u0644\u0639\u0631\u0636",
-   "fieldname": "display_order",
-   "fieldtype": "Int",
-   "label": "Display Order"
+   "label": "Request Identity"
   },
   {
    "description": "\u0627\u0644\u0645\u0639\u0631\u0641 \u0627\u0644\u0641\u0631\u064a\u062f",
@@ -87,6 +52,11 @@
    "label": "Type",
    "options": "student\nemployee",
    "reqd": 1
+  },
+  {
+   "fieldname": "applicant_info_section",
+   "fieldtype": "Section Break",
+   "label": "Applicant Information"
   },
   {
    "description": "\u0627\u0644\u0627\u0633\u0645 \u0627\u0644\u0643\u0627\u0645\u0644",
@@ -115,6 +85,11 @@
    "fieldtype": "Data",
    "label": "Specialty",
    "reqd": 1
+  },
+  {
+   "fieldname": "academic_info_section",
+   "fieldtype": "Section Break",
+   "label": "Academic Information"
   },
   {
    "description": "\u0645\u0639\u0631\u0641 \u0627\u0644\u0643\u0644\u064a\u0629 \u0645\u0646 \u0627\u0644\u0648\u0627\u062c\u0647\u0629",
@@ -149,6 +124,11 @@
    "options": "graduate\nstudent"
   },
   {
+   "fieldname": "documents_section",
+   "fieldtype": "Section Break",
+   "label": "Documents"
+  },
+  {
    "default": "0",
    "description": "\u0647\u0644 \u062a\u0645 \u0631\u0641\u0639 \u062c\u0645\u064a\u0639 \u0627\u0644\u0648\u062b\u0627\u0626\u0642 \u0627\u0644\u0645\u0637\u0644\u0648\u0628\u0629",
    "fieldname": "has_required_documents",
@@ -180,16 +160,9 @@
    "label": "Serial Number"
   },
   {
-   "description": "\u0627\u0644\u062e\u0628\u0631\u0629",
-   "fieldname": "experience",
-   "fieldtype": "Long Text",
-   "label": "Experience"
-  },
-  {
-   "description": "\u0627\u0644\u0633\u064a\u0631\u0629 \u0627\u0644\u0630\u0627\u062a\u064a\u0629",
-   "fieldname": "cv_file",
-   "fieldtype": "Attach",
-   "label": "Cv File"
+   "fieldname": "workflow_section",
+   "fieldtype": "Section Break",
+   "label": "Workflow"
   },
   {
    "description": "\u0631\u0633\u0627\u0644\u0629 \u0625\u0636\u0627\u0641\u064a\u0629",

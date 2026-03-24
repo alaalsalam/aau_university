@@ -131,18 +131,12 @@ def create_join_request(**payload):
     if payload.get("has_required_documents") in (None, ""):
         payload["has_required_documents"] = 1 if has_docs else 0
 
-    payload.setdefault("title", payload.get("full_name") or payload.get("name"))
     payload.setdefault("status", "pending")
     payload.setdefault("type", "student")
     # Keep this public endpoint tolerant to older frontend bundles that may still
     # send extra UI-only fields such as college/program/documents/educationStatus.
     allowed_fields = {
         "id",
-        "title",
-        "content",
-        "image",
-        "is_published",
-        "display_order",
         "type",
         "full_name",
         "email",
@@ -158,8 +152,6 @@ def create_join_request(**payload):
         "id_document_name",
         "personal_photo_name",
         "serial_number",
-        "experience",
-        "cv_file",
         "message",
         "status",
         "reviewed_at",
