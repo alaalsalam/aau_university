@@ -243,9 +243,9 @@ def get_current_access():
 
 @frappe.whitelist(allow_guest=True)
 @api_endpoint
-def resolve_login_identifier(identifier: str):
+def resolve_login_identifier(identifier: str | None = None):
     """Resolve login identifier (email/username/academic no.) to Frappe login user id."""
-    raw = _clean(identifier)
+    raw = _clean(identifier or frappe.form_dict.get("identifier"))
     if not raw:
         raise ApiError("VALIDATION_ERROR", "identifier is required", status_code=400)
 
