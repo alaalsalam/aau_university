@@ -241,6 +241,93 @@ def get_current_access():
     }
 
 
+@frappe.whitelist(allow_guest=True)
+@api_endpoint
+def resolve_login_identifier(identifier: str):
+    """Resolve login identifier (email/username/academic no.) to Frappe login user id."""
+    raw = _clean(identifier)
+    if not raw:
+        raise ApiError("VALIDATION_ERROR", "identifier is required", status_code=400)
+
+    # Direct User id / email match
+    if frappe.db.exists("User", raw):
+        return {"identifier": raw}
+    user_by_email = frappe.db.get_value("User", {"email": raw}, "name")
+    if user_by_email:
+        return {"identifier": user_by_email}
+
+    # Student mapping: allow login by academic number (Student.name) or student_email_id.
+    if frappe.db.exists("DocType", "Student"):
+        student_meta = frappe.get_meta("Student")
+        valid_cols = set(student_meta.get_valid_columns())
+        student_fields = [f for f in ("name", "user", "student_email_id") if f in valid_cols or f == "name"]
+        student_rows = []
+        try:
+            student_rows = frappe.get_all(
+                "Student",
+                filters={"name": raw},
+                fields=student_fields,
+                limit_page_length=1,
+                ignore_permissions=True,
+            )
+            if not student_rows and "student_email_id" in valid_cols:
+                student_rows = frappe.get_all(
+                    "Student",
+                    filters={"student_email_id": raw},
+                    fields=student_fields,
+                    limit_page_length=1,
+                    ignore_permissions=True,
+                )
+        except Exception:
+            student_rows = []
+        if student_rows:
+            row = student_rows[0]
+            mapped = _clean(row.get("user")) or _clean(row.get("student_email_id"))
+            if mapped and frappe.db.exists("User", mapped):
+                return {"identifier": mapped}
+            if mapped:
+                user_from_email = frappe.db.get_value("User", {"email": mapped}, "name")
+                if user_from_email:
+                    return {"identifier": user_from_email}
+
+    # Instructor mapping fallback (e.g., employee code/user link).
+    if frappe.db.exists("DocType", "Instructor"):
+        instructor_meta = frappe.get_meta("Instructor")
+        valid_cols = set(instructor_meta.get_valid_columns())
+        link_field = next((f for f in ("custom_user_id", "user_id", "user") if f in valid_cols), None)
+        instructor_fields = ["name"]
+        if link_field:
+            instructor_fields.append(link_field)
+        try:
+            instructor_rows = frappe.get_all(
+                "Instructor",
+                filters={"name": raw},
+                fields=instructor_fields,
+                limit_page_length=1,
+                ignore_permissions=True,
+            )
+            if not instructor_rows and "employee" in valid_cols:
+                instructor_rows = frappe.get_all(
+                    "Instructor",
+                    filters={"employee": raw},
+                    fields=instructor_fields,
+                    limit_page_length=1,
+                    ignore_permissions=True,
+                )
+        except Exception:
+            instructor_rows = []
+        if instructor_rows and link_field:
+            mapped = _clean(instructor_rows[0].get(link_field))
+            if mapped and frappe.db.exists("User", mapped):
+                return {"identifier": mapped}
+            if mapped:
+                user_from_email = frappe.db.get_value("User", {"email": mapped}, "name")
+                if user_from_email:
+                    return {"identifier": user_from_email}
+
+    return {"identifier": raw}
+
+
 @frappe.whitelist()
 @api_endpoint
 def list_users():
