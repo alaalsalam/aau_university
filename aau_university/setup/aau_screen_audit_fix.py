@@ -360,9 +360,9 @@ def _doctype_specs() -> dict:
                 _field("Program Name", "Data", "اسم البرنامج", fieldname="program_name"),
                 _field("Education Status", "Select", "حالة المتقدم دراسيا", options="graduate\nstudent", fieldname="education_status"),
                 _field("Has Required Documents", "Check", "هل تم رفع جميع الوثائق المطلوبة", fieldname="has_required_documents"),
-                _field("High School Document Name", "Data", "اسم ملف شهادة الثانوية", fieldname="high_school_document_name"),
-                _field("ID Document Name", "Data", "اسم ملف الهوية", fieldname="id_document_name"),
-                _field("Personal Photo Name", "Data", "اسم ملف الصورة الشخصية", fieldname="personal_photo_name"),
+                _field("High School Document Name", "Attach", "اسم ملف شهادة الثانوية", fieldname="high_school_document_name"),
+                _field("ID Document Name", "Attach", "اسم ملف الهوية", fieldname="id_document_name"),
+                _field("Personal Photo Name", "Attach Image", "اسم ملف الصورة الشخصية", fieldname="personal_photo_name"),
                 _field("Serial Number", "Data", "رقم تسلسلي للطلب من الواجهة", fieldname="serial_number"),
                 _field("Message", "Long Text", "رسالة إضافية"),
                 _field(

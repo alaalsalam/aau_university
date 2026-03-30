@@ -138,19 +138,19 @@
   {
    "description": "\u0627\u0633\u0645 \u0645\u0644\u0641 \u0634\u0647\u0627\u062f\u0629 \u0627\u0644\u062b\u0627\u0646\u0648\u064a\u0629",
    "fieldname": "high_school_document_name",
-   "fieldtype": "Data",
+   "fieldtype": "Attach",
    "label": "High School Document Name"
   },
   {
    "description": "\u0627\u0633\u0645 \u0645\u0644\u0641 \u0627\u0644\u0647\u0648\u064a\u0629",
    "fieldname": "id_document_name",
-   "fieldtype": "Data",
+   "fieldtype": "Attach",
    "label": "ID Document Name"
   },
   {
    "description": "\u0627\u0633\u0645 \u0645\u0644\u0641 \u0627\u0644\u0635\u0648\u0631\u0629 \u0627\u0644\u0634\u062e\u0635\u064a\u0629",
    "fieldname": "personal_photo_name",
-   "fieldtype": "Data",
+   "fieldtype": "Attach Image",
    "label": "Personal Photo Name"
   },
   {
