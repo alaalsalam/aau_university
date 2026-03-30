@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 from __future__ import annotations
 
+import base64
 import json
 import re
 
 import frappe
 from frappe.translate import get_all_translations
+from frappe.utils.file_manager import save_file
 
 from .registry import ADMIN_ROLES, SEARCH_TYPES
 from .resources import (
@@ -72,6 +74,7 @@ def create_join_request(**payload):
     """Create a join request."""
     payload = _merge_request_payload(payload)
     payload = _unwrap_wrapped_payload(payload)
+    upload_payloads = _extract_join_request_uploads(payload)
     key_aliases = {
         "fullName": "full_name",
         "collegeId": "college_id",
@@ -119,11 +122,11 @@ def create_join_request(**payload):
     documents = payload.get("documents")
     if isinstance(documents, dict):
         if documents.get("highSchool") and not payload.get("high_school_document_name"):
-            payload["high_school_document_name"] = str(documents.get("highSchool"))
+            payload["high_school_document_name"] = _extract_upload_name(documents.get("highSchool"))
         if documents.get("id") and not payload.get("id_document_name"):
-            payload["id_document_name"] = str(documents.get("id"))
+            payload["id_document_name"] = _extract_upload_name(documents.get("id"))
         if documents.get("photo") and not payload.get("personal_photo_name"):
-            payload["personal_photo_name"] = str(documents.get("photo"))
+            payload["personal_photo_name"] = _extract_upload_name(documents.get("photo"))
 
     has_docs = all(
         [
@@ -181,7 +184,22 @@ def create_join_request(**payload):
             if key in allowed_fields and value not in (None, "")
         }
     )
-    return create_entity("join_requests", payload, public=True), 201
+    created = create_entity("join_requests", payload, public=True)
+    docname = _as_text(created.get("docname"))
+    doc_id = _as_text(created.get("id") or payload.get("id"))
+
+    if docname:
+        updates = _attach_join_request_uploads(docname, upload_payloads)
+        if updates:
+            for fieldname, file_url in updates.items():
+                frappe.db.set_value("Join Requests", docname, fieldname, file_url, update_modified=True)
+            if all(updates.get(field) for field in ("high_school_document_name", "id_document_name", "personal_photo_name")):
+                frappe.db.set_value("Join Requests", docname, "has_required_documents", 1, update_modified=True)
+            frappe.db.commit()
+
+    if doc_id:
+        return get_entity("join_requests", doc_id, by="id", public=True), 201
+    return created, 201
 
 
 @frappe.whitelist()
@@ -1688,6 +1706,70 @@ def _unwrap_wrapped_payload(payload: frappe._dict) -> frappe._dict:
                 for key, value in nested_data.items():
                     flattened.setdefault(key, value)
     return flattened
+
+
+def _extract_upload_name(value) -> str:
+    if isinstance(value, dict):
+        return _as_text(value.get("name") or value.get("filename") or value.get("fileName"))
+    return _as_text(value)
+
+
+def _extract_join_request_uploads(payload: frappe._dict) -> dict[str, dict]:
+    uploads: dict[str, dict] = {}
+    documents = payload.get("documents")
+    if isinstance(documents, dict):
+        if isinstance(documents.get("highSchool"), dict):
+            uploads["high_school_document_name"] = documents.get("highSchool")
+        if isinstance(documents.get("id"), dict):
+            uploads["id_document_name"] = documents.get("id")
+        if isinstance(documents.get("photo"), dict):
+            uploads["personal_photo_name"] = documents.get("photo")
+    return uploads
+
+
+def _decode_upload_content(raw_content: str) -> bytes:
+    content = _as_text(raw_content)
+    if not content:
+        raise ApiError("VALIDATION_ERROR", "Uploaded file content is empty", status_code=400)
+
+    if content.startswith("data:"):
+        parts = content.split(",", 1)
+        if len(parts) != 2:
+            raise ApiError("VALIDATION_ERROR", "Invalid data URL payload", status_code=400)
+        content = parts[1]
+
+    try:
+        return base64.b64decode(content)
+    except Exception as exc:
+        raise ApiError("VALIDATION_ERROR", "Invalid uploaded file encoding", status_code=400) from exc
+
+
+def _attach_join_request_uploads(docname: str, uploads: dict[str, dict]) -> dict[str, str]:
+    updates: dict[str, str] = {}
+    for fieldname, upload in (uploads or {}).items():
+        if not isinstance(upload, dict):
+            continue
+
+        filename = _as_text(upload.get("name") or upload.get("filename") or upload.get("fileName"), default=f"{fieldname}.bin")
+        raw_content = _as_text(upload.get("content") or upload.get("data") or upload.get("base64"))
+        if not raw_content:
+            continue
+
+        content = _decode_upload_content(raw_content)
+        file_doc = save_file(
+            fname=filename,
+            content=content,
+            dt="Join Requests",
+            dn=docname,
+            is_private=1,
+            decode=False,
+            df=fieldname,
+        )
+        file_url = _as_text(getattr(file_doc, "file_url", None) or (file_doc.get("file_url") if isinstance(file_doc, dict) else ""))
+        if file_url:
+            updates[fieldname] = file_url
+
+    return updates
 
 
 def _as_text(value, default: str = "") -> str:
