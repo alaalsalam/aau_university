@@ -15,7 +15,7 @@ from .resources import (
     list_entities,
     update_status,
 )
-from .utils import api_endpoint, now_ts, require_roles, to_camel
+from .utils import ApiError, api_endpoint, ensure_uuid, now_ts, require_roles, to_camel
 
 
 @frappe.whitelist(allow_guest=True)
@@ -91,8 +91,10 @@ def create_join_request(**payload):
         "displayOrder": "display_order",
     }
     for source_key, target_key in key_aliases.items():
-        if payload.get(source_key) and not payload.get(target_key):
-            payload[target_key] = payload.get(source_key)
+        source_value = payload.get(source_key)
+        if source_value not in (None, "") and payload.get(target_key) in (None, ""):
+            payload[target_key] = source_value
+
     if payload.get("name") and not payload.get("full_name"):
         payload["full_name"] = payload.get("name")
     if payload.get("college") and not payload.get("college_id"):
@@ -105,6 +107,8 @@ def create_join_request(**payload):
         payload["specialty"] = payload.get("major")
     if payload.get("program_name") and not payload.get("specialty"):
         payload["specialty"] = payload.get("program_name")
+    if payload.get("program_id") and not payload.get("specialty"):
+        payload["specialty"] = payload.get("program_id")
     if payload.get("program") and not payload.get("program_name"):
         payload["program_name"] = payload.get("program")
     if payload.get("college") and not payload.get("college_name"):
@@ -133,6 +137,19 @@ def create_join_request(**payload):
 
     payload.setdefault("status", "pending")
     payload.setdefault("type", "student")
+    payload.setdefault("created_at", now_ts())
+    payload.setdefault("id", ensure_uuid(payload.get("id")))
+
+    required_fields = ["full_name", "email", "phone", "specialty"]
+    missing_fields = [field for field in required_fields if not str(payload.get(field) or "").strip()]
+    if missing_fields:
+        raise ApiError(
+            "VALIDATION_ERROR",
+            "Missing required join request fields",
+            details={"missing": missing_fields},
+            status_code=400,
+        )
+
     # Keep this public endpoint tolerant to older frontend bundles that may still
     # send extra UI-only fields such as college/program/documents/educationStatus.
     allowed_fields = {
@@ -157,7 +174,13 @@ def create_join_request(**payload):
         "reviewed_at",
         "created_at",
     }
-    payload = frappe._dict({key: value for key, value in payload.items() if key in allowed_fields and value not in (None, "")})
+    payload = frappe._dict(
+        {
+            key: value
+            for key, value in payload.items()
+            if key in allowed_fields and value not in (None, "")
+        }
+    )
     return create_entity("join_requests", payload, public=True), 201
 
 
@@ -744,15 +767,25 @@ def _get_home_sections() -> dict:
         translations = get_all_translations(lang) or {}
         return _as_text(translations.get(source), default=source)
 
+    def _choose_en(explicit_en, ar_value, default_en: str = "") -> str:
+        explicit = _text(explicit_en)
+        if explicit:
+            return explicit
+        fallback_ar = _text(ar_value)
+        translated = _translated(fallback_ar)
+        if translated:
+            return translated
+        return _text(default_en)
+
     hero = {
         "badgeAr": _text(row.get("hero_badge_ar"), default="مرحباً بكم في جامعة الجيل الجديد"),
-        "badgeEn": _translated(_text(row.get("hero_badge_ar"), default="مرحباً بكم في جامعة الجيل الجديد")),
+        "badgeEn": _choose_en(row.get("hero_badge_en"), row.get("hero_badge_ar"), "Welcome to Al-Jeel Al-Jadeed University"),
         "titlePrimaryAr": _text(row.get("hero_title_primary_ar"), default="جامعة الجيل الجديد"),
-        "titlePrimaryEn": _translated(_text(row.get("hero_title_primary_ar"), default="جامعة الجيل الجديد")),
+        "titlePrimaryEn": _choose_en(row.get("hero_title_primary_en"), row.get("hero_title_primary_ar"), "Al-Jeel Al-Jadeed University"),
         "titleSecondaryAr": _text(row.get("hero_title_secondary_ar"), default="الجامعة"),
-        "titleSecondaryEn": _translated(_text(row.get("hero_title_secondary_ar"), default="الجامعة")),
+        "titleSecondaryEn": _choose_en(row.get("hero_title_secondary_en"), row.get("hero_title_secondary_ar"), "University"),
         "descriptionAr": _text(row.get("hero_description_ar")),
-        "descriptionEn": _translated(_text(row.get("hero_description_ar"))),
+        "descriptionEn": _choose_en(row.get("hero_description_en"), row.get("hero_description_ar")),
         "image": _text(row.get("hero_image")),
     }
 
@@ -766,108 +799,42 @@ def _get_home_sections() -> dict:
             "key": "students",
             "number": str(row.get("students_count") or 0),
             "labelAr": _text(row.get("stats_students_label_ar"), default="طالب وطالبة"),
-            "labelEn": _translated(_text(row.get("stats_students_label_ar"), default="طالب وطالبة")),
+            "labelEn": _choose_en(row.get("stats_students_label_en"), row.get("stats_students_label_ar"), "Students"),
             "icon": "GraduationCap",
         },
         {
             "key": "faculty",
             "number": str(faculty_count),
             "labelAr": _text(row.get("stats_faculty_label_ar"), default="عضو هيئة تدريس"),
-            "labelEn": _translated(_text(row.get("stats_faculty_label_ar"), default="عضو هيئة تدريس")),
+            "labelEn": _choose_en(row.get("stats_faculty_label_en"), row.get("stats_faculty_label_ar"), "Faculty"),
             "icon": "Users",
         },
         {
             "key": "programs",
             "number": str(row.get("programs_count") or 0),
             "labelAr": _text(row.get("stats_programs_label_ar"), default="برنامج أكاديمي"),
-            "labelEn": _translated(_text(row.get("stats_programs_label_ar"), default="برنامج أكاديمي")),
+            "labelEn": _choose_en(row.get("stats_programs_label_en"), row.get("stats_programs_label_ar"), "Programs"),
             "icon": "BookOpen",
         },
         {
             "key": "colleges",
             "number": str(colleges_count or 0),
             "labelAr": _text(row.get("stats_colleges_label_ar"), default="كليات متخصصة"),
-            "labelEn": _translated(_text(row.get("stats_colleges_label_ar"), default="كليات متخصصة")),
+            "labelEn": _choose_en(row.get("stats_colleges_label_en"), row.get("stats_colleges_label_ar"), "Colleges"),
             "icon": "Award",
         },
     ]
 
-    about_title_ar = _text(row.get("about_title_ar"), default="عن الجامعة")
-    about_description_ar = _text(row.get("about_description_ar"))
-    about_vision_ar = _text(
-        row.get("about_vision_ar"),
-        default="مؤسسة تعليمية رائدة وطنيا ومتميزة إقليميا وفعالة في بناء مجتمع المعرفة",
-    )
-    about_mission_ar = _text(
-        row.get("about_mission_ar"),
-        default="إعداد خريجين يتمتعون بالكفاءة العلمية والمهنية والتعلم مدى الحياة من خلال بيئة تعليمية داعمة وبرامج أكاديمية نوعية.",
-    )
-    about_goals_ar = _text(
-        row.get("about_goals_ar"),
-        default="تحقيق التميز الأكاديمي والبحثي وتعزيز الشراكة المجتمعية وتوفير بيئة تعليمية محفزة.",
-    )
-    about_values_ar = _text(
-        row.get("about_values_ar"),
-        default="الريادة والتعلم المستمر، الابتكار والإبداع، المسؤولية والشفافية، والعمل بروح الفريق.",
-    )
-    about_highlight_title_ar = _text(row.get("about_highlight_title_ar"), default="بيئة تعليمية متميزة")
-    about_highlight_text_ar = _text(
-        row.get("about_highlight_text_ar"),
-        default="نوفر بيئة تعليمية حديثة بمختبرات متطورة ومساحات تعلم محفزة.",
-    )
-    president_message_intro_ar = _text(
-        row.get("president_message_intro_ar"),
-        default="بسم الله الرحمن الرحيم. الحمد لله رب العالمين، والصلاة والسلام على خاتم الأنبياء والمرسلين.",
-    )
-    president_message_body_ar = _text(
-        row.get("president_message_body_ar"),
-        default="يسرني أن أرحب بطلابنا وطالباتنا، ونؤكد التزام الجامعة بتقديم تعليم نوعي وبيئة جامعية تشجع على الإبداع والريادة والتميز.",
-    )
-    president_message_closing_ar = _text(
-        row.get("president_message_closing_ar"),
-        default="نثق بأنكم ستكونون على قدر المسؤولية في تمثيل الجامعة وبناء مستقبل مشرق لكم ولوطنكم.",
-    )
-    president_name_ar = _text(row.get("president_name_ar"), default="أ.د/ همدان الشامي")
-    president_role_ar = _text(row.get("president_role_ar"), default="رئيس الجامعة")
-
-    about = {
-        "titleAr": about_title_ar,
-        "titleEn": _translated(about_title_ar),
-        "descriptionAr": about_description_ar,
-        "descriptionEn": _translated(about_description_ar),
-        "image": _text(row.get("about_image")),
-        "visionAr": about_vision_ar,
-        "visionEn": _translated(about_vision_ar),
-        "missionAr": about_mission_ar,
-        "missionEn": _translated(about_mission_ar),
-        "goalsAr": about_goals_ar,
-        "goalsEn": _translated(about_goals_ar),
-        "valuesAr": about_values_ar,
-        "valuesEn": _translated(about_values_ar),
-        "highlightTitleAr": about_highlight_title_ar,
-        "highlightTitleEn": _translated(about_highlight_title_ar),
-        "highlightTextAr": about_highlight_text_ar,
-        "highlightTextEn": _translated(about_highlight_text_ar),
-        "presidentMessageIntroAr": president_message_intro_ar,
-        "presidentMessageIntroEn": _translated(president_message_intro_ar),
-        "presidentMessageBodyAr": president_message_body_ar,
-        "presidentMessageBodyEn": _translated(president_message_body_ar),
-        "presidentMessageClosingAr": president_message_closing_ar,
-        "presidentMessageClosingEn": _translated(president_message_closing_ar),
-        "presidentNameAr": president_name_ar,
-        "presidentNameEn": _translated(president_name_ar),
-        "presidentRoleAr": president_role_ar,
-        "presidentRoleEn": _translated(president_role_ar),
-    }
+    about = {}
 
     def _section_content(prefix: str, title_ar: str, title_en: str, description_ar: str, description_en: str):
         title_value = _text(row.get(f"{prefix}_title_ar"), default=title_ar)
         description_value = _text(row.get(f"{prefix}_description_ar"), default=description_ar)
         return {
             "titleAr": title_value,
-            "titleEn": _translated(title_value) or title_en,
+            "titleEn": _choose_en(row.get(f"{prefix}_title_en"), title_value, title_en),
             "descriptionAr": description_value,
-            "descriptionEn": _translated(description_value) or description_en,
+            "descriptionEn": _choose_en(row.get(f"{prefix}_description_en"), description_value, description_en),
         }
 
     sections = {
@@ -922,15 +889,22 @@ def _get_home_sections() -> dict:
                 "Experience our modern learning environment and advanced facilities.",
             ),
             "overlayTitleAr": _text(row.get("video_overlay_title_ar"), default="جولة في الحرم الجامعي"),
-            "overlayTitleEn": _translated(_text(row.get("video_overlay_title_ar"), default="جولة في الحرم الجامعي")) or "Campus Virtual Tour",
+            "overlayTitleEn": _choose_en(
+                row.get("video_overlay_title_en"),
+                _text(row.get("video_overlay_title_ar"), default="جولة في الحرم الجامعي"),
+                "Campus Virtual Tour",
+            ),
             "overlayDescriptionAr": _text(
                 row.get("video_overlay_description_ar"),
                 default="استكشف القاعات الدراسية والمعامل المجهزة بأحدث التقنيات.",
             ),
-            "overlayDescriptionEn": _translated(
-                _text(row.get("video_overlay_description_ar"), default="استكشف القاعات الدراسية والمعامل المجهزة بأحدث التقنيات.")
-            )
-            or "Explore classrooms and laboratories equipped with the latest technologies.",
+            "overlayDescriptionEn": _choose_en(
+                row.get("video_overlay_description_en"),
+                _text(row.get("video_overlay_description_ar"), default="استكشف القاعات الدراسية والمعامل المجهزة بأحدث التقنيات."),
+                "Explore classrooms and laboratories equipped with the latest technologies.",
+            ),
+            "videoUrl": _text(row.get("video_url")),
+            "videoFile": _text(row.get("video_file")),
         },
         "contact": _section_content(
             "contact",
@@ -1016,6 +990,12 @@ def _build_about_page_payload() -> dict:
         translated = _translated_text(value)
         return translated or fallback or value
 
+    def _choose_en(en_value, ar_value, fallback: str = "") -> str:
+        en_text = _as_text(en_value)
+        if en_text:
+            return en_text
+        return _translated(_as_text(ar_value), fallback)
+
     page_badge_ar = _as_text(row.get("page_badge_ar"), default="تعرف علينا")
     page_title_ar = _as_text(row.get("page_title_ar"), default="عن جامعة الجيل الجديد")
     page_description_ar = _as_text(row.get("page_description_ar"))
@@ -1025,30 +1005,30 @@ def _build_about_page_payload() -> dict:
         {
             "key": "vision",
             "titleAr": _as_text(row.get("vision_title_ar"), default="الرؤية"),
-            "titleEn": _translated(_as_text(row.get("vision_title_ar"), default="الرؤية"), "Vision"),
+            "titleEn": _choose_en(row.get("vision_title_en"), row.get("vision_title_ar"), "Vision"),
             "descriptionAr": _as_text(row.get("vision_description_ar")),
-            "descriptionEn": _translated(_as_text(row.get("vision_description_ar"))),
+            "descriptionEn": _choose_en(row.get("vision_description_en"), row.get("vision_description_ar")),
         },
         {
             "key": "mission",
             "titleAr": _as_text(row.get("mission_title_ar"), default="الرسالة"),
-            "titleEn": _translated(_as_text(row.get("mission_title_ar"), default="الرسالة"), "Mission"),
+            "titleEn": _choose_en(row.get("mission_title_en"), row.get("mission_title_ar"), "Mission"),
             "descriptionAr": _as_text(row.get("mission_description_ar")),
-            "descriptionEn": _translated(_as_text(row.get("mission_description_ar"))),
+            "descriptionEn": _choose_en(row.get("mission_description_en"), row.get("mission_description_ar")),
         },
         {
             "key": "goals",
             "titleAr": _as_text(row.get("goals_title_ar"), default="الأهداف"),
-            "titleEn": _translated(_as_text(row.get("goals_title_ar"), default="الأهداف"), "Goals"),
+            "titleEn": _choose_en(row.get("goals_title_en"), row.get("goals_title_ar"), "Goals"),
             "descriptionAr": _as_text(row.get("goals_description_ar")),
-            "descriptionEn": _translated(_as_text(row.get("goals_description_ar"))),
+            "descriptionEn": _choose_en(row.get("goals_description_en"), row.get("goals_description_ar")),
         },
         {
             "key": "values",
             "titleAr": _as_text(row.get("values_title_ar"), default="القيم"),
-            "titleEn": _translated(_as_text(row.get("values_title_ar"), default="القيم"), "Values"),
+            "titleEn": _choose_en(row.get("values_title_en"), row.get("values_title_ar"), "Values"),
             "descriptionAr": _as_text(row.get("values_description_ar")),
-            "descriptionEn": _translated(_as_text(row.get("values_description_ar"))),
+            "descriptionEn": _choose_en(row.get("values_description_en"), row.get("values_description_ar")),
         },
     ]
 
@@ -1057,10 +1037,11 @@ def _build_about_page_payload() -> dict:
         group_name_ar = _as_text(member.get("group_name_ar"), default="الفريق الإداري")
         team_groups.setdefault(group_name_ar, []).append(
             {
+                "group_name_en": _as_text(member.get("group_name_en")),
                 "nameAr": _as_text(member.get("full_name_ar")),
-                "nameEn": _translated(_as_text(member.get("full_name_ar"))),
+                "nameEn": _choose_en(member.get("full_name_en"), member.get("full_name_ar")),
                 "roleAr": _as_text(member.get("job_title_ar")),
-                "roleEn": _translated(_as_text(member.get("job_title_ar"))),
+                "roleEn": _choose_en(member.get("job_title_en"), member.get("job_title_ar")),
                 "image": _as_text(member.get("member_image")),
                 "displayOrder": int(member.get("display_order") or 0),
             }
@@ -1069,7 +1050,7 @@ def _build_about_page_payload() -> dict:
     groups = [
         {
             "titleAr": group_name_ar,
-            "titleEn": _translated(group_name_ar),
+            "titleEn": _choose_en((members[0] or {}).get("group_name_en") if members else "", group_name_ar),
             "members": members,
         }
         for group_name_ar, members in team_groups.items()
@@ -1078,38 +1059,38 @@ def _build_about_page_payload() -> dict:
     return {
         "pageHeader": {
             "badgeAr": page_badge_ar,
-            "badgeEn": _translated(page_badge_ar, "About Us"),
+            "badgeEn": _choose_en(row.get("page_badge_en"), page_badge_ar, "About Us"),
             "titleAr": page_title_ar,
-            "titleEn": _translated(page_title_ar, "About AJ JEEL ALJADEED UNIVERSITY"),
+            "titleEn": _choose_en(row.get("page_title_en"), page_title_ar, "About AJ JEEL ALJADEED UNIVERSITY"),
             "descriptionAr": page_description_ar,
-            "descriptionEn": _translated(page_description_ar),
+            "descriptionEn": _choose_en(row.get("page_description_en"), page_description_ar),
         },
         "intro": {
             "bodyAr": intro_body_ar,
-            "bodyEn": _translated(intro_body_ar),
+            "bodyEn": _choose_en(row.get("intro_body_en"), intro_body_ar),
             "image": _as_text(row.get("intro_image")),
         },
         "identity": identity,
         "presidentMessage": {
             "sectionTitleAr": _as_text(row.get("president_section_title_ar"), default="كلمة رئيس الجامعة"),
-            "sectionTitleEn": _translated(_as_text(row.get("president_section_title_ar"), default="كلمة رئيس الجامعة"), "President's Message"),
+            "sectionTitleEn": _choose_en(row.get("president_section_title_en"), row.get("president_section_title_ar"), "President's Message"),
             "introAr": _as_text(row.get("president_message_intro_ar")),
-            "introEn": _translated(_as_text(row.get("president_message_intro_ar"))),
+            "introEn": _choose_en(row.get("president_message_intro_en"), row.get("president_message_intro_ar")),
             "bodyAr": _as_text(row.get("president_message_body_ar")),
-            "bodyEn": _translated(_as_text(row.get("president_message_body_ar"))),
+            "bodyEn": _choose_en(row.get("president_message_body_en"), row.get("president_message_body_ar")),
             "closingAr": _as_text(row.get("president_message_closing_ar")),
-            "closingEn": _translated(_as_text(row.get("president_message_closing_ar"))),
+            "closingEn": _choose_en(row.get("president_message_closing_en"), row.get("president_message_closing_ar")),
             "nameAr": _as_text(row.get("president_name_ar")),
-            "nameEn": _translated(_as_text(row.get("president_name_ar"))),
+            "nameEn": _choose_en(row.get("president_name_en"), row.get("president_name_ar")),
             "roleAr": _as_text(row.get("president_role_ar")),
-            "roleEn": _translated(_as_text(row.get("president_role_ar"))),
+            "roleEn": _choose_en(row.get("president_role_en"), row.get("president_role_ar")),
             "image": _as_text(row.get("president_image")),
         },
         "team": {
             "titleAr": _as_text(row.get("team_section_title_ar"), default="الفريق الإداري"),
-            "titleEn": _translated(_as_text(row.get("team_section_title_ar"), default="الفريق الإداري"), "Administrative Team"),
+            "titleEn": _choose_en(row.get("team_section_title_en"), row.get("team_section_title_ar"), "Administrative Team"),
             "descriptionAr": _as_text(row.get("team_section_description_ar")),
-            "descriptionEn": _translated(_as_text(row.get("team_section_description_ar"))),
+            "descriptionEn": _choose_en(row.get("team_section_description_en"), row.get("team_section_description_ar")),
             "groups": groups,
         },
         "meta": {"generated_at": now_ts(), "source": "About University"},
@@ -1718,6 +1699,18 @@ def _as_text(value, default: str = "") -> str:
     return str(value).strip() or default
 
 
+def _contains_arabic(value: str) -> bool:
+    return bool(re.search(r"[\u0600-\u06FF]", _as_text(value)))
+
+
+def _preferred_ar_text(primary_value, fallback_value) -> str:
+    primary = _as_text(primary_value)
+    fallback = _as_text(fallback_value)
+    if _contains_arabic(fallback):
+        return fallback
+    return primary or fallback
+
+
 def _serialize_news_item(row: dict) -> dict:
     slug = _as_text(row.get("slug")) or _slugify_news_value(
         row.get("title_en") or row.get("title_ar") or row.get("title")
@@ -1839,7 +1832,7 @@ def _serialize_event_item(row: dict) -> dict:
     )
     title_ar = _as_text(row.get("title_ar") or row.get("title") or row.get("event_title"))
     title_en = _as_text(row.get("title_en") or _translated_text(title_ar) or row.get("title") or row.get("event_title") or title_ar)
-    description_ar = _as_text(row.get("description_ar") or row.get("description"))
+    description_ar = _preferred_ar_text(row.get("description_ar"), row.get("description"))
     description_en = _as_text(row.get("description_en") or _translated_text(description_ar) or row.get("description") or description_ar)
     content_ar = _as_text(row.get("content_ar") or row.get("content") or description_ar)
     content_en = _as_text(row.get("content_en") or _translated_text(content_ar) or row.get("content") or content_ar)
@@ -1885,6 +1878,9 @@ def _serialize_college_item(row: dict) -> dict:
     programs = _get_college_programs_from_doctype(row)
     if not programs and _json_fallback_enabled():
         programs = _parse_programs_json(row.get("programs_json"))
+    programs_count = len(programs)
+    departments_count = _count_college_departments(row, programs)
+    faculty_count = _count_college_faculty(row)
     slug = row.get("slug") or _slugify_news_value(
         row.get("name_en")
         or row.get("name_ar")
@@ -1893,7 +1889,7 @@ def _serialize_college_item(row: dict) -> dict:
     )
     name_ar = _as_text(row.get("name_ar") or row.get("college_name") or row.get("name"))
     name_en = _as_text(row.get("name_en") or _translated_text(name_ar) or row.get("college_name") or row.get("name") or name_ar)
-    description_ar = _as_text(row.get("description_ar") or row.get("description"))
+    description_ar = _preferred_ar_text(row.get("description_ar"), row.get("description"))
     description_en = _as_text(row.get("description_en") or _translated_text(description_ar) or row.get("description") or description_ar)
     vision_ar = _as_text(row.get("vision_ar"))
     mission_ar = _as_text(row.get("mission_ar"))
@@ -1927,6 +1923,9 @@ def _serialize_college_item(row: dict) -> dict:
         "icon": _as_text(row.get("icon")),
         "image": _as_text(row.get("image")),
         "programs": programs,
+        "programsCount": programs_count,
+        "departmentsCount": departments_count,
+        "facultyCount": faculty_count,
     }
 
 
@@ -2011,6 +2010,88 @@ def _get_college_programs_from_doctype(college_row: dict) -> list[dict]:
         )
     cache[college_key] = programs
     return programs
+
+
+def _count_college_departments(college_row: dict, programs: list[dict]) -> int:
+    doctype = _first_existing_doctype(["Academic Departments"])
+    if doctype:
+        available = _selectable_fields(doctype)
+        if "college" in available:
+            fields = [field for field in ["name", "college", "is_active"] if field in available]
+            filters = {}
+            if "is_active" in available:
+                filters["is_active"] = 1
+
+            aliases = _college_aliases(college_row)
+            rows = frappe.get_all(
+                doctype,
+                fields=fields,
+                filters=filters,
+                ignore_permissions=True,
+                limit_page_length=0,
+            )
+            matched = {row.get("name") for row in rows if _as_text(row.get("college")) in aliases and row.get("name")}
+            if matched:
+                return len(matched)
+
+    department_values = {
+        _as_text((program or {}).get("departmentAr"))
+        for program in (programs or [])
+        if _as_text((program or {}).get("departmentAr"))
+    }
+    if department_values:
+        return len(department_values)
+    return len(programs or [])
+
+
+def _count_college_faculty(college_row: dict) -> int:
+    faculty_doctype = _first_existing_doctype(["Faculty Members"])
+    dept_doctype = _first_existing_doctype(["Academic Departments"])
+    if not faculty_doctype or not dept_doctype:
+        return 0
+
+    dept_available = _selectable_fields(dept_doctype)
+    faculty_available = _selectable_fields(faculty_doctype)
+    if "college" not in dept_available or "department" not in faculty_available:
+        return 0
+
+    dept_filters = {}
+    if "is_active" in dept_available:
+        dept_filters["is_active"] = 1
+    dept_fields = [field for field in ["name", "college"] if field in dept_available]
+
+    aliases = _college_aliases(college_row)
+    dept_rows = frappe.get_all(
+        dept_doctype,
+        fields=dept_fields,
+        filters=dept_filters,
+        ignore_permissions=True,
+        limit_page_length=0,
+    )
+    department_names = [row.get("name") for row in dept_rows if _as_text(row.get("college")) in aliases and row.get("name")]
+    if not department_names:
+        return 0
+
+    faculty_filters = {"department": ["in", department_names]}
+    if "is_active" in faculty_available:
+        faculty_filters["is_active"] = 1
+    return frappe.db.count(faculty_doctype, filters=faculty_filters)
+
+
+def _college_aliases(college_row: dict) -> set[str]:
+    aliases = set()
+    for value in [
+        college_row.get("name"),
+        college_row.get("id"),
+        college_row.get("slug"),
+        college_row.get("college_name"),
+        college_row.get("name_ar"),
+        college_row.get("name_en"),
+    ]:
+        text = _as_text(value)
+        if text:
+            aliases.add(text)
+    return aliases
 
 
 def _parse_programs_json(raw: str | None) -> list[dict]:
