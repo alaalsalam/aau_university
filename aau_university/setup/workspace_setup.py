@@ -28,20 +28,12 @@ def apply_aau_workspaces() -> dict[str, Any]:
     number_cards = _ensure_number_cards()
     charts = _ensure_dashboard_charts()
 
-    for legacy_name in (
-        "aau-executive-dashboard",
-        "aau-content-operations",
-        "aau-academic-operations",
-        "aau-admin-control",
-    ):
-        _archive_legacy_workspace(legacy_name)
-
     workspaces = [
         {
             "name": "aau",
-            "label": "مركز قيادة منصة الجامعة",
+            "label": "مركز إدارة موقع الجامعة",
             "title": "AAU",
-            "sequence_id": 1,
+            "sequence_id": 71,
             "icon": "website",
             "indicator_color": "blue",
             "roles": [
@@ -52,35 +44,55 @@ def apply_aau_workspaces() -> dict[str, Any]:
                 "AAU Site Manager",
             ],
             "links": [
-                {"type": "Card Break", "label": "مساحات العمل التشغيلية", "icon": "dashboard"},
-                {"type": "Link", "label": "إدارة المحتوى والنشر", "link_type": "DocType", "link_to": "Home Page"},
-                {"type": "Link", "label": "الإدارة الأكاديمية", "link_type": "DocType", "link_to": "Colleges"},
-                {"type": "Link", "label": "لوحة المؤشرات التنفيذية", "link_type": "DocType", "link_to": "Dashboard Chart"},
-                {"type": "Link", "label": "مركز إدارة النظام", "link_type": "DocType", "link_to": "User"},
-                {"type": "Card Break", "label": "مهام يومية سريعة", "icon": "list"},
+                {"type": "Card Break", "label": "المحتوى الرئيسي", "icon": "website"},
+                {"type": "Link", "label": "الصفحة الرئيسية", "link_type": "DocType", "link_to": "Home Page"},
+                {"type": "Link", "label": "عن الجامعة", "link_type": "DocType", "link_to": "About University"},
+                {"type": "Link", "label": "صفحات AAU", "link_type": "DocType", "link_to": "AAU Page"},
+                {"type": "Link", "label": "إعدادات الموقع", "link_type": "DocType", "link_to": "Website Settings"},
+                {"type": "Link", "label": "قوائم التنقل", "link_type": "DocType", "link_to": "AAU Menu"},
+                {"type": "Link", "label": "المكتبة الإعلامية", "link_type": "DocType", "link_to": "Media Library"},
+                {"type": "Card Break", "label": "المحتوى المنشور", "icon": "file"},
                 {"type": "Link", "label": "الأخبار", "link_type": "DocType", "link_to": "News"},
                 {"type": "Link", "label": "الفعاليات", "link_type": "DocType", "link_to": "Events"},
+                {"type": "Link", "label": "المدونة", "link_type": "DocType", "link_to": "Blog Posts"},
+                {"type": "Link", "label": "الأسئلة الشائعة", "link_type": "DocType", "link_to": "FAQ"},
+                {"type": "Link", "label": "المشاريع", "link_type": "DocType", "link_to": "Projects"},
+                {"type": "Link", "label": "الحياة الجامعية", "link_type": "DocType", "link_to": "Campus Life"},
+                {"type": "Card Break", "label": "الأكاديمي", "icon": "education"},
+                {"type": "Link", "label": "الكليات", "link_type": "DocType", "link_to": "Colleges"},
+                {"type": "Link", "label": "البرامج الأكاديمية", "link_type": "DocType", "link_to": "Academic Programs"},
+                {"type": "Link", "label": "أعضاء هيئة التدريس", "link_type": "DocType", "link_to": "Faculty Members"},
+                {"type": "Card Break", "label": "الطلبات", "icon": "mail"},
                 {"type": "Link", "label": "رسائل التواصل", "link_type": "DocType", "link_to": "Contact Us Messages"},
                 {"type": "Link", "label": "طلبات الانضمام", "link_type": "DocType", "link_to": "Join Requests"},
-                {"type": "Card Break", "label": "إعدادات المنصة", "icon": "setting-gear"},
-                {"type": "Link", "label": "إعدادات الموقع", "link_type": "DocType", "link_to": "Website Settings"},
+                {"type": "Card Break", "label": "الإدارة", "icon": "setting-gear"},
+                {"type": "Link", "label": "المستخدمون", "link_type": "DocType", "link_to": "User"},
+                {"type": "Link", "label": "الأدوار", "link_type": "DocType", "link_to": "Role"},
                 {"type": "Link", "label": "الترجمة", "link_type": "DocType", "link_to": "Translation"},
-                {"type": "Link", "label": "قوائم التنقل", "link_type": "DocType", "link_to": "AAU Menu"},
+                {"type": "Link", "label": "مساحات العمل", "link_type": "DocType", "link_to": "Workspace"},
             ],
             "shortcuts": [
                 {"type": "DocType", "label": "الأخبار", "link_to": "News", "doc_view": "List"},
                 {"type": "DocType", "label": "الفعاليات", "link_to": "Events", "doc_view": "List"},
                 {"type": "DocType", "label": "رسائل التواصل", "link_to": "Contact Us Messages", "doc_view": "List"},
                 {"type": "DocType", "label": "طلبات الانضمام", "link_to": "Join Requests", "doc_view": "List"},
+                {"type": "DocType", "label": "المستخدمون", "link_to": "User", "doc_view": "List"},
+                {"type": "DocType", "label": "تقارير الطلاب", "link_to": "Student", "doc_view": "Report Builder"},
+                {"type": "DocType", "label": "تقارير المدرسين", "link_to": "Instructor", "doc_view": "Report Builder"},
             ],
-            "number_cards": [number_cards.get("users"), number_cards.get("news"), number_cards.get("events"), number_cards.get("contacts")],
+            "number_cards": [
+                number_cards.get("users"),
+                number_cards.get("news"),
+                number_cards.get("events"),
+                number_cards.get("contacts"),
+            ],
             "charts": [charts.get("news_trend"), charts.get("events_trend")],
         },
         {
-            "name": "AAU Executive Dashboard",
+            "name": "aau-executive-dashboard",
             "label": "لوحة المؤشرات التنفيذية",
             "title": "AAU Executive Dashboard",
-            "sequence_id": 2,
+            "sequence_id": 72,
             "icon": "dashboard",
             "indicator_color": "green",
             "roles": [
@@ -90,18 +102,25 @@ def apply_aau_workspaces() -> dict[str, Any]:
                 "AAU Site Manager",
             ],
             "links": [
-                {"type": "Card Break", "label": "مواد التشغيل", "icon": "dashboard"},
-                {"type": "Link", "label": "إدارة المحتوى", "link_type": "DocType", "link_to": "News"},
-                {"type": "Link", "label": "الإدارة الأكاديمية", "link_type": "DocType", "link_to": "Colleges"},
-                {"type": "Link", "label": "إدارة النظام", "link_type": "DocType", "link_to": "User"},
+                {"type": "Card Break", "label": "المؤشرات العامة", "icon": "dashboard"},
+                {"type": "Link", "label": "المستخدمون", "link_type": "DocType", "link_to": "User"},
+                {"type": "Link", "label": "الطلاب", "link_type": "DocType", "link_to": "Student"},
+                {"type": "Link", "label": "المدرسون", "link_type": "DocType", "link_to": "Instructor"},
+                {"type": "Card Break", "label": "المحتوى العام", "icon": "website"},
+                {"type": "Link", "label": "الأخبار", "link_type": "DocType", "link_to": "News"},
+                {"type": "Link", "label": "الفعاليات", "link_type": "DocType", "link_to": "Events"},
+                {"type": "Link", "label": "الكليات", "link_type": "DocType", "link_to": "Colleges"},
+                {"type": "Link", "label": "البرامج الأكاديمية", "link_type": "DocType", "link_to": "Academic Programs"},
                 {"type": "Card Break", "label": "مركز المتابعة", "icon": "list"},
                 {"type": "Link", "label": "رسائل التواصل", "link_type": "DocType", "link_to": "Contact Us Messages"},
                 {"type": "Link", "label": "طلبات الانضمام", "link_type": "DocType", "link_to": "Join Requests"},
             ],
             "shortcuts": [
                 {"type": "DocType", "label": "تقرير المستخدمين", "link_to": "User", "doc_view": "Report Builder"},
-                {"type": "DocType", "label": "رسائل التواصل", "link_to": "Contact Us Messages", "doc_view": "List"},
-                {"type": "DocType", "label": "طلبات الانضمام", "link_to": "Join Requests", "doc_view": "List"},
+                {"type": "DocType", "label": "تقرير الطلاب", "link_to": "Student", "doc_view": "Report Builder"},
+                {"type": "DocType", "label": "تقرير المدرسين", "link_to": "Instructor", "doc_view": "Report Builder"},
+                {"type": "DocType", "label": "تقرير الأخبار", "link_to": "News", "doc_view": "Report Builder"},
+                {"type": "DocType", "label": "تقرير الفعاليات", "link_to": "Events", "doc_view": "Report Builder"},
             ],
             "number_cards": [
                 number_cards.get("users"),
@@ -114,10 +133,10 @@ def apply_aau_workspaces() -> dict[str, Any]:
             "charts": [charts.get("news_trend"), charts.get("events_trend"), charts.get("contacts_trend")],
         },
         {
-            "name": "AAU Content Operations",
+            "name": "aau-content-operations",
             "label": "إدارة المحتوى والنشر",
             "title": "AAU Content Operations",
-            "sequence_id": 3,
+            "sequence_id": 73,
             "icon": "file",
             "indicator_color": "cyan",
             "roles": [
@@ -133,17 +152,12 @@ def apply_aau_workspaces() -> dict[str, Any]:
                 {"type": "Link", "label": "عن الجامعة", "link_type": "DocType", "link_to": "About University"},
                 {"type": "Link", "label": "صفحات AAU", "link_type": "DocType", "link_to": "AAU Page"},
                 {"type": "Link", "label": "قوائم التنقل", "link_type": "DocType", "link_to": "AAU Menu"},
-                {"type": "Card Break", "label": "المحتوى المنشور", "icon": "file"},
+                {"type": "Card Break", "label": "النشر", "icon": "file"},
                 {"type": "Link", "label": "الأخبار", "link_type": "DocType", "link_to": "News"},
                 {"type": "Link", "label": "الفعاليات", "link_type": "DocType", "link_to": "Events"},
                 {"type": "Link", "label": "المدونة", "link_type": "DocType", "link_to": "Blog Posts"},
-                {"type": "Link", "label": "المشاريع", "link_type": "DocType", "link_to": "Projects"},
-                {"type": "Link", "label": "الحياة الجامعية", "link_type": "DocType", "link_to": "Campus Life"},
-                {"type": "Link", "label": "المراكز", "link_type": "DocType", "link_to": "Centers"},
-                {"type": "Link", "label": "العروض", "link_type": "DocType", "link_to": "Offers"},
-                {"type": "Link", "label": "الشركاء", "link_type": "DocType", "link_to": "Partners"},
                 {"type": "Link", "label": "الأسئلة الشائعة", "link_type": "DocType", "link_to": "FAQ"},
-                {"type": "Card Break", "label": "الوسائط والإعدادات", "icon": "folder-open"},
+                {"type": "Card Break", "label": "الملفات والوسائط", "icon": "folder-open"},
                 {"type": "Link", "label": "المكتبة الإعلامية", "link_type": "DocType", "link_to": "Media Library"},
                 {"type": "Link", "label": "إعدادات الموقع", "link_type": "DocType", "link_to": "Website Settings"},
                 {"type": "Link", "label": "الترجمة", "link_type": "DocType", "link_to": "Translation"},
@@ -151,27 +165,30 @@ def apply_aau_workspaces() -> dict[str, Any]:
             "shortcuts": [
                 {"type": "DocType", "label": "قائمة الأخبار", "link_to": "News", "doc_view": "List"},
                 {"type": "DocType", "label": "قائمة الفعاليات", "link_to": "Events", "doc_view": "List"},
-                {"type": "DocType", "label": "قائمة المدونة", "link_to": "Blog Posts", "doc_view": "List"},
+                {"type": "DocType", "label": "تحليل الأخبار", "link_to": "News", "doc_view": "Report Builder"},
+                {"type": "DocType", "label": "تحليل الفعاليات", "link_to": "Events", "doc_view": "Report Builder"},
             ],
-            "number_cards": [number_cards.get("news"), number_cards.get("events")],
+            "number_cards": [
+                number_cards.get("news"),
+                number_cards.get("events"),
+                number_cards.get("contacts"),
+                number_cards.get("join_requests"),
+            ],
             "charts": [charts.get("news_trend"), charts.get("events_trend")],
         },
         {
-            "name": "AAU Academic Operations",
+            "name": "aau-academic-operations",
             "label": "الإدارة الأكاديمية",
             "title": "AAU Academic Operations",
-            "sequence_id": 4,
+            "sequence_id": 74,
             "icon": "education",
             "indicator_color": "purple",
-                "roles": [
-                    "System Manager",
-                    "Workspace Manager",
-                    "AAU Executive Manager",
-                    "AAU Site Manager",
-                    "AAU Content Manager",
-                    "Academics User",
-                    "Education Manager",
-                ],
+            "roles": [
+                "System Manager",
+                "Workspace Manager",
+                "AAU Executive Manager",
+                "AAU Site Manager",
+            ],
             "links": [
                 {"type": "Card Break", "label": "البنية الأكاديمية", "icon": "education"},
                 {"type": "Link", "label": "الكليات", "link_type": "DocType", "link_to": "Colleges"},
@@ -197,13 +214,13 @@ def apply_aau_workspaces() -> dict[str, Any]:
             "charts": [charts.get("students_trend")],
         },
         {
-            "name": "AAU Admin Control",
+            "name": "aau-admin-control",
             "label": "مركز إدارة النظام",
             "title": "AAU Admin Control",
-            "sequence_id": 5,
+            "sequence_id": 75,
             "icon": "setting-gear",
             "indicator_color": "orange",
-            "roles": ["System Manager", "Workspace Manager", "AAU Content Manager", "AAU Site Manager"],
+            "roles": ["System Manager", "Workspace Manager"],
             "links": [
                 {"type": "Card Break", "label": "التحكم بالنظام", "icon": "setting-gear"},
                 {"type": "Link", "label": "المستخدمون", "link_type": "DocType", "link_to": "User"},
@@ -211,7 +228,9 @@ def apply_aau_workspaces() -> dict[str, Any]:
                 {"type": "Link", "label": "مساحات العمل", "link_type": "DocType", "link_to": "Workspace"},
                 {"type": "Link", "label": "الترجمة", "link_type": "DocType", "link_to": "Translation"},
                 {"type": "Link", "label": "إعدادات الموقع", "link_type": "DocType", "link_to": "Website Settings"},
-                {"type": "Card Break", "label": "الطلبات والمراجعة", "icon": "file"},
+                {"type": "Card Break", "label": "رقابة المحتوى", "icon": "file"},
+                {"type": "Link", "label": "الأخبار", "link_type": "DocType", "link_to": "News"},
+                {"type": "Link", "label": "الفعاليات", "link_type": "DocType", "link_to": "Events"},
                 {"type": "Link", "label": "رسائل التواصل", "link_type": "DocType", "link_to": "Contact Us Messages"},
                 {"type": "Link", "label": "طلبات الانضمام", "link_type": "DocType", "link_to": "Join Requests"},
             ],
@@ -229,14 +248,7 @@ def apply_aau_workspaces() -> dict[str, Any]:
     for definition in workspaces:
         workspace_names.append(_upsert_workspace(definition))
 
-    for legacy_workspace in (
-        "AAU Content Hub",
-        "aau-executive-dashboard",
-        "aau-content-operations",
-        "aau-academic-operations",
-        "aau-admin-control",
-    ):
-        _hide_legacy_workspace(legacy_workspace)
+    _hide_legacy_workspace("AAU Content Hub")
 
     frappe.db.commit()
     frappe.clear_cache()
@@ -556,6 +568,7 @@ def _upsert_workspace(definition: dict[str, Any]) -> str:
         doc.save(ignore_permissions=True)
 
     # label/title/module are read-only in model; enforce persisted values via DB update.
+    _archive_workspace_conflicts(doc.name, payload["label"], payload["title"])
     frappe.db.set_value("Workspace", doc.name, "label", payload["label"], update_modified=False)
     frappe.db.set_value("Workspace", doc.name, "title", payload["title"], update_modified=False)
     frappe.db.set_value("Workspace", doc.name, "module", payload["module"], update_modified=False)
@@ -565,6 +578,27 @@ def _upsert_workspace(definition: dict[str, Any]) -> str:
         frappe.db.set_value("Workspace", doc.name, "sequence_id", payload["sequence_id"], update_modified=False)
 
     return doc.name
+
+
+def _archive_workspace_conflicts(current_name: str, target_label: str, target_title: str) -> None:
+    """Ensure label/title unique constraints won't fail due old duplicated workspaces."""
+    label_conflict = frappe.db.get_value(
+        "Workspace",
+        {"label": target_label, "name": ["!=", current_name]},
+        "name",
+    )
+    if label_conflict:
+        frappe.db.set_value("Workspace", label_conflict, "label", f"{target_label} (Legacy)", update_modified=False)
+        frappe.db.set_value("Workspace", label_conflict, "is_hidden", 1, update_modified=False)
+
+    title_conflict = frappe.db.get_value(
+        "Workspace",
+        {"title": target_title, "name": ["!=", current_name]},
+        "name",
+    )
+    if title_conflict:
+        frappe.db.set_value("Workspace", title_conflict, "title", f"{target_title} (Legacy)", update_modified=False)
+        frappe.db.set_value("Workspace", title_conflict, "is_hidden", 1, update_modified=False)
 
 
 def _prepare_workspace_payload(definition: dict[str, Any]) -> dict[str, Any]:
@@ -791,20 +825,3 @@ def _hide_legacy_workspace(name: str) -> None:
     if not frappe.db.exists("Workspace", name):
         return
     frappe.db.set_value("Workspace", name, "is_hidden", 1, update_modified=False)
-
-
-def _archive_legacy_workspace(name: str) -> None:
-    if not frappe.db.exists("Workspace", name):
-        return
-    legacy_title = f"Legacy - {name}"
-    frappe.db.set_value(
-        "Workspace",
-        name,
-        {
-            "title": legacy_title,
-            "label": legacy_title,
-            "is_hidden": 1,
-            "public": 0,
-        },
-        update_modified=False,
-    )

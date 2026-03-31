@@ -271,28 +271,26 @@ def resolve_login_identifier(identifier: str | None = None):
     if user_from_local_part:
         return {"identifier": _clean(user_from_local_part[0].get("name"))}
 
-    # Student mapping: allow login by academic number (Student.name) or student_email_id.
+    # Student mapping: allow login by academic number / student code / email.
     if frappe.db.exists("DocType", "Student"):
         student_meta = frappe.get_meta("Student")
         valid_cols = set(student_meta.get_valid_columns())
-        student_fields = [f for f in ("name", "user", "student_email_id") if f in valid_cols or f == "name"]
+        candidate_fields = ["name", "user", "student_email_id", "student_id", "custom_student_id"]
+        student_fields = [f for f in candidate_fields if f in valid_cols or f == "name"]
         student_rows = []
         try:
-            student_rows = frappe.get_all(
-                "Student",
-                filters={"name": raw},
-                fields=student_fields,
-                limit_page_length=1,
-                ignore_permissions=True,
-            )
-            if not student_rows and "student_email_id" in valid_cols:
+            for search_field in ("name", "student_email_id", "student_id", "custom_student_id"):
+                if search_field != "name" and search_field not in valid_cols:
+                    continue
                 student_rows = frappe.get_all(
                     "Student",
-                    filters={"student_email_id": raw},
+                    filters={search_field: raw},
                     fields=student_fields,
                     limit_page_length=1,
                     ignore_permissions=True,
                 )
+                if student_rows:
+                    break
         except Exception:
             student_rows = []
         if student_rows:

@@ -88,7 +88,7 @@
    "type": "Link"
   }
  ],
- "modified": "2026-03-31 08:47:18.756715",
+ "modified": "2026-03-31 08:56:37.042165",
  "modified_by": "Administrator",
  "module": "AAU",
  "name": "AAU Academic Operations",
@@ -129,15 +129,6 @@
   },
   {
    "role": "AAU Site Manager"
-  },
-  {
-   "role": "AAU Content Manager"
-  },
-  {
-   "role": "Academics User"
-  },
-  {
-   "role": "Education Manager"
   }
  ],
  "sequence_id": 74.0,

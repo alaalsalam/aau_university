@@ -9,7 +9,7 @@
    "label": ""
   }
  ],
- "content": "[{\"id\": \"aau_header\", \"type\": \"header\", \"data\": {\"text\": \"<span class=\\\"h4\\\">\u0645\u0631\u0643\u0632 \u0642\u064a\u0627\u062f\u0629 \u0645\u0646\u0635\u0629 \u0627\u0644\u062c\u0627\u0645\u0639\u0629</span>\", \"col\": 12}}, {\"id\": \"aau_chart_1\", \"type\": \"chart\", \"data\": {\"chart_name\": \"AAU News Trend\", \"col\": 12}}, {\"id\": \"aau_chart_2\", \"type\": \"chart\", \"data\": {\"chart_name\": \"AAU Events Trend\", \"col\": 6}}, {\"id\": \"aau_number_1\", \"type\": \"number_card\", \"data\": {\"number_card_name\": \"\u0625\u062c\u0645\u0627\u0644\u064a \u0627\u0644\u0645\u0633\u062a\u062e\u062f\u0645\u064a\u0646\", \"col\": 3}}, {\"id\": \"aau_number_2\", \"type\": \"number_card\", \"data\": {\"number_card_name\": \"\u0627\u0644\u0623\u062e\u0628\u0627\u0631 \u0627\u0644\u0645\u0646\u0634\u0648\u0631\u0629\", \"col\": 3}}, {\"id\": \"aau_number_3\", \"type\": \"number_card\", \"data\": {\"number_card_name\": \"\u0627\u0644\u0641\u0639\u0627\u0644\u064a\u0627\u062a \u0627\u0644\u0645\u0646\u0634\u0648\u0631\u0629\", \"col\": 3}}, {\"id\": \"aau_number_4\", \"type\": \"number_card\", \"data\": {\"number_card_name\": \"\u0631\u0633\u0627\u0626\u0644 \u0627\u0644\u062a\u0648\u0627\u0635\u0644\", \"col\": 3}}, {\"id\": \"aau_spacer_1\", \"type\": \"spacer\", \"data\": {\"col\": 12}}, {\"id\": \"aau_shortcuts_header\", \"type\": \"header\", \"data\": {\"text\": \"<span class=\\\"h4\\\"><b>\u0625\u062c\u0631\u0627\u0621\u0627\u062a \u0633\u0631\u064a\u0639\u0629</b></span>\", \"col\": 12}}, {\"id\": \"aau_shortcut_1\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"\u0627\u0644\u0623\u062e\u0628\u0627\u0631\", \"col\": 3}}, {\"id\": \"aau_shortcut_2\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"\u0627\u0644\u0641\u0639\u0627\u0644\u064a\u0627\u062a\", \"col\": 3}}, {\"id\": \"aau_shortcut_3\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"\u0631\u0633\u0627\u0626\u0644 \u0627\u0644\u062a\u0648\u0627\u0635\u0644\", \"col\": 3}}, {\"id\": \"aau_shortcut_4\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"\u0637\u0644\u0628\u0627\u062a \u0627\u0644\u0627\u0646\u0636\u0645\u0627\u0645\", \"col\": 3}}, {\"id\": \"aau_spacer_2\", \"type\": \"spacer\", \"data\": {\"col\": 12}}, {\"id\": \"aau_cards_header\", \"type\": \"header\", \"data\": {\"text\": \"<span class=\\\"h4\\\"><b>\u0627\u0644\u0625\u062f\u0627\u0631\u0629 \u0627\u0644\u062a\u0641\u0635\u064a\u0644\u064a\u0629</b></span>\", \"col\": 12}}, {\"id\": \"aau_card_1\", \"type\": \"card\", \"data\": {\"card_name\": \"\u0645\u0633\u0627\u062d\u0627\u062a \u0627\u0644\u0639\u0645\u0644 \u0627\u0644\u062a\u0634\u063a\u064a\u0644\u064a\u0629\", \"col\": 4}}, {\"id\": \"aau_card_2\", \"type\": \"card\", \"data\": {\"card_name\": \"\u0645\u0647\u0627\u0645 \u064a\u0648\u0645\u064a\u0629 \u0633\u0631\u064a\u0639\u0629\", \"col\": 4}}, {\"id\": \"aau_card_3\", \"type\": \"card\", \"data\": {\"card_name\": \"\u0625\u0639\u062f\u0627\u062f\u0627\u062a \u0627\u0644\u0645\u0646\u0635\u0629\", \"col\": 4}}]",
+ "content": "[{\"id\": \"aau_header\", \"type\": \"header\", \"data\": {\"text\": \"<span class=\\\"h4\\\">\u0645\u0631\u0643\u0632 \u0625\u062f\u0627\u0631\u0629 \u0645\u0648\u0642\u0639 \u0627\u0644\u062c\u0627\u0645\u0639\u0629</span>\", \"col\": 12}}, {\"id\": \"aau_chart_1\", \"type\": \"chart\", \"data\": {\"chart_name\": \"AAU News Trend\", \"col\": 12}}, {\"id\": \"aau_chart_2\", \"type\": \"chart\", \"data\": {\"chart_name\": \"AAU Events Trend\", \"col\": 6}}, {\"id\": \"aau_number_1\", \"type\": \"number_card\", \"data\": {\"number_card_name\": \"\u0625\u062c\u0645\u0627\u0644\u064a \u0627\u0644\u0645\u0633\u062a\u062e\u062f\u0645\u064a\u0646\", \"col\": 3}}, {\"id\": \"aau_number_2\", \"type\": \"number_card\", \"data\": {\"number_card_name\": \"\u0627\u0644\u0623\u062e\u0628\u0627\u0631 \u0627\u0644\u0645\u0646\u0634\u0648\u0631\u0629\", \"col\": 3}}, {\"id\": \"aau_number_3\", \"type\": \"number_card\", \"data\": {\"number_card_name\": \"\u0627\u0644\u0641\u0639\u0627\u0644\u064a\u0627\u062a \u0627\u0644\u0645\u0646\u0634\u0648\u0631\u0629\", \"col\": 3}}, {\"id\": \"aau_number_4\", \"type\": \"number_card\", \"data\": {\"number_card_name\": \"\u0631\u0633\u0627\u0626\u0644 \u0627\u0644\u062a\u0648\u0627\u0635\u0644\", \"col\": 3}}, {\"id\": \"aau_spacer_1\", \"type\": \"spacer\", \"data\": {\"col\": 12}}, {\"id\": \"aau_shortcuts_header\", \"type\": \"header\", \"data\": {\"text\": \"<span class=\\\"h4\\\"><b>\u0625\u062c\u0631\u0627\u0621\u0627\u062a \u0633\u0631\u064a\u0639\u0629</b></span>\", \"col\": 12}}, {\"id\": \"aau_shortcut_1\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"\u0627\u0644\u0623\u062e\u0628\u0627\u0631\", \"col\": 3}}, {\"id\": \"aau_shortcut_2\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"\u0627\u0644\u0641\u0639\u0627\u0644\u064a\u0627\u062a\", \"col\": 3}}, {\"id\": \"aau_shortcut_3\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"\u0631\u0633\u0627\u0626\u0644 \u0627\u0644\u062a\u0648\u0627\u0635\u0644\", \"col\": 3}}, {\"id\": \"aau_shortcut_4\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"\u0637\u0644\u0628\u0627\u062a \u0627\u0644\u0627\u0646\u0636\u0645\u0627\u0645\", \"col\": 3}}, {\"id\": \"aau_shortcut_5\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"\u0627\u0644\u0645\u0633\u062a\u062e\u062f\u0645\u0648\u0646\", \"col\": 3}}, {\"id\": \"aau_shortcut_6\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"\u062a\u0642\u0627\u0631\u064a\u0631 \u0627\u0644\u0637\u0644\u0627\u0628\", \"col\": 3}}, {\"id\": \"aau_shortcut_7\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"\u062a\u0642\u0627\u0631\u064a\u0631 \u0627\u0644\u0645\u062f\u0631\u0633\u064a\u0646\", \"col\": 3}}, {\"id\": \"aau_spacer_2\", \"type\": \"spacer\", \"data\": {\"col\": 12}}, {\"id\": \"aau_cards_header\", \"type\": \"header\", \"data\": {\"text\": \"<span class=\\\"h4\\\"><b>\u0627\u0644\u0625\u062f\u0627\u0631\u0629 \u0627\u0644\u062a\u0641\u0635\u064a\u0644\u064a\u0629</b></span>\", \"col\": 12}}, {\"id\": \"aau_card_1\", \"type\": \"card\", \"data\": {\"card_name\": \"\u0627\u0644\u0645\u062d\u062a\u0648\u0649 \u0627\u0644\u0631\u0626\u064a\u0633\u064a\", \"col\": 4}}, {\"id\": \"aau_card_2\", \"type\": \"card\", \"data\": {\"card_name\": \"\u0627\u0644\u0645\u062d\u062a\u0648\u0649 \u0627\u0644\u0645\u0646\u0634\u0648\u0631\", \"col\": 4}}, {\"id\": \"aau_card_3\", \"type\": \"card\", \"data\": {\"card_name\": \"\u0627\u0644\u0623\u0643\u0627\u062f\u064a\u0645\u064a\", \"col\": 4}}, {\"id\": \"aau_card_4\", \"type\": \"card\", \"data\": {\"card_name\": \"\u0627\u0644\u0637\u0644\u0628\u0627\u062a\", \"col\": 4}}, {\"id\": \"aau_card_5\", \"type\": \"card\", \"data\": {\"card_name\": \"\u0627\u0644\u0625\u062f\u0627\u0631\u0629\", \"col\": 4}}]",
  "creation": "2026-03-24 13:07:33.382976",
  "custom_blocks": [],
  "docstatus": 0,
@@ -23,9 +23,9 @@
  "links": [
   {
    "hidden": 0,
-   "icon": "dashboard",
+   "icon": "website",
    "is_query_report": 0,
-   "label": "\u0645\u0633\u0627\u062d\u0627\u062a \u0627\u0644\u0639\u0645\u0644 \u0627\u0644\u062a\u0634\u063a\u064a\u0644\u064a\u0629",
+   "label": "\u0627\u0644\u0645\u062d\u062a\u0648\u0649 \u0627\u0644\u0631\u0626\u064a\u0633\u064a",
    "link_count": 0,
    "link_type": "DocType",
    "onboard": 0,
@@ -34,7 +34,7 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "\u0625\u062f\u0627\u0631\u0629 \u0627\u0644\u0645\u062d\u062a\u0648\u0649 \u0648\u0627\u0644\u0646\u0634\u0631",
+   "label": "\u0627\u0644\u0635\u0641\u062d\u0629 \u0627\u0644\u0631\u0626\u064a\u0633\u064a\u0629",
    "link_count": 0,
    "link_to": "Home Page",
    "link_type": "DocType",
@@ -44,9 +44,9 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "\u0627\u0644\u0625\u062f\u0627\u0631\u0629 \u0627\u0644\u0623\u0643\u0627\u062f\u064a\u0645\u064a\u0629",
+   "label": "\u0639\u0646 \u0627\u0644\u062c\u0627\u0645\u0639\u0629",
    "link_count": 0,
-   "link_to": "Colleges",
+   "link_to": "About University",
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
@@ -54,9 +54,9 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "\u0644\u0648\u062d\u0629 \u0627\u0644\u0645\u0624\u0634\u0631\u0627\u062a \u0627\u0644\u062a\u0646\u0641\u064a\u0630\u064a\u0629",
+   "label": "\u0635\u0641\u062d\u0627\u062a AAU",
    "link_count": 0,
-   "link_to": "Dashboard Chart",
+   "link_to": "AAU Page",
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
@@ -64,18 +64,38 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "\u0645\u0631\u0643\u0632 \u0625\u062f\u0627\u0631\u0629 \u0627\u0644\u0646\u0638\u0627\u0645",
+   "label": "\u0625\u0639\u062f\u0627\u062f\u0627\u062a \u0627\u0644\u0645\u0648\u0642\u0639",
    "link_count": 0,
-   "link_to": "User",
+   "link_to": "Website Settings",
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
   },
   {
    "hidden": 0,
-   "icon": "list",
    "is_query_report": 0,
-   "label": "\u0645\u0647\u0627\u0645 \u064a\u0648\u0645\u064a\u0629 \u0633\u0631\u064a\u0639\u0629",
+   "label": "\u0642\u0648\u0627\u0626\u0645 \u0627\u0644\u062a\u0646\u0642\u0644",
+   "link_count": 0,
+   "link_to": "AAU Menu",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "\u0627\u0644\u0645\u0643\u062a\u0628\u0629 \u0627\u0644\u0625\u0639\u0644\u0627\u0645\u064a\u0629",
+   "link_count": 0,
+   "link_to": "Media Library",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "icon": "file",
+   "is_query_report": 0,
+   "label": "\u0627\u0644\u0645\u062d\u062a\u0648\u0649 \u0627\u0644\u0645\u0646\u0634\u0648\u0631",
    "link_count": 0,
    "link_type": "DocType",
    "onboard": 0,
@@ -104,6 +124,96 @@
   {
    "hidden": 0,
    "is_query_report": 0,
+   "label": "\u0627\u0644\u0645\u062f\u0648\u0646\u0629",
+   "link_count": 0,
+   "link_to": "Blog Posts",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "\u0627\u0644\u0623\u0633\u0626\u0644\u0629 \u0627\u0644\u0634\u0627\u0626\u0639\u0629",
+   "link_count": 0,
+   "link_to": "FAQ",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "\u0627\u0644\u0645\u0634\u0627\u0631\u064a\u0639",
+   "link_count": 0,
+   "link_to": "Projects",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "\u0627\u0644\u062d\u064a\u0627\u0629 \u0627\u0644\u062c\u0627\u0645\u0639\u064a\u0629",
+   "link_count": 0,
+   "link_to": "Campus Life",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "icon": "education",
+   "is_query_report": 0,
+   "label": "\u0627\u0644\u0623\u0643\u0627\u062f\u064a\u0645\u064a",
+   "link_count": 0,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "\u0627\u0644\u0643\u0644\u064a\u0627\u062a",
+   "link_count": 0,
+   "link_to": "Colleges",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "\u0627\u0644\u0628\u0631\u0627\u0645\u062c \u0627\u0644\u0623\u0643\u0627\u062f\u064a\u0645\u064a\u0629",
+   "link_count": 0,
+   "link_to": "Academic Programs",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "\u0623\u0639\u0636\u0627\u0621 \u0647\u064a\u0626\u0629 \u0627\u0644\u062a\u062f\u0631\u064a\u0633",
+   "link_count": 0,
+   "link_to": "Faculty Members",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "icon": "mail",
+   "is_query_report": 0,
+   "label": "\u0627\u0644\u0637\u0644\u0628\u0627\u062a",
+   "link_count": 0,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
    "label": "\u0631\u0633\u0627\u0626\u0644 \u0627\u0644\u062a\u0648\u0627\u0635\u0644",
    "link_count": 0,
    "link_to": "Contact Us Messages",
@@ -125,7 +235,7 @@
    "hidden": 0,
    "icon": "setting-gear",
    "is_query_report": 0,
-   "label": "\u0625\u0639\u062f\u0627\u062f\u0627\u062a \u0627\u0644\u0645\u0646\u0635\u0629",
+   "label": "\u0627\u0644\u0625\u062f\u0627\u0631\u0629",
    "link_count": 0,
    "link_type": "DocType",
    "onboard": 0,
@@ -134,9 +244,19 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "\u0625\u0639\u062f\u0627\u062f\u0627\u062a \u0627\u0644\u0645\u0648\u0642\u0639",
+   "label": "\u0627\u0644\u0645\u0633\u062a\u062e\u062f\u0645\u0648\u0646",
    "link_count": 0,
-   "link_to": "Website Settings",
+   "link_to": "User",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "\u0627\u0644\u0623\u062f\u0648\u0627\u0631",
+   "link_count": 0,
+   "link_to": "Role",
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
@@ -154,15 +274,15 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "\u0642\u0648\u0627\u0626\u0645 \u0627\u0644\u062a\u0646\u0642\u0644",
+   "label": "\u0645\u0633\u0627\u062d\u0627\u062a \u0627\u0644\u0639\u0645\u0644",
    "link_count": 0,
-   "link_to": "AAU Menu",
+   "link_to": "Workspace",
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
   }
  ],
- "modified": "2026-03-31 08:47:18.603897",
+ "modified": "2026-03-31 08:56:36.886714",
  "modified_by": "Administrator",
  "module": "AAU",
  "name": "AAU",
@@ -204,7 +324,7 @@
    "role": "AAU Site Manager"
   }
  ],
- "sequence_id": 71.0,
+ "sequence_id": 1.0,
  "shortcuts": [
   {
    "doc_view": "List",
@@ -228,6 +348,24 @@
    "doc_view": "List",
    "label": "\u0637\u0644\u0628\u0627\u062a \u0627\u0644\u0627\u0646\u0636\u0645\u0627\u0645",
    "link_to": "Join Requests",
+   "type": "DocType"
+  },
+  {
+   "doc_view": "List",
+   "label": "\u0627\u0644\u0645\u0633\u062a\u062e\u062f\u0645\u0648\u0646",
+   "link_to": "User",
+   "type": "DocType"
+  },
+  {
+   "doc_view": "Report Builder",
+   "label": "\u062a\u0642\u0627\u0631\u064a\u0631 \u0627\u0644\u0637\u0644\u0627\u0628",
+   "link_to": "Student",
+   "type": "DocType"
+  },
+  {
+   "doc_view": "Report Builder",
+   "label": "\u062a\u0642\u0627\u0631\u064a\u0631 \u0627\u0644\u0645\u062f\u0631\u0633\u064a\u0646",
+   "link_to": "Instructor",
    "type": "DocType"
   }
  ],
