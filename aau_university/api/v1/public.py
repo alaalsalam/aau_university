@@ -2,7 +2,9 @@
 from __future__ import annotations
 
 import base64
+import ast
 import json
+import os
 import re
 
 import frappe
@@ -119,6 +121,8 @@ def create_join_request(**payload):
     if payload.get("educationStatus") and not payload.get("education_status"):
         payload["education_status"] = payload.get("educationStatus")
 
+    payload = _normalize_join_request_document_fields(payload, upload_payloads)
+
     documents = payload.get("documents")
     if isinstance(documents, dict):
         if documents.get("highSchool") and not payload.get("high_school_document_name"):
@@ -130,9 +134,9 @@ def create_join_request(**payload):
 
     has_docs = all(
         [
-            payload.get("high_school_document_name"),
-            payload.get("id_document_name"),
-            payload.get("personal_photo_name"),
+            payload.get("high_school_document_name") or upload_payloads.get("high_school_document_name"),
+            payload.get("id_document_name") or upload_payloads.get("id_document_name"),
+            payload.get("personal_photo_name") or upload_payloads.get("personal_photo_name"),
         ]
     )
     if payload.get("has_required_documents") in (None, ""):
@@ -233,6 +237,37 @@ def delete_join_request(request_id: str):
     """Delete a join request."""
     require_roles(ADMIN_ROLES)
     return delete_entity("join_requests", request_id, by="id")
+
+
+@frappe.whitelist()
+@api_endpoint
+def repair_join_request_document_links(limit: int = 200):
+    """Repair legacy join request document values into real file links."""
+    require_roles(ADMIN_ROLES)
+    fixed = 0
+    scanned = 0
+    rows = frappe.get_all(
+        "Join Requests",
+        fields=[
+            "name",
+            "high_school_document_name",
+            "id_document_name",
+            "personal_photo_name",
+        ],
+        order_by="modified desc",
+        limit_page_length=max(1, min(int(limit or 200), 2000)),
+        ignore_permissions=True,
+    )
+    for row in rows:
+        scanned += 1
+        updates = _repair_join_request_document_row(row)
+        if updates:
+            for fieldname, value in updates.items():
+                frappe.db.set_value("Join Requests", row.get("name"), fieldname, value, update_modified=True)
+            fixed += 1
+    if fixed:
+        frappe.db.commit()
+    return {"scanned": scanned, "fixed": fixed}
 
 
 @frappe.whitelist(allow_guest=True)
@@ -1717,14 +1752,95 @@ def _extract_upload_name(value) -> str:
 def _extract_join_request_uploads(payload: frappe._dict) -> dict[str, dict]:
     uploads: dict[str, dict] = {}
     documents = payload.get("documents")
+    if isinstance(documents, str):
+        try:
+            documents = frappe.parse_json(documents)
+        except Exception:
+            documents = None
     if isinstance(documents, dict):
-        if isinstance(documents.get("highSchool"), dict):
-            uploads["high_school_document_name"] = documents.get("highSchool")
-        if isinstance(documents.get("id"), dict):
-            uploads["id_document_name"] = documents.get("id")
-        if isinstance(documents.get("photo"), dict):
-            uploads["personal_photo_name"] = documents.get("photo")
+        high_school = (
+            documents.get("highSchool")
+            or documents.get("high_school")
+            or documents.get("highSchoolDocument")
+            or documents.get("highSchoolDocumentName")
+        )
+        id_document = (
+            documents.get("id")
+            or documents.get("idDocument")
+            or documents.get("idDocumentName")
+            or documents.get("id_document")
+        )
+        personal_photo = (
+            documents.get("photo")
+            or documents.get("personalPhoto")
+            or documents.get("personalPhotoName")
+            or documents.get("personal_photo")
+        )
+        if isinstance(high_school, dict):
+            uploads["high_school_document_name"] = high_school
+        if isinstance(id_document, dict):
+            uploads["id_document_name"] = id_document
+        if isinstance(personal_photo, dict):
+            uploads["personal_photo_name"] = personal_photo
+
+    top_level_aliases = {
+        "high_school_document_name": (
+            "high_school_document_name",
+            "highSchoolDocumentName",
+            "highSchoolDocument",
+        ),
+        "id_document_name": (
+            "id_document_name",
+            "idDocumentName",
+            "idDocument",
+        ),
+        "personal_photo_name": (
+            "personal_photo_name",
+            "personalPhotoName",
+            "personalPhoto",
+        ),
+    }
+    for target_field, alias_keys in top_level_aliases.items():
+        for alias_key in alias_keys:
+            value = payload.get(alias_key)
+            if isinstance(value, str):
+                try:
+                    parsed = frappe.parse_json(value)
+                    if isinstance(parsed, dict):
+                        value = parsed
+                except Exception:
+                    pass
+            if isinstance(value, dict) and _as_text(value.get("content") or value.get("data") or value.get("base64")):
+                uploads[target_field] = value
+                break
     return uploads
+
+
+def _normalize_join_request_document_fields(payload: frappe._dict, uploads: dict[str, dict]) -> frappe._dict:
+    normalized = frappe._dict(payload or {})
+    field_aliases = {
+        "high_school_document_name": ("high_school_document_name", "highSchoolDocumentName"),
+        "id_document_name": ("id_document_name", "idDocumentName"),
+        "personal_photo_name": ("personal_photo_name", "personalPhotoName"),
+    }
+    for target_field, alias_keys in field_aliases.items():
+        for alias_key in alias_keys:
+            value = normalized.get(alias_key)
+            if isinstance(value, str):
+                try:
+                    parsed = frappe.parse_json(value)
+                    if isinstance(parsed, dict):
+                        value = parsed
+                except Exception:
+                    pass
+            if isinstance(value, dict):
+                normalized[target_field] = _extract_upload_name(value)
+            elif value not in (None, "") and normalized.get(target_field) in (None, ""):
+                normalized[target_field] = _as_text(value)
+        upload = (uploads or {}).get(target_field)
+        if isinstance(upload, dict) and not normalized.get(target_field):
+            normalized[target_field] = _extract_upload_name(upload)
+    return normalized
 
 
 def _decode_upload_content(raw_content: str) -> bytes:
@@ -1770,6 +1886,87 @@ def _attach_join_request_uploads(docname: str, uploads: dict[str, dict]) -> dict
             updates[fieldname] = file_url
 
     return updates
+
+
+def _repair_join_request_document_row(row: dict) -> dict[str, str]:
+    updates: dict[str, str] = {}
+    field_aliases = {
+        "high_school_document_name": "high_school_document_name",
+        "id_document_name": "id_document_name",
+        "personal_photo_name": "personal_photo_name",
+    }
+    for fieldname in field_aliases:
+        raw_value = row.get(fieldname)
+        text_value = _as_text(raw_value)
+        if not text_value:
+            continue
+        if text_value.startswith("/private/files/") or text_value.startswith("/files/"):
+            continue
+
+        parsed_upload = _parse_upload_dict(raw_value)
+        if isinstance(parsed_upload, dict):
+            try:
+                repaired = _attach_join_request_uploads(row.get("name"), {fieldname: parsed_upload}).get(fieldname)
+            except Exception:
+                repaired = ""
+            if repaired:
+                updates[fieldname] = repaired
+                continue
+
+        guessed_private = f"/private/files/{text_value}"
+        guessed_public = f"/files/{text_value}"
+        file_url = ""
+        if frappe.db.exists("File", {"file_url": guessed_private}):
+            file_url = guessed_private
+        elif frappe.db.exists("File", {"file_url": guessed_public}):
+            file_url = guessed_public
+        elif frappe.db.exists("File", {"file_name": text_value, "attached_to_name": row.get("name")}):
+            existing_url = frappe.db.get_value(
+                "File",
+                {"file_name": text_value, "attached_to_name": row.get("name")},
+                "file_url",
+            )
+            file_url = _as_text(existing_url)
+        else:
+            private_path = frappe.get_site_path("private", "files", text_value)
+            public_path = frappe.get_site_path("public", "files", text_value)
+            if os.path.exists(private_path):
+                file_url = guessed_private
+            elif os.path.exists(public_path):
+                file_url = guessed_public
+        if file_url:
+            updates[fieldname] = file_url
+
+    if updates and all(
+        [
+            updates.get("high_school_document_name") or _as_text(row.get("high_school_document_name")).startswith("/"),
+            updates.get("id_document_name") or _as_text(row.get("id_document_name")).startswith("/"),
+            updates.get("personal_photo_name") or _as_text(row.get("personal_photo_name")).startswith("/"),
+        ]
+    ):
+        updates["has_required_documents"] = 1
+    return updates
+
+
+def _parse_upload_dict(value):
+    if isinstance(value, dict):
+        return value
+    text = _as_text(value)
+    if not text:
+        return None
+    try:
+        parsed = frappe.parse_json(text)
+        if isinstance(parsed, dict):
+            return parsed
+    except Exception:
+        pass
+    try:
+        parsed = ast.literal_eval(text)
+        if isinstance(parsed, dict):
+            return parsed
+    except Exception:
+        return None
+    return None
 
 
 def _as_text(value, default: str = "") -> str:
