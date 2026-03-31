@@ -255,6 +255,19 @@ def resolve_login_identifier(identifier: str | None = None):
     user_by_email = frappe.db.get_value("User", {"email": raw}, "name")
     if user_by_email:
         return {"identifier": user_by_email}
+    # Local-part fallback (e.g., "instructor01" -> "instructor01@aau.edu.ye")
+    user_from_local_part = frappe.db.sql(
+        """
+        select name
+        from `tabUser`
+        where enabled = 1 and LOCATE('@', name) > 1 and SUBSTRING_INDEX(name, '@', 1) = %s
+        limit 1
+        """,
+        (raw,),
+        as_dict=True,
+    )
+    if user_from_local_part:
+        return {"identifier": _clean(user_from_local_part[0].get("name"))}
 
     # Student mapping: allow login by academic number (Student.name) or student_email_id.
     if frappe.db.exists("DocType", "Student"):
@@ -310,6 +323,14 @@ def resolve_login_identifier(identifier: str | None = None):
                 instructor_rows = frappe.get_all(
                     "Instructor",
                     filters={"employee": raw},
+                    fields=instructor_fields,
+                    limit_page_length=1,
+                    ignore_permissions=True,
+                )
+            if not instructor_rows and "instructor_name" in valid_cols:
+                instructor_rows = frappe.get_all(
+                    "Instructor",
+                    filters={"instructor_name": raw},
                     fields=instructor_fields,
                     limit_page_length=1,
                     ignore_permissions=True,
