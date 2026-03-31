@@ -2,6 +2,8 @@
 from __future__ import annotations
 
 from datetime import datetime
+import re
+import unicodedata
 
 import frappe
 from frappe.utils import get_datetime, today
@@ -345,6 +347,40 @@ def resolve_login_identifier(identifier: str | None = None):
                 user_from_email = frappe.db.get_value("User", {"email": mapped}, "name")
                 if user_from_email:
                     return {"identifier": user_from_email}
+
+        # Fuzzy instructor name/code matching to tolerate punctuation/spacing variants
+        normalized_raw = _normalize_login_key(raw)
+        if normalized_raw:
+            fuzzy_fields = ["name"]
+            if "instructor_name" in valid_cols:
+                fuzzy_fields.append("instructor_name")
+            if "employee" in valid_cols:
+                fuzzy_fields.append("employee")
+            if link_field and link_field not in fuzzy_fields:
+                fuzzy_fields.append(link_field)
+            fuzzy_rows = frappe.get_all(
+                "Instructor",
+                fields=fuzzy_fields,
+                ignore_permissions=True,
+                limit_page_length=0,
+            )
+            for row in fuzzy_rows:
+                candidates = {
+                    _normalize_login_key(row.get("name")),
+                    _normalize_login_key(row.get("instructor_name")),
+                    _normalize_login_key(row.get("employee")),
+                }
+                mapped_user = _clean(row.get(link_field)) if link_field else ""
+                if mapped_user:
+                    candidates.add(_normalize_login_key(mapped_user))
+                    candidates.add(_normalize_login_key(mapped_user.split("@")[0]))
+                if normalized_raw in {value for value in candidates if value}:
+                    if mapped_user and frappe.db.exists("User", mapped_user):
+                        return {"identifier": mapped_user}
+                    if mapped_user:
+                        user_from_email = frappe.db.get_value("User", {"email": mapped_user}, "name")
+                        if user_from_email:
+                            return {"identifier": user_from_email}
 
     return {"identifier": raw}
 
@@ -744,6 +780,27 @@ def get_admin_dashboard():
 
 def _normalize(value) -> str:
     return str(value or "").strip().lower()
+
+
+def _normalize_login_key(value) -> str:
+    text = _clean(value).lower()
+    if not text:
+        return ""
+    text = unicodedata.normalize("NFKD", text)
+    text = "".join(ch for ch in text if not unicodedata.combining(ch))
+    replacements = {
+        "أ": "ا",
+        "إ": "ا",
+        "آ": "ا",
+        "ة": "ه",
+        "ى": "ي",
+        "ؤ": "و",
+        "ئ": "ي",
+    }
+    for src, dst in replacements.items():
+        text = text.replace(src, dst)
+    text = re.sub(r"[^a-z0-9\u0600-\u06FF]+", "", text)
+    return text
 
 
 def _clean(value) -> str:
