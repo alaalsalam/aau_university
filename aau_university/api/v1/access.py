@@ -385,6 +385,38 @@ def resolve_login_identifier(identifier: str | None = None):
     return {"identifier": raw}
 
 
+@frappe.whitelist(allow_guest=True)
+@api_endpoint
+def portal_login(identifier: str | None = None, password: str | None = None):
+    """Login endpoint that resolves student/doctor identifiers before auth."""
+    payload = frappe._dict({})
+    payload.update(getattr(frappe.local, "form_dict", {}) or {})
+    if frappe.request:
+        try:
+            body = frappe.request.get_json(silent=True) or {}
+            if isinstance(body, dict):
+                payload.update(body)
+        except Exception:
+            pass
+    if isinstance(identifier, str) and identifier.strip():
+        payload["identifier"] = identifier
+    if isinstance(password, str) and password:
+        payload["password"] = password
+
+    raw_identifier = _clean(payload.get("identifier") or payload.get("username") or payload.get("usr"))
+    raw_password = str(payload.get("password") or payload.get("pwd") or "")
+    if not raw_identifier or not raw_password:
+        raise ApiError("VALIDATION_ERROR", "identifier and password are required", status_code=400)
+
+    resolved = resolve_login_identifier(raw_identifier).get("identifier") or raw_identifier
+    from frappe.auth import LoginManager
+
+    login_manager = LoginManager()
+    login_manager.authenticate(user=resolved, pwd=raw_password)
+    login_manager.post_login()
+    return {"message": "Logged In", "identifier": resolved, "user": frappe.session.user}
+
+
 @frappe.whitelist()
 @api_endpoint
 def list_users():

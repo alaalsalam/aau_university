@@ -183,6 +183,7 @@ def ensure_routes():
         Rule("/aau/profile", methods=["PUT"], endpoint=public.update_site_profile),
         Rule("/access/me", methods=["GET"], endpoint=access.get_current_access),
         Rule("/access/resolve-login", methods=["GET"], endpoint=access.resolve_login_identifier),
+        Rule("/access/login", methods=["POST"], endpoint=access.portal_login),
         Rule("/admin/dashboard", methods=["GET"], endpoint=access.get_admin_dashboard),
         # Users & roles
         Rule("/users", methods=["GET"], endpoint=access.list_users),
