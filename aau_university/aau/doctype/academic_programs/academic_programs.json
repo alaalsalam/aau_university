@@ -6,9 +6,21 @@
  "engine": "InnoDB",
  "field_order": [
   "program_name",
+  "name_ar",
+  "name_en",
+  "department_ar",
+  "department_en",
+  "id",
   "degree_type",
+  "admission_rate",
+  "high_school_type",
+  "high_school_type_en",
   "description",
+  "description_ar",
+  "description_en",
   "duration",
+  "study_years",
+  "image",
   "is_active",
   "column_break_ypdg",
   "main_section",
@@ -16,7 +28,7 @@
  ],
  "fields": [
   {
-   "description": "\u0627\u0633\u0645 \u0627\u0644\u0628\u0631\u0646\u0627\u0645\u062c",
+   "description": "اسم البرنامج",
    "fieldname": "program_name",
    "fieldtype": "Data",
    "in_list_view": 1,
@@ -24,27 +36,27 @@
    "reqd": 1
   },
   {
-   "description": "\u0646\u0648\u0639 \u0627\u0644\u062f\u0631\u062c\u0629 \u0627\u0644\u0639\u0644\u0645\u064a\u0629",
+   "description": "نوع الدرجة العلمية",
    "fieldname": "degree_type",
    "fieldtype": "Select",
    "label": "Degree Type",
    "options": "Diploma\nBachelor\nMaster\nPhD"
   },
   {
-   "description": "\u0648\u0635\u0641 \u0627\u0644\u0628\u0631\u0646\u0627\u0645\u062c",
+   "description": "وصف البرنامج",
    "fieldname": "description",
    "fieldtype": "Long Text",
    "label": "Description"
   },
   {
-   "description": "\u0645\u062f\u0629 \u0627\u0644\u062f\u0631\u0627\u0633\u0629",
+   "description": "مدة الدراسة",
    "fieldname": "duration",
    "fieldtype": "Data",
    "label": "Duration"
   },
   {
    "default": "0",
-   "description": "\u0645\u0641\u0639\u0644",
+   "description": "مفعل",
    "fieldname": "is_active",
    "fieldtype": "Check",
    "label": "Is Active"
@@ -59,13 +71,75 @@
    "label": "Main Section"
   },
   {
-   "description": "\u0627\u0644\u0643\u0644\u064a\u0629 \u0627\u0644\u062a\u0627\u0628\u0639\u0629",
+   "description": "الكلية التابعة",
    "fieldname": "college",
    "fieldtype": "Link",
    "in_list_view": 1,
    "label": "College",
    "options": "Colleges",
    "reqd": 1
+  },
+  {
+   "fieldname": "id",
+   "fieldtype": "Data",
+   "label": "ID",
+   "unique": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "name_ar",
+   "fieldtype": "Data",
+   "label": "Name (AR)"
+  },
+  {
+   "fieldname": "name_en",
+   "fieldtype": "Data",
+   "label": "Name (EN)"
+  },
+  {
+   "fieldname": "description_ar",
+   "fieldtype": "Long Text",
+   "label": "Description (AR)"
+  },
+  {
+   "fieldname": "description_en",
+   "fieldtype": "Long Text",
+   "label": "Description (EN)"
+  },
+  {
+   "fieldname": "department_ar",
+   "fieldtype": "Data",
+   "label": "Department (AR)"
+  },
+  {
+   "fieldname": "department_en",
+   "fieldtype": "Data",
+   "label": "Department (EN)"
+  },
+  {
+   "fieldname": "admission_rate",
+   "fieldtype": "Float",
+   "label": "Admission Rate"
+  },
+  {
+   "fieldname": "high_school_type",
+   "fieldtype": "Data",
+   "label": "High School Type"
+  },
+  {
+   "fieldname": "high_school_type_en",
+   "fieldtype": "Data",
+   "label": "High School Type (EN)"
+  },
+  {
+   "fieldname": "study_years",
+   "fieldtype": "Data",
+   "label": "Study Years"
+  },
+  {
+   "fieldname": "image",
+   "fieldtype": "Attach Image",
+   "label": "Image"
   }
  ],
  "grid_page_length": 50,
@@ -100,6 +174,24 @@
    "role": "AAU Content Manager",
    "share": 1,
    "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Instructor",
+   "share": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Academics User",
+   "share": 1
   }
  ],
  "row_format": "Dynamic",
