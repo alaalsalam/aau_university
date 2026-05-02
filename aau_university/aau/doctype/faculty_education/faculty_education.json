@@ -1,0 +1,29 @@
+{
+ "actions": [],
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "degree_ar",
+  "degree_en",
+  "institution_ar",
+  "institution_en",
+  "year"
+ ],
+ "fields": [
+  { "fieldname": "degree_ar", "fieldtype": "Data", "in_list_view": 1, "label": "Degree (AR)", "reqd": 1 },
+  { "fieldname": "degree_en", "fieldtype": "Data", "in_list_view": 1, "label": "Degree (EN)" },
+  { "fieldname": "institution_ar", "fieldtype": "Data", "in_list_view": 1, "label": "Institution (AR)" },
+  { "fieldname": "institution_en", "fieldtype": "Data", "in_list_view": 1, "label": "Institution (EN)" },
+  { "fieldname": "year", "fieldtype": "Data", "label": "Year" }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "module": "AAU",
+ "name": "Faculty Education",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
+

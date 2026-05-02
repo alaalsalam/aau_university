@@ -8,8 +8,10 @@
  "field_order": [
   "main_section",
   "department_name",
+  "department_name_en",
   "college",
   "description",
+  "description_en",
   "is_active"
  ],
  "fields": [
@@ -27,6 +29,11 @@
    "reqd": 1
   },
   {
+   "fieldname": "department_name_en",
+   "fieldtype": "Data",
+   "label": "Department Name (English)"
+  },
+  {
    "description": "\u0627\u0644\u0643\u0644\u064a\u0629 \u0627\u0644\u062a\u0627\u0628\u0639\u0629",
    "fieldname": "college",
    "fieldtype": "Link",
@@ -42,6 +49,11 @@
    "label": "Description"
   },
   {
+   "fieldname": "description_en",
+   "fieldtype": "Long Text",
+   "label": "Description (English)"
+  },
+  {
    "default": "0",
    "description": "\u062d\u0627\u0644\u0629 \u0627\u0644\u062a\u0641\u0639\u064a\u0644",
    "fieldname": "is_active",
@@ -52,7 +64,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-03-02 00:40:59.316680",
+ "modified": "2026-04-05 22:52:22.130079",
  "modified_by": "Administrator",
  "module": "AAU",
  "name": "Academic Departments",
@@ -67,6 +79,30 @@
    "read": 1,
    "report": 1,
    "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "AAU Site Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "AAU Coordinator",
    "share": 1,
    "write": 1
   }

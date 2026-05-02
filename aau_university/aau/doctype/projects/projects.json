@@ -13,6 +13,7 @@
   "title_en",
   "desc_ar",
   "desc_en",
+  "image",
   "details_ar",
   "details_en",
   "start_date",
@@ -68,6 +69,12 @@
    "fieldname": "desc_en",
    "fieldtype": "Long Text",
    "label": "Desc En"
+  },
+  {
+   "description": "\u0635\u0648\u0631\u0629 \u0627\u0644\u0645\u0634\u0631\u0648\u0639",
+   "fieldname": "image",
+   "fieldtype": "Attach Image",
+   "label": "Image"
   },
   {
    "description": "\u062a\u0641\u0627\u0635\u064a\u0644 \u0627\u0644\u0645\u0634\u0631\u0648\u0639 \u0628\u0627\u0644\u0639\u0631\u0628\u064a\u0629",
@@ -129,7 +136,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-03-15 04:25:20.046292",
+ "modified": "2026-04-03 10:53:44.756776",
  "modified_by": "Administrator",
  "module": "AAU",
  "name": "Projects",
@@ -156,6 +163,37 @@
    "read": 1,
    "report": 1,
    "role": "AAU Content Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "AAU Site Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "AAU Executive Manager"
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "AAU Editor",
    "share": 1,
    "write": 1
   }

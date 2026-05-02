@@ -21,6 +21,49 @@ from .resources import (
 )
 from .utils import ApiError, api_endpoint, ensure_uuid, now_ts, require_roles, to_camel
 
+STUDENT_AFFAIRS_DOCUMENTS = [
+    {
+        "id": "student-affairs-regulations",
+        "titleAr": "لائحة شؤون الطلاب",
+        "titleEn": "Student Affairs Regulations",
+        "href": "/docs/regulations.pdf",
+        "fileComingSoon": 1,
+        "displayOrder": 1,
+    },
+    {
+        "id": "supplementary-semester",
+        "titleAr": "الدوري التكميلي",
+        "titleEn": "Supplementary Semester",
+        "href": "/docs/supplementary.pdf",
+        "fileComingSoon": 1,
+        "displayOrder": 2,
+    },
+    {
+        "id": "grievance-form",
+        "titleAr": "استمارة تظلمات",
+        "titleEn": "Grievance Form",
+        "href": "/docs/grievance.pdf",
+        "fileComingSoon": 1,
+        "displayOrder": 3,
+    },
+    {
+        "id": "general-conduct",
+        "titleAr": "ضوابط وسلوكيات عامة",
+        "titleEn": "General Behavior Controls",
+        "href": "/docs/general_conduct.pdf",
+        "fileComingSoon": 1,
+        "displayOrder": 4,
+    },
+    {
+        "id": "exam-conduct",
+        "titleAr": "ضوابط وسلوكيات الامتحانات",
+        "titleEn": "Exam Behavior Controls",
+        "href": "/docs/exam_conduct.pdf",
+        "fileComingSoon": 1,
+        "displayOrder": 5,
+    },
+]
+
 
 @frappe.whitelist(allow_guest=True)
 @api_endpoint
@@ -68,6 +111,67 @@ def delete_contact_message(message_id: str):
     """Delete a contact message."""
     require_roles(ADMIN_ROLES)
     return delete_entity("contact_messages", message_id, by="id")
+
+
+@frappe.whitelist(allow_guest=True)
+@api_endpoint
+def create_email_request(**payload):
+    """Create an institutional email request."""
+    payload = _merge_request_payload(payload)
+    payload.setdefault("status", "pending")
+    payload.setdefault("created_at", now_ts())
+    payload.setdefault("id", ensure_uuid(payload.get("id")))
+
+    required_fields = ["name_ar", "name_en", "academic_id", "college", "level", "phone"]
+    missing_fields = [field for field in required_fields if not str(payload.get(field) or "").strip()]
+    if missing_fields:
+        raise ApiError(
+            "VALIDATION_ERROR",
+            "Missing required email request fields",
+            details={"missing": missing_fields},
+            status_code=400,
+        )
+
+    allowed_fields = {"id", "name_ar", "name_en", "academic_id", "college", "level", "phone", "status", "created_at"}
+    payload = frappe._dict({key: value for key, value in payload.items() if key in allowed_fields and value not in (None, "")})
+    created = create_entity("email_requests", payload, public=True)
+    doc_id = _as_text(created.get("id") or payload.get("id"))
+    if doc_id:
+        return get_entity("email_requests", doc_id, by="id", public=True), 201
+    return created, 201
+
+
+@frappe.whitelist()
+@api_endpoint
+def list_email_requests():
+    """List institutional email requests."""
+    require_roles(ADMIN_ROLES)
+    result = list_entities("email_requests", public=False)
+    return {"data": result["data"], "meta": result["meta"], "__meta__": True}
+
+
+@frappe.whitelist()
+@api_endpoint
+def get_email_request(request_id: str):
+    """Get an institutional email request by id."""
+    require_roles(ADMIN_ROLES)
+    return get_entity("email_requests", request_id, by="id", public=False)
+
+
+@frappe.whitelist()
+@api_endpoint
+def update_email_request_status(request_id: str, status: str):
+    """Update email request status."""
+    require_roles(ADMIN_ROLES)
+    return update_status("email_requests", request_id, "status", status)
+
+
+@frappe.whitelist()
+@api_endpoint
+def delete_email_request(request_id: str):
+    """Delete an institutional email request."""
+    require_roles(ADMIN_ROLES)
+    return delete_entity("email_requests", request_id, by="id")
 
 
 @frappe.whitelist(allow_guest=True)
@@ -608,6 +712,8 @@ def list_public_colleges(limit: int | None = None, page: int | None = None):
     order_by = ", ".join(sort_parts)
 
     fields = ["name", *sorted(db_fields)] if "name" not in db_fields else sorted(db_fields)
+    if "modified" not in fields:
+        fields.append("modified")
     rows = frappe.get_all(
         doctype,
         fields=fields,
@@ -648,6 +754,8 @@ def get_public_college(slug: str):
         filters["is_active"] = 1
 
     fields = ["name", *sorted(db_fields)] if "name" not in db_fields else sorted(db_fields)
+    if "modified" not in fields:
+        fields.append("modified")
     row = frappe.db.get_value(doctype, filters, fields, as_dict=True)
     if not row:
         fallback_filters = {"is_active": 1} if "is_active" in db_fields else {}
@@ -712,6 +820,77 @@ def get_public_page(slug: str):
 
 @frappe.whitelist(allow_guest=True)
 @api_endpoint
+def list_student_affairs_documents():
+    doctype = _first_existing_doctype(["Student Affairs Document"])
+    items = []
+
+    if doctype:
+        meta = frappe.get_meta(doctype)
+        db_fields = {
+            df.fieldname
+            for df in meta.fields
+            if df.fieldname and df.fieldtype not in {"Section Break", "Column Break", "Tab Break", "Fold", "HTML", "Button"}
+        }
+
+        fields_to_read = [
+            "name",
+            "id",
+            "title_ar",
+            "title_en",
+            "title",
+            "file_url",
+            "href",
+            "file_coming_soon",
+            "is_published",
+            "display_order",
+        ]
+        read_fields = [field for field in fields_to_read if field in db_fields or field == "name"]
+        filters = {}
+        if "is_published" in db_fields and frappe.session.user == "Guest":
+            filters["is_published"] = 1
+        order_by = "display_order asc, modified desc" if "display_order" in db_fields else "modified desc"
+        rows = frappe.get_all(doctype, filters=filters, fields=read_fields, order_by=order_by, ignore_permissions=True)
+
+        for row in rows:
+            href = _as_text(row.get("file_url") or row.get("href"))
+            file_coming_soon = row.get("file_coming_soon")
+            if file_coming_soon in (None, ""):
+                file_coming_soon = 0 if href else 1
+            items.append(
+                {
+                    "id": _as_text(row.get("id") or row.get("name")),
+                    "titleAr": _as_text(row.get("title_ar") or row.get("title")),
+                    "titleEn": _as_text(row.get("title_en") or row.get("title_ar") or row.get("title")),
+                    "href": href,
+                    "fileComingSoon": bool(file_coming_soon),
+                    "displayOrder": int(row.get("display_order") or 0),
+                }
+            )
+
+        items = [item for item in items if item.get("id") and (item.get("titleAr") or item.get("titleEn"))]
+
+    if not items:
+        items = [
+            {
+                "id": _as_text(item.get("id")),
+                "titleAr": _as_text(item.get("titleAr")),
+                "titleEn": _as_text(item.get("titleEn") or item.get("titleAr")),
+                "href": _as_text(item.get("href")),
+                "fileComingSoon": bool(item.get("fileComingSoon", True)),
+                "displayOrder": int(item.get("displayOrder") or 0),
+            }
+            for item in sorted(STUDENT_AFFAIRS_DOCUMENTS, key=lambda row: int(row.get("displayOrder") or 0))
+        ]
+
+    return {
+        "sectionTitleAr": "شؤون الطلاب",
+        "sectionTitleEn": "Student Affairs",
+        "items": items,
+    }
+
+
+@frappe.whitelist(allow_guest=True)
+@api_endpoint
 def get_public_menu(key: str):
     # WHY+WHAT: expose all navigation/footer links via one public menu endpoint keyed by menu type for low-risk dynamic header/footer management.
     doctype = _first_existing_doctype(["AAU Menu"])
@@ -763,6 +942,10 @@ def update_site_profile(**payload):
         "instagram": "instagram",
         "linkedin": "linkedin",
         "youtube": "youtube",
+        "footerBackgroundType": "footer_background_type",
+        "footerBackgroundImage": "footer_background_image",
+        "footerBackgroundVideo": "footer_background_video",
+        "footerBackgroundOverlayOpacity": "footer_background_overlay_opacity",
     }
 
     updates = {}
@@ -818,14 +1001,13 @@ def _get_home_sections() -> dict:
         if not source:
             return ""
         translations = get_all_translations(lang) or {}
-        return _as_text(translations.get(source), default=source)
+        return _as_text(translations.get(source))
 
     def _choose_en(explicit_en, ar_value, default_en: str = "") -> str:
         explicit = _text(explicit_en)
         if explicit:
             return explicit
-        fallback_ar = _text(ar_value)
-        translated = _translated(fallback_ar)
+        translated = _translated(_text(ar_value))
         if translated:
             return translated
         return _text(default_en)
@@ -840,6 +1022,10 @@ def _get_home_sections() -> dict:
         "descriptionAr": _text(row.get("hero_description_ar")),
         "descriptionEn": _choose_en(row.get("hero_description_en"), row.get("hero_description_ar")),
         "image": _text(row.get("hero_image")),
+        "backgroundType": _text(row.get("hero_background_type"), default="none"),
+        "backgroundImage": _text(row.get("hero_background_image")),
+        "backgroundVideo": _text(row.get("hero_background_video")),
+        "backgroundOverlayOpacity": row.get("hero_background_overlay_opacity"),
     }
 
     colleges_count = row.get("colleges_count")
@@ -956,7 +1142,6 @@ def _get_home_sections() -> dict:
                 _text(row.get("video_overlay_description_ar"), default="استكشف القاعات الدراسية والمعامل المجهزة بأحدث التقنيات."),
                 "Explore classrooms and laboratories equipped with the latest technologies.",
             ),
-            "videoUrl": _text(row.get("video_url")),
             "videoFile": _text(row.get("video_file")),
         },
         "contact": _section_content(
@@ -974,35 +1159,63 @@ def _get_home_sections() -> dict:
 def _build_site_profile_payload() -> dict:
     settings = _get_website_settings_payload()
     social_links = _get_social_links_from_menu()
+
+    def _preferred_en(en_value, ar_value, fallback: str = "") -> str:
+        en_text = _as_text(en_value)
+        if len(en_text.strip()) >= 4:
+            return en_text
+        translated = _translated_text(_as_text(ar_value))
+        return translated or fallback
+
     site_name_ar = _as_text(settings.get("site_name_ar") or settings.get("site_name") or settings.get("app_name"))
+    site_name_en = _as_text(settings.get("site_name_en") or settings.get("site_name") or settings.get("app_name"))
     site_description_ar = _as_text(settings.get("site_description_ar") or settings.get("about_short"))
     address_ar = _as_text(settings.get("address_ar") or settings.get("address"))
     return {
         "siteName": _as_text(settings.get("site_name") or settings.get("app_name") or site_name_ar),
         "siteNameAr": site_name_ar,
+        "siteNameEn": site_name_en,
         "siteDescriptionAr": site_description_ar,
-        "siteDescriptionEn": _as_text(settings.get("site_description_en") or settings.get("about_short_en") or _translated_text(site_description_ar)),
+        "siteDescriptionEn": _preferred_en(settings.get("site_description_en") or settings.get("about_short_en"), site_description_ar),
         "contactPhone": _as_text(settings.get("contact_phone") or settings.get("phone")),
         "contactEmail": _as_text(settings.get("contact_email") or settings.get("email")),
         "addressAr": address_ar,
-        "addressEn": _as_text(settings.get("address_en") or _translated_text(address_ar)),
+        "addressEn": _preferred_en(settings.get("address_en"), address_ar, "Sanaa, Yemen"),
         "mapLocation": _as_text(settings.get("map_location")),
+        "footerBackgroundType": _as_text(settings.get("footer_background_type"), default="none"),
+        "footerBackgroundImage": _as_text(settings.get("footer_background_image")),
+        "footerBackgroundVideo": _as_text(settings.get("footer_background_video")),
+        "footerBackgroundOverlayOpacity": settings.get("footer_background_overlay_opacity"),
         "socialLinks": social_links,
     }
 
 
 def _build_contact_page_payload() -> dict:
     settings = _get_website_settings_payload()
+    contact_settings = {}
+    if frappe.db.exists("DocType", "Contact Page Settings"):
+        try:
+            contact_settings = frappe.get_doc("Contact Page Settings", "Contact Page Settings").as_dict()
+        except Exception:
+            contact_settings = {}
+    source = contact_settings or settings
     profile = _build_site_profile_payload()
 
-    badge_ar = _as_text(settings.get("contact_page_badge_ar"), default="تواصل معنا")
-    title_ar = _as_text(settings.get("contact_page_title_ar"), default="نحن هنا للإجابة على استفساراتكم")
+    def _preferred_en(en_value, ar_value, fallback: str = "") -> str:
+        en_text = _as_text(en_value)
+        if len(en_text.strip()) >= 3:
+            return en_text
+        translated = _translated_text(_as_text(ar_value))
+        return translated or fallback
+
+    badge_ar = _as_text(source.get("contact_page_badge_ar"), default="تواصل معنا")
+    title_ar = _as_text(source.get("contact_page_title_ar"), default="نحن هنا للإجابة على استفساراتكم")
     description_ar = _as_text(
-        settings.get("contact_page_description_ar"),
+        source.get("contact_page_description_ar"),
         default="تواصل مع جامعة الجيل الجديد للاستفسار عن القبول والبرامج الأكاديمية والخدمات الطلابية.",
     )
-    form_title_ar = _as_text(settings.get("contact_form_title_ar"), default="أرسل رسالة")
-    social_title_ar = _as_text(settings.get("social_section_title_ar"), default="تابعنا على")
+    form_title_ar = _as_text(source.get("contact_form_title_ar"), default="أرسل رسالة")
+    social_title_ar = _as_text(source.get("social_section_title_ar"), default="تابعنا على")
 
     return {
         "pageHeader": {
@@ -1015,14 +1228,45 @@ def _build_contact_page_payload() -> dict:
         },
         "form": {
             "titleAr": form_title_ar,
-            "titleEn": _translated_text(form_title_ar, "en") or "Send a Message",
+            "titleEn": _preferred_en(source.get("contact_form_title_en"), form_title_ar, "Send a Message"),
+            "nameLabelAr": _as_text(source.get("contact_form_name_label_ar"), default="الاسم"),
+            "nameLabelEn": _preferred_en(source.get("contact_form_name_label_en"), source.get("contact_form_name_label_ar"), "Name"),
+            "namePlaceholderAr": _as_text(source.get("contact_form_name_placeholder_ar"), default="أدخل اسمك"),
+            "namePlaceholderEn": _preferred_en(source.get("contact_form_name_placeholder_en"), source.get("contact_form_name_placeholder_ar"), "Enter your name"),
+            "emailLabelAr": _as_text(source.get("contact_form_email_label_ar"), default="البريد الإلكتروني"),
+            "emailLabelEn": _preferred_en(source.get("contact_form_email_label_en"), source.get("contact_form_email_label_ar"), "Email"),
+            "emailPlaceholderAr": _as_text(source.get("contact_form_email_placeholder_ar"), default="أدخل بريدك الإلكتروني"),
+            "emailPlaceholderEn": _preferred_en(source.get("contact_form_email_placeholder_en"), source.get("contact_form_email_placeholder_ar"), "Enter your email"),
+            "subjectLabelAr": _as_text(source.get("contact_form_subject_label_ar"), default="الموضوع"),
+            "subjectLabelEn": _preferred_en(source.get("contact_form_subject_label_en"), source.get("contact_form_subject_label_ar"), "Subject"),
+            "subjectPlaceholderAr": _as_text(source.get("contact_form_subject_placeholder_ar"), default="أدخل موضوع الرسالة"),
+            "subjectPlaceholderEn": _preferred_en(source.get("contact_form_subject_placeholder_en"), source.get("contact_form_subject_placeholder_ar"), "Enter message subject"),
+            "messageLabelAr": _as_text(source.get("contact_form_message_label_ar"), default="الرسالة"),
+            "messageLabelEn": _preferred_en(source.get("contact_form_message_label_en"), source.get("contact_form_message_label_ar"), "Message"),
+            "messagePlaceholderAr": _as_text(source.get("contact_form_message_placeholder_ar"), default="اكتب رسالتك هنا"),
+            "messagePlaceholderEn": _preferred_en(source.get("contact_form_message_placeholder_en"), source.get("contact_form_message_placeholder_ar"), "Write your message here"),
+            "submitTextAr": _as_text(source.get("contact_form_submit_text_ar"), default="إرسال الرسالة"),
+            "submitTextEn": _preferred_en(source.get("contact_form_submit_text_en"), source.get("contact_form_submit_text_ar"), "Send Message"),
         },
         "social": {
             "titleAr": social_title_ar,
             "titleEn": _translated_text(social_title_ar, "en") or "Follow Us",
         },
-        "siteProfile": profile,
-        "meta": {"generated_at": now_ts(), "source": "Website Settings"},
+        "siteProfile": {
+            **profile,
+            "contactPhone": _as_text(source.get("contact_phone") or settings.get("contact_phone") or settings.get("phone")),
+            "contactEmail": _as_text(source.get("contact_email") or settings.get("contact_email") or settings.get("email")),
+            "addressAr": _as_text(source.get("address_ar") or settings.get("address_ar") or settings.get("address")),
+            "addressEn": _preferred_en(source.get("address_en"), source.get("address_ar") or settings.get("address_ar") or settings.get("address"), "Sanaa, Yemen"),
+            "mapLocation": _as_text(source.get("map_location") or settings.get("map_location")),
+            "phoneLabelAr": _as_text(source.get("contact_phone_label_ar"), default="الهاتف"),
+            "phoneLabelEn": _preferred_en(source.get("contact_phone_label_en"), source.get("contact_phone_label_ar"), "Phone"),
+            "emailLabelAr": _as_text(source.get("contact_email_label_ar"), default="البريد الإلكتروني"),
+            "emailLabelEn": _preferred_en(source.get("contact_email_label_en"), source.get("contact_email_label_ar"), "Email"),
+            "addressLabelAr": _as_text(source.get("contact_address_label_ar"), default="العنوان"),
+            "addressLabelEn": _preferred_en(source.get("contact_address_label_en"), source.get("contact_address_label_ar"), "Address"),
+        },
+        "meta": {"generated_at": now_ts(), "source": "Contact Page Settings" if contact_settings else "Website Settings"},
     }
 
 
@@ -1041,13 +1285,14 @@ def _build_about_page_payload() -> dict:
 
     def _translated(value: str, fallback: str = "") -> str:
         translated = _translated_text(value)
-        return translated or fallback or value
+        return translated or fallback
 
     def _choose_en(en_value, ar_value, fallback: str = "") -> str:
         en_text = _as_text(en_value)
         if en_text:
             return en_text
-        return _translated(_as_text(ar_value), fallback)
+        translated = _translated(_as_text(ar_value), fallback)
+        return translated or ""
 
     page_badge_ar = _as_text(row.get("page_badge_ar"), default="تعرف علينا")
     page_title_ar = _as_text(row.get("page_title_ar"), default="عن جامعة الجيل الجديد")
@@ -1256,6 +1501,7 @@ def _list_home_events(limit: int) -> list[dict]:
         "slug",
         "title",
         "event_title",
+        "event_title_en",
         "title_ar",
         "title_en",
         "description",
@@ -1376,8 +1622,6 @@ def _list_home_colleges(limit: int) -> list[dict]:
         "mission_en",
         "goals_ar",
         "goals_en",
-        "admission_requirements_ar",
-        "admission_requirements_en",
         "icon",
         "image",
         "display_order",
@@ -1465,7 +1709,7 @@ def _list_home_campus_life(limit: int) -> list[dict]:
         return []
 
     available = _selectable_fields(doctype)
-    desired = ["name", "title", "content", "image", "display_order", "is_published"]
+    desired = ["name", "title", "title_en", "content", "content_en", "image", "display_order", "is_published"]
     fields = [field for field in desired if field in available]
     filters = {"is_published": 1} if "is_published" in available else {}
     order_by = "display_order asc, modified desc" if "display_order" in available else "modified desc"
@@ -1603,6 +1847,7 @@ def _get_website_settings_payload() -> dict:
     candidate_fields = [
         "site_name",
         "site_name_ar",
+        "site_name_en",
         "site_description_ar",
         "site_description_en",
         "about_short",
@@ -1626,6 +1871,10 @@ def _get_website_settings_payload() -> dict:
         "instagram",
         "linkedin",
         "youtube",
+        "footer_background_type",
+        "footer_background_image",
+        "footer_background_video",
+        "footer_background_overlay_opacity",
     ]
     available = [field for field in candidate_fields if meta.get_field(field)]
     if not available:
@@ -1992,14 +2241,18 @@ def _preferred_ar_text(primary_value, fallback_value) -> str:
 
 def _serialize_news_item(row: dict) -> dict:
     slug = _as_text(row.get("slug")) or _slugify_news_value(
-        row.get("title_en") or row.get("title_ar") or row.get("title")
+        row.get("title_en") or row.get("title") or row.get("title_ar")
     )
-    title_ar = _as_text(row.get("title_ar") or row.get("title"))
-    title_en = _as_text(row.get("title_en") or _translated_text(title_ar) or row.get("title") or title_ar)
-    description_ar = _as_text(row.get("description_ar") or row.get("summary"))
-    description_en = _as_text(row.get("description_en") or _translated_text(description_ar) or row.get("summary") or description_ar)
-    content_ar = _as_text(row.get("content_ar") or row.get("content"))
-    content_en = _as_text(row.get("content_en") or _translated_text(content_ar) or row.get("content") or content_ar)
+    title_ar = _as_text(row.get("title") or row.get("title_ar"))
+    title_en = _as_text(row.get("title_en") or _translated_text(title_ar) or row.get("title") or row.get("title_ar") or title_ar)
+    description_ar = _as_text(row.get("summary") or row.get("description_ar"))
+    description_en = _as_text(
+        row.get("description_en") or _translated_text(description_ar) or row.get("summary") or row.get("description_ar") or description_ar
+    )
+    content_ar = _as_text(row.get("content") or row.get("content_ar"))
+    content_en = _as_text(
+        row.get("content_en") or _translated_text(content_ar) or row.get("content") or row.get("content_ar") or content_ar
+    )
     image = _as_text(row.get("image") or row.get("featured_image"))
     date = row.get("date") or row.get("publish_date")
     raw_tags = row.get("tags")
@@ -2047,16 +2300,18 @@ def _serialize_faq_item(row: dict) -> dict:
 def _serialize_campus_life_item(row: dict) -> dict:
     title_ar = _as_text(row.get("title"))
     content_ar = _as_text(row.get("content"))
+    title_en = _as_text(row.get("title_en"), default=_translated_text(title_ar))
+    content_en = _as_text(row.get("content_en"), default=_translated_text(content_ar))
     slug = _as_text(row.get("name")) or _slugify_news_value(title_ar)
     return {
         "id": slug,
         "slug": slug,
         "titleAr": title_ar,
-        "titleEn": _translated_text(title_ar),
+        "titleEn": title_en,
         "descriptionAr": content_ar,
-        "descriptionEn": _translated_text(content_ar),
+        "descriptionEn": content_en,
         "contentAr": content_ar,
-        "contentEn": _translated_text(content_ar),
+        "contentEn": content_en,
         "category": "",
         "image": _as_text(row.get("image")),
     }
@@ -2075,6 +2330,7 @@ def _serialize_project_item(row: dict) -> dict:
         "descEn": _as_text(row.get("desc_en"), default=_translated_text(desc_ar)),
         "detailsAr": details_ar,
         "detailsEn": _as_text(row.get("details_en"), default=_translated_text(details_ar)),
+        "image": _as_text(row.get("image")),
         "students": [],
         "progress": row.get("progress"),
         "year": row.get("year"),
@@ -2091,7 +2347,7 @@ def _translated_text(value: str, lang: str = "en") -> str:
     if not source:
         return ""
     translations = get_all_translations(lang) or {}
-    return _as_text(translations.get(source), default=source)
+    return _as_text(translations.get(source))
 
 
 def _slugify_news_value(value: str | None) -> str:
@@ -2104,23 +2360,24 @@ def _slugify_news_value(value: str | None) -> str:
 
 def _serialize_event_item(row: dict) -> dict:
     slug = _as_text(row.get("slug")) or _slugify_news_value(
-        row.get("title_en")
+        row.get("event_title_en")
+        or row.get("title_en")
         or row.get("title_ar")
         or row.get("event_title")
         or row.get("title")
     )
     title_ar = _as_text(row.get("title_ar") or row.get("title") or row.get("event_title"))
-    title_en = _as_text(row.get("title_en") or _translated_text(title_ar) or row.get("title") or row.get("event_title") or title_ar)
+    title_en = _as_text(row.get("event_title_en") or row.get("title_en"))
     description_ar = _preferred_ar_text(row.get("description_ar"), row.get("description"))
-    description_en = _as_text(row.get("description_en") or _translated_text(description_ar) or row.get("description") or description_ar)
+    description_en = _as_text(row.get("description_en"))
     content_ar = _as_text(row.get("content_ar") or row.get("content") or description_ar)
-    content_en = _as_text(row.get("content_en") or _translated_text(content_ar) or row.get("content") or content_ar)
+    content_en = _as_text(row.get("content_en"))
     date = row.get("date") or row.get("event_date")
     end_date = row.get("end_date")
     location_ar = _as_text(row.get("location_ar") or row.get("location"))
-    location_en = _as_text(row.get("location_en") or _translated_text(location_ar) or row.get("location") or location_ar)
+    location_en = _as_text(row.get("location_en"))
     organizer_ar = _as_text(row.get("organizer_ar") or row.get("organizer"))
-    organizer_en = _as_text(row.get("organizer_en") or _translated_text(organizer_ar) or row.get("organizer") or organizer_ar)
+    organizer_en = _as_text(row.get("organizer_en"))
     raw_tags = row.get("tags")
     if isinstance(raw_tags, str):
         tags = [part.strip() for part in raw_tags.split(",") if part.strip()]
@@ -2176,13 +2433,24 @@ def _serialize_college_item(row: dict) -> dict:
     quality_ar = _as_text(row.get("quality_ar"))
     values_ar = _as_text(row.get("values_ar"))
     strategy_ar = _as_text(row.get("strategy_ar"))
-    admission_requirements_ar = _as_text(row.get("admission_requirements_ar"))
+    dean_name_ar = _as_text(row.get("dean_name_ar") or row.get("dean_name"))
+    dean_name_en = _as_text(row.get("dean_name_en"))
+    department_head_name_ar = _as_text(row.get("department_head_name"))
+    department_head_name_en = _as_text(row.get("department_head_name_en"))
+    college_news = _list_college_news(row)
 
     return {
         "id": row.get("id") or slug or row.get("name"),
         "slug": slug,
+        "updatedAt": _as_text(row.get("modified")),
         "nameAr": name_ar,
         "nameEn": name_en,
+        "deanName": dean_name_ar,
+        "deanNameEn": dean_name_en,
+        "deanImage": _as_text(row.get("dean_image")),
+        "departmentHeadName": department_head_name_ar,
+        "departmentHeadNameEn": department_head_name_en,
+        "departmentHeadImage": _as_text(row.get("department_head_image")),
         "descriptionAr": description_ar,
         "descriptionEn": description_en,
         "visionAr": vision_ar,
@@ -2197,15 +2465,105 @@ def _serialize_college_item(row: dict) -> dict:
         "valuesEn": _as_text(row.get("values_en") or _translated_text(values_ar)),
         "strategyAr": strategy_ar,
         "strategyEn": _as_text(row.get("strategy_en") or _translated_text(strategy_ar)),
-        "admissionRequirementsAr": admission_requirements_ar,
-        "admissionRequirementsEn": _as_text(row.get("admission_requirements_en") or _translated_text(admission_requirements_ar)),
         "icon": _as_text(row.get("icon")),
         "image": _as_text(row.get("image")),
+        "backgroundImage": _as_text(row.get("background_image") or row.get("image")),
         "programs": programs,
         "programsCount": programs_count,
         "departmentsCount": departments_count,
         "facultyCount": faculty_count,
+        "news": college_news,
     }
+
+def _list_college_news(college_row: dict) -> list[dict]:
+    doctype = _first_existing_doctype(["News"])
+    if not doctype:
+        return []
+
+    available = _selectable_fields(doctype)
+    has_college_link = "college" in available
+
+    college_docname = _as_text(college_row.get("name"))
+
+    fields = [
+        field
+        for field in [
+            "name",
+            "slug",
+            "title",
+            "title_ar",
+            "title_en",
+            "summary",
+            "summary_en",
+            "description_ar",
+            "description_en",
+            "date",
+            "publish_date",
+            "featured_image",
+            "image",
+            "is_published",
+            "display_order",
+            "college",
+        ]
+        if field in available
+    ]
+
+    filters = {}
+    if has_college_link and college_docname:
+        filters["college"] = college_docname
+    if "is_published" in available:
+        filters["is_published"] = 1
+
+    order_by = "date desc, publish_date desc, modified desc"
+    if "display_order" in available:
+        order_by = "display_order asc, date desc, publish_date desc, modified desc"
+
+    rows = frappe.get_all(
+        doctype,
+        filters=filters,
+        fields=fields,
+        order_by=order_by,
+        limit_page_length=6,
+        ignore_permissions=True,
+    )
+
+    # Fallback: keep college section populated with latest published news
+    # when no direct college mapping exists yet.
+    if not rows:
+        fallback_filters = {}
+        if "is_published" in available:
+            fallback_filters["is_published"] = 1
+        rows = frappe.get_all(
+            doctype,
+            filters=fallback_filters,
+            fields=fields,
+            order_by=order_by,
+            limit_page_length=3,
+            ignore_permissions=True,
+        )
+
+    items = []
+    for row in rows:
+        title_ar = _as_text(row.get("title") or row.get("title_ar"))
+        title_en = _as_text(row.get("title_en") or _translated_text(title_ar))
+        desc_ar = _as_text(row.get("summary") or row.get("description_ar"))
+        desc_en = _as_text(row.get("summary_en") or row.get("description_en") or _translated_text(desc_ar))
+        slug = _as_text(row.get("slug")) or _slugify_news_value(title_en or title_ar or row.get("name"))
+        date_value = row.get("date") or row.get("publish_date")
+        image_value = _as_text(row.get("featured_image") or row.get("image"))
+        items.append(
+            {
+                "id": row.get("name") or slug,
+                "slug": slug,
+                "titleAr": title_ar,
+                "titleEn": title_en,
+                "descAr": desc_ar,
+                "descEn": desc_en,
+                "date": str(date_value)[:10] if date_value else "",
+                "image": image_value,
+            }
+        )
+    return items
 
 
 def _get_college_programs_from_doctype(college_row: dict) -> list[dict]:
@@ -2238,10 +2596,20 @@ def _get_college_programs_from_doctype(college_row: dict) -> list[dict]:
         "high_school_type",
         "high_school_type_en",
         "study_years",
+        "study_years_en",
         "duration",
+        "duration_en",
         "description",
         "description_ar",
         "description_en",
+        "objectives_ar",
+        "objectives_en",
+        "career_prospects_ar",
+        "career_prospects_en",
+        "application_steps_ar",
+        "application_steps_en",
+        "why_program_ar",
+        "why_program_en",
         "image",
         "college",
         "degree_type",
@@ -2265,6 +2633,14 @@ def _get_college_programs_from_doctype(college_row: dict) -> list[dict]:
     )
     programs = []
     for program in rows:
+        objectives_ar = _split_text_lines(program.get("objectives_ar"))
+        objectives_en = _split_text_lines(program.get("objectives_en"))
+        career_ar = _split_text_lines(program.get("career_prospects_ar"))
+        career_en = _split_text_lines(program.get("career_prospects_en"))
+        application_steps_ar = _split_text_lines(program.get("application_steps_ar"))
+        application_steps_en = _split_text_lines(program.get("application_steps_en"))
+        why_program_ar = _split_text_lines(program.get("why_program_ar"))
+        why_program_en = _split_text_lines(program.get("why_program_en"))
         programs.append(
             {
                 "id": program.get("id") or program.get("name"),
@@ -2276,19 +2652,124 @@ def _get_college_programs_from_doctype(college_row: dict) -> list[dict]:
                 "highSchoolType": program.get("high_school_type") or "علمي",
                 "highSchoolTypeEn": program.get("high_school_type_en") or "Scientific",
                 "studyYears": str(program.get("study_years") or program.get("duration") or ""),
+                "studyYearsEn": str(program.get("study_years_en") or program.get("duration_en") or program.get("study_years") or program.get("duration") or ""),
                 "degreeType": _as_text(program.get("degree_type")),
                 "image": program.get("image"),
+                "updatedAt": _as_text(program.get("modified")),
                 "descriptionAr": program.get("description_ar") or program.get("description") or "",
                 "descriptionEn": program.get("description_en") or _translated_text(program.get("description_ar") or "") or program.get("description") or "",
-                "objectives": [],
+                "objectives": _merge_program_objectives(objectives_ar, objectives_en),
                 "studyPlan": [],
-                "careerProspectsAr": [],
-                "careerProspectsEn": [],
-                "facultyMembers": [],
+                "careerProspectsAr": career_ar,
+                "careerProspectsEn": _ensure_parallel_text_list(career_ar, career_en),
+                "applicationStepsAr": application_steps_ar,
+                "applicationStepsEn": _ensure_parallel_text_list(application_steps_ar, application_steps_en),
+                "whyProgramAr": why_program_ar,
+                "whyProgramEn": _ensure_parallel_text_list(why_program_ar, why_program_en),
+                "facultyMembers": _get_program_faculty_members(program),
             }
         )
     cache[college_key] = programs
     return programs
+
+
+def _split_text_lines(value) -> list[str]:
+    text = _as_text(value)
+    if not text:
+        return []
+    normalized = re.sub(r"[;,،]+", "\n", text)
+    return [line.strip() for line in normalized.splitlines() if line.strip()]
+
+
+def _merge_program_objectives(objectives_ar: list[str], objectives_en: list[str]) -> list[dict]:
+    size = max(len(objectives_ar), len(objectives_en))
+    result = []
+    for index in range(size):
+        text_ar = objectives_ar[index] if index < len(objectives_ar) else ""
+        text_en = objectives_en[index] if index < len(objectives_en) else ""
+        if not text_en and text_ar:
+            text_en = _translated_text(text_ar)
+        if not text_ar and text_en:
+            text_ar = text_en
+        if not text_ar and not text_en:
+            continue
+        result.append(
+            {
+                "id": f"objective-{index + 1}",
+                "textAr": text_ar,
+                "textEn": text_en,
+            }
+        )
+    return result
+
+
+def _ensure_parallel_text_list(primary: list[str], secondary: list[str]) -> list[str]:
+    if secondary:
+        return secondary
+    return [_translated_text(item) for item in primary]
+
+
+def _get_program_faculty_members(program_row: dict) -> list[dict]:
+    doctype = _first_existing_doctype(["Faculty Members"])
+    if not doctype:
+        return []
+
+    available = _selectable_fields(doctype)
+    if "linked_program" not in available:
+        return []
+
+    fields = [
+        field
+        for field in [
+            "name",
+            "full_name",
+            "full_name_en",
+            "academic_title",
+            "academic_title_en",
+            "department",
+            "biography",
+            "biography_en",
+            "photo",
+            "is_active",
+            "linked_program",
+        ]
+        if field in available
+    ]
+    if not fields:
+        return []
+
+    filters = {"linked_program": program_row.get("name")}
+    if "is_active" in available:
+        filters["is_active"] = 1
+
+    rows = frappe.get_all(
+        doctype,
+        filters=filters,
+        fields=fields,
+        order_by="modified desc",
+        ignore_permissions=True,
+        limit_page_length=24,
+    )
+
+    items = []
+    for row in rows:
+        name_ar = _as_text(row.get("full_name"))
+        degree_ar = _as_text(row.get("academic_title"))
+        department_ar = _as_text(row.get("department"))
+        items.append(
+            {
+                "id": _as_text(row.get("name")),
+                "nameAr": name_ar,
+                "nameEn": _as_text(row.get("full_name_en") or _translated_text(name_ar)),
+                "titleAr": degree_ar,
+                "titleEn": _as_text(row.get("academic_title_en") or _translated_text(degree_ar)),
+                "specializationAr": department_ar,
+                "specializationEn": _translated_text(department_ar),
+                "email": "",
+                "image": _as_text(row.get("photo")),
+            }
+        )
+    return items
 
 
 def _count_college_departments(college_row: dict, programs: list[dict]) -> int:

@@ -1,0 +1,29 @@
+{
+ "actions": [],
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "title_ar",
+  "title_en",
+  "journal",
+  "year",
+  "link"
+ ],
+ "fields": [
+  { "fieldname": "title_ar", "fieldtype": "Data", "in_list_view": 1, "label": "Title (AR)", "reqd": 1 },
+  { "fieldname": "title_en", "fieldtype": "Data", "in_list_view": 1, "label": "Title (EN)" },
+  { "fieldname": "journal", "fieldtype": "Data", "in_list_view": 1, "label": "Journal" },
+  { "fieldname": "year", "fieldtype": "Data", "in_list_view": 1, "label": "Year" },
+  { "fieldname": "link", "fieldtype": "Data", "label": "Link" }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "module": "AAU",
+ "name": "Faculty Publication",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
+

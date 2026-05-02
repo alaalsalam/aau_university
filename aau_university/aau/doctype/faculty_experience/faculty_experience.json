@@ -1,0 +1,30 @@
+{
+ "actions": [],
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "position_ar",
+  "position_en",
+  "organization_ar",
+  "organization_en",
+  "period_ar",
+  "period_en"
+ ],
+ "fields": [
+  { "fieldname": "position_ar", "fieldtype": "Data", "in_list_view": 1, "label": "Position (AR)", "reqd": 1 },
+  { "fieldname": "position_en", "fieldtype": "Data", "in_list_view": 1, "label": "Position (EN)" },
+  { "fieldname": "organization_ar", "fieldtype": "Data", "in_list_view": 1, "label": "Organization (AR)" },
+  { "fieldname": "organization_en", "fieldtype": "Data", "in_list_view": 1, "label": "Organization (EN)" },
+  { "fieldname": "period_ar", "fieldtype": "Data", "label": "Period (AR)" },
+  { "fieldname": "period_en", "fieldtype": "Data", "label": "Period (EN)" }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "module": "AAU",
+ "name": "Faculty Experience",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

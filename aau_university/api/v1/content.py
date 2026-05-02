@@ -21,7 +21,7 @@ def list_news():
     """List news items."""
     result = list_entities(
         "news",
-        search_fields=["title_ar", "title_en", "description_ar", "description_en"],
+        search_fields=["title", "summary", "content", "title_ar", "title_en", "description_ar", "description_en"],
         public=True,
     )
     return {"data": result["data"], "meta": result["meta"], "__meta__": True}
@@ -68,7 +68,7 @@ def search_news(q: str):
     frappe.form_dict["q"] = q
     result = list_entities(
         "news",
-        search_fields=["title_ar", "title_en", "description_ar", "description_en"],
+        search_fields=["title", "summary", "content", "title_ar", "title_en", "description_ar", "description_en"],
         public=True,
     )
     return {"data": result["data"], "meta": result["meta"], "__meta__": True}
@@ -108,7 +108,16 @@ def list_events():
     """List events."""
     result = list_entities(
         "events",
-        search_fields=["title_ar", "title_en", "description_ar", "description_en"],
+        search_fields=[
+            "event_title",
+            "event_title_en",
+            "description",
+            "description_en",
+            "location",
+            "location_en",
+            "organizer",
+            "organizer_en",
+        ],
         public=True,
     )
     return {"data": result["data"], "meta": result["meta"], "__meta__": True}
@@ -317,8 +326,10 @@ def _serialize_center_row(doc) -> dict:
     desc_ar = _as_text(doc.get("desc_ar"))
     title_en = _as_text(doc.get("title_en"), default=_translated_text(title_ar))
     desc_en = _as_text(doc.get("desc_en"), default=_translated_text(desc_ar))
-    services = _serialize_center_items(doc.get("services") or [])
-    programs = _serialize_center_items(doc.get("programs") or [])
+    services = _serialize_center_items(doc.get("services"), doc.get("services_en"))
+    programs = _serialize_center_items(doc.get("programs"), doc.get("programs_en"))
+    location_ar = _as_text(doc.get("location"))
+    location_en = _as_text(doc.get("location_en"), default=_translated_text(location_ar))
     identifier = _as_text(doc.get("id"), default=doc.name)
 
     return {
@@ -330,29 +341,48 @@ def _serialize_center_row(doc) -> dict:
         "services": services,
         "programs": programs,
         "image": _as_text(doc.get("image")),
-        "location": _as_text(doc.get("location")),
+        "locationAr": location_ar,
+        "locationEn": location_en,
+        "location": location_ar,
         "phone": _as_text(doc.get("phone")),
         "email": _as_text(doc.get("email")),
     }
 
 
-def _serialize_center_items(rows) -> list[dict]:
+def _split_center_values(rows) -> list[str]:
+    if rows is None:
+        return []
     if isinstance(rows, str):
-        rows = [line.strip() for line in rows.splitlines() if line and line.strip()]
+        return [line.strip() for line in rows.splitlines() if line and line.strip()]
+    if isinstance(rows, (list, tuple)):
+        values: list[str] = []
+        for row in rows:
+            if isinstance(row, dict):
+                raw_value = row.get("value")
+            elif isinstance(row, str):
+                raw_value = row
+            else:
+                raw_value = getattr(row, "value", None)
+            text_value = _as_text(raw_value)
+            if text_value:
+                values.append(text_value)
+        return values
+    return []
 
+
+def _serialize_center_items(rows, rows_en=None) -> list[dict]:
+    ar_values = _split_center_values(rows)
+    en_values = _split_center_values(rows_en)
+    total = max(len(ar_values), len(en_values))
     serialized = []
-    for row in rows:
-        if isinstance(row, dict):
-            raw_value = row.get("value")
-        elif isinstance(row, str):
-            raw_value = row
-        else:
-            raw_value = row.value
-
-        value_ar = _as_text(raw_value)
+    for idx in range(total):
+        value_ar = _as_text(ar_values[idx]) if idx < len(ar_values) else ""
+        value_en = _as_text(en_values[idx]) if idx < len(en_values) else ""
+        if not value_ar and value_en:
+            value_ar = value_en
         if not value_ar:
             continue
-        serialized.append({"ar": value_ar, "en": _translated_text(value_ar)})
+        serialized.append({"ar": value_ar, "en": value_en or _translated_text(value_ar)})
     return serialized
 
 
@@ -367,7 +397,8 @@ def _normalize_center_payload(payload: dict, is_update: bool = False) -> dict:
     desc_en = _payload_value(payload, "descEn", "desc_en")
     center_id = _payload_value(payload, "id")
     image = _payload_value(payload, "image")
-    location = _payload_value(payload, "location")
+    location_ar = _payload_value(payload, "locationAr", "location", "location_ar")
+    location_en = _payload_value(payload, "locationEn", "location_en")
     phone = _payload_value(payload, "phone")
     email = _payload_value(payload, "email")
     display_order = payload.get("display_order", payload.get("displayOrder"))
@@ -385,8 +416,10 @@ def _normalize_center_payload(payload: dict, is_update: bool = False) -> dict:
         normalized["id"] = center_id
     if image:
         normalized["image"] = image
-    if location:
-        normalized["location"] = location
+    if location_ar:
+        normalized["location"] = location_ar
+    if location_en:
+        normalized["location_en"] = location_en
     if phone:
         normalized["phone"] = phone
     if email:
@@ -401,21 +434,34 @@ def _normalize_center_payload(payload: dict, is_update: bool = False) -> dict:
         normalized["services"] = [{"value": _payload_list_value(item)} for item in services if _payload_list_value(item)]
     elif isinstance(services, str) and services.strip():
         normalized["services"] = services.strip()
+    services_en = payload.get("servicesEn", payload.get("services_en"))
+    if isinstance(services_en, list):
+        normalized["services_en"] = [{"value": _payload_list_value(item, language="en")} for item in services_en if _payload_list_value(item, language="en")]
+    elif isinstance(services_en, str) and services_en.strip():
+        normalized["services_en"] = services_en.strip()
 
     programs = payload.get("programs")
     if isinstance(programs, list):
         normalized["programs"] = [{"value": _payload_list_value(item)} for item in programs if _payload_list_value(item)]
     elif isinstance(programs, str) and programs.strip():
         normalized["programs"] = programs.strip()
+    programs_en = payload.get("programsEn", payload.get("programs_en"))
+    if isinstance(programs_en, list):
+        normalized["programs_en"] = [{"value": _payload_list_value(item, language="en")} for item in programs_en if _payload_list_value(item, language="en")]
+    elif isinstance(programs_en, str) and programs_en.strip():
+        normalized["programs_en"] = programs_en.strip()
 
     if not is_update and not normalized.get("title_ar"):
         raise ApiError("VALIDATION_ERROR", "Center titleAr is required", status_code=400)
     return normalized
 
 
-def _payload_list_value(item) -> str:
+def _payload_list_value(item, language: str = "ar") -> str:
     if isinstance(item, dict):
-        for key in ("ar", "value", "titleAr", "nameAr"):
+        keys = ("ar", "value", "titleAr", "nameAr")
+        if language == "en":
+            keys = ("en", "value", "titleEn", "nameEn", "ar", "titleAr", "nameAr")
+        for key in keys:
             value = item.get(key)
             if value is not None and str(value).strip():
                 return str(value).strip()
@@ -430,7 +476,33 @@ def _list_campus_life_payload() -> list[dict]:
     rows = frappe.get_all(
         "Campus Life",
         filters={"is_published": 1} if frappe.get_meta("Campus Life").get_field("is_published") else None,
-        fields=["name", "title", "content", "image", "display_order"],
+        fields=[
+            "name",
+            "title",
+            "title_en",
+            "content",
+            "content_en",
+            "image",
+            "display_order",
+            "sidebar_title_ar",
+            "sidebar_title_en",
+            "highlights_title_ar",
+            "highlights_title_en",
+            "highlight_1_ar",
+            "highlight_1_en",
+            "highlight_2_ar",
+            "highlight_2_en",
+            "highlight_3_ar",
+            "highlight_3_en",
+            "stat_1_value",
+            "stat_1_label_ar",
+            "stat_1_label_en",
+            "stat_2_value",
+            "stat_2_label_ar",
+            "stat_2_label_en",
+            "sidebar_note_ar",
+            "sidebar_note_en",
+        ],
         order_by="display_order asc, modified desc, name asc",
         ignore_permissions=True,
     )
@@ -453,7 +525,7 @@ def _list_research_publications_payload() -> list[dict]:
     rows = frappe.get_all(
         "Research and Publications",
         filters=filters or None,
-        fields=["name", "title", "content", "image", "creation", "modified", "display_order"],
+        fields=["name", "title", "title_en", "content", "content_en", "image", "publish_date", "creation", "modified", "display_order"],
         order_by="display_order asc, creation desc, name asc",
         ignore_permissions=True,
     )
@@ -462,11 +534,11 @@ def _list_research_publications_payload() -> list[dict]:
 
 def _serialize_research_publication_row(row) -> dict:
     title_ar = _as_text(row.get("title"))
-    title_en = _translated_text(title_ar)
+    title_en = _as_text(row.get("title_en"), default=_translated_text(title_ar))
     content_ar = _as_text(row.get("content"))
-    content_en = _translated_text(content_ar)
-    created_on = row.get("creation") or row.get("modified")
-    publish_date = str(created_on.date()) if hasattr(created_on, "date") else _as_text(created_on)
+    content_en = _as_text(row.get("content_en"), default=_translated_text(content_ar))
+    publish_on = row.get("publish_date") or row.get("creation") or row.get("modified")
+    publish_date = str(publish_on.date()) if hasattr(publish_on, "date") else _as_text(publish_on)[:10]
 
     return {
         "id": _as_text(row.get("name")),
@@ -491,8 +563,8 @@ def _serialize_research_publication_row(row) -> dict:
 def _serialize_campus_life_row(row, used_slugs: set[str] | None = None) -> dict:
     title_ar = _as_text(row.get("title"))
     content_ar = _as_text(row.get("content"))
-    title_en = _translated_text(title_ar)
-    content_en = _translated_text(content_ar)
+    title_en = _as_text(row.get("title_en"), default=_translated_text(title_ar))
+    content_en = _as_text(row.get("content_en"), default=_translated_text(content_ar))
     category = _infer_campus_life_category(title_ar, content_ar)
 
     if used_slugs is None:
@@ -510,6 +582,24 @@ def _serialize_campus_life_row(row, used_slugs: set[str] | None = None) -> dict:
         "contentEn": content_en,
         "category": category,
         "image": row.get("image") or "",
+        "sidebarTitleAr": _as_text(row.get("sidebar_title_ar")),
+        "sidebarTitleEn": _as_text(row.get("sidebar_title_en")),
+        "highlightsTitleAr": _as_text(row.get("highlights_title_ar")),
+        "highlightsTitleEn": _as_text(row.get("highlights_title_en")),
+        "highlight1Ar": _as_text(row.get("highlight_1_ar")),
+        "highlight1En": _as_text(row.get("highlight_1_en")),
+        "highlight2Ar": _as_text(row.get("highlight_2_ar")),
+        "highlight2En": _as_text(row.get("highlight_2_en")),
+        "highlight3Ar": _as_text(row.get("highlight_3_ar")),
+        "highlight3En": _as_text(row.get("highlight_3_en")),
+        "stat1Value": int(row.get("stat_1_value") or 0),
+        "stat1LabelAr": _as_text(row.get("stat_1_label_ar")),
+        "stat1LabelEn": _as_text(row.get("stat_1_label_en")),
+        "stat2Value": int(row.get("stat_2_value") or 0),
+        "stat2LabelAr": _as_text(row.get("stat_2_label_ar")),
+        "stat2LabelEn": _as_text(row.get("stat_2_label_en")),
+        "sidebarNoteAr": _as_text(row.get("sidebar_note_ar")),
+        "sidebarNoteEn": _as_text(row.get("sidebar_note_en")),
         "displayOrder": int(row.get("display_order") or 0),
     }
 
@@ -554,6 +644,36 @@ def _slugify_value(value: str | None) -> str:
     return frappe.scrub(source).replace("_", "-").strip("-")
 
 
+def _normalize_public_project_lookup(value) -> str:
+    return _slugify_value(_as_text(value))
+
+
+def _public_project_slug(payload: dict | None) -> str:
+    row = payload or {}
+    return (
+        _normalize_public_project_lookup(row.get("slug"))
+        or _normalize_public_project_lookup(row.get("id"))
+        or _normalize_public_project_lookup(row.get("titleAr"))
+        or _normalize_public_project_lookup(row.get("titleEn"))
+        or _normalize_public_project_lookup(row.get("docname") or row.get("name"))
+    )
+
+
+def _normalize_public_project_row(payload: dict | None) -> dict | None:
+    if not payload:
+        return None
+
+    row = dict(payload)
+    slug = _public_project_slug(row)
+    if slug:
+        row["slug"] = slug
+
+    if not row.get("id"):
+        row["id"] = _as_text(row.get("docname") or row.get("name")) or slug
+
+    return row
+
+
 def _unique_slug(base_slug: str, fallback: str | None, used_slugs: set[str]) -> str:
     candidate = base_slug or _slugify_value(fallback) or "item"
     if candidate not in used_slugs:
@@ -579,7 +699,7 @@ def _translated_text(value: str, lang: str = "en") -> str:
     if not source:
         return ""
     translations = get_all_translations(lang) or {}
-    return _as_text(translations.get(source), default=source)
+    return _as_text(translations.get(source))
 
 
 def _as_text(value, default: str = "") -> str:
@@ -741,14 +861,30 @@ def delete_team_member(member_id: str):
 def list_projects():
     """List projects."""
     result = list_entities("projects", public=True)
-    return {"data": result["data"], "meta": result["meta"], "__meta__": True}
+    return {"data": [_normalize_public_project_row(item) for item in result["data"]], "meta": result["meta"], "__meta__": True}
 
 
 @frappe.whitelist(allow_guest=True)
 @api_endpoint
 def get_project(slug: str):
     """Get project by slug."""
-    return get_entity("projects", slug, by="slug", public=True)
+    try:
+        return _normalize_public_project_row(get_entity("projects", slug, by="slug", public=True))
+    except frappe.DoesNotExistError:
+        normalized_target = _normalize_public_project_lookup(slug)
+        result = list_entities("projects", public=True)
+        for item in result["data"]:
+            normalized = _normalize_public_project_row(item)
+            candidates = {
+                _normalize_public_project_lookup(normalized.get("slug")),
+                _normalize_public_project_lookup(normalized.get("id")),
+                _normalize_public_project_lookup(normalized.get("docname") or normalized.get("name")),
+                _normalize_public_project_lookup(normalized.get("titleAr")),
+                _normalize_public_project_lookup(normalized.get("titleEn")),
+            }
+            if normalized_target and normalized_target in candidates:
+                return normalized
+        raise
 
 
 @frappe.whitelist(allow_guest=True)
@@ -757,7 +893,7 @@ def list_projects_current():
     """List current projects."""
     frappe.form_dict["status"] = "current"
     result = list_entities("projects", public=True)
-    return {"data": result["data"], "meta": result["meta"], "__meta__": True}
+    return {"data": [_normalize_public_project_row(item) for item in result["data"]], "meta": result["meta"], "__meta__": True}
 
 
 @frappe.whitelist(allow_guest=True)
@@ -766,7 +902,7 @@ def list_projects_completed():
     """List completed projects."""
     frappe.form_dict["status"] = "completed"
     result = list_entities("projects", public=True)
-    return {"data": result["data"], "meta": result["meta"], "__meta__": True}
+    return {"data": [_normalize_public_project_row(item) for item in result["data"]], "meta": result["meta"], "__meta__": True}
 
 
 @frappe.whitelist(allow_guest=True)
@@ -796,7 +932,16 @@ def update_project(project_id: str, **payload):
 @api_endpoint
 def delete_project(project_id: str):
     """Delete project."""
-    return delete_entity("projects", project_id, by="id")
+    # Keep deletion backward-compatible with legacy admin payloads that may pass slug/name instead of UUID id.
+    try:
+        return delete_entity("projects", project_id, by="id")
+    except frappe.DoesNotExistError:
+        if frappe.db.exists("Projects", {"slug": project_id}):
+            return delete_entity("projects", project_id, by="slug")
+        if frappe.db.exists("Projects", project_id):
+            frappe.delete_doc("Projects", project_id, ignore_permissions=True)
+            return {"deleted": True}
+        raise
 
 
 @frappe.whitelist(allow_guest=True)

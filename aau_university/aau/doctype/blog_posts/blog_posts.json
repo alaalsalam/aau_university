@@ -1,7 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
- "creation": "2026-03-02 00:38:58.514633",
+ "creation": "2026-04-01 10:36:48.480745",
  "doctype": "DocType",
  "editable_grid": 1,
  "engine": "InnoDB",
@@ -17,13 +17,15 @@
   "content_en",
   "author_name_ar",
   "author_name_en",
-  "author_avatar",
   "author_role_ar",
   "author_role_en",
+  "media_section",
+  "author_avatar",
   "category",
   "category_ar",
   "category_en",
   "image",
+  "background_image",
   "published_at",
   "read_time",
   "views",
@@ -63,7 +65,6 @@
    "description": "\u0639\u0646\u0648\u0627\u0646 \u0627\u0644\u0645\u0642\u0627\u0644 \u0628\u0627\u0644\u0625\u0646\u062c\u0644\u064a\u0632\u064a\u0629",
    "fieldname": "title_en",
    "fieldtype": "Data",
-   "hidden": 1,
    "label": "Title En"
   },
   {
@@ -76,7 +77,6 @@
    "description": "\u0627\u0644\u0645\u0644\u062e\u0635 \u0628\u0627\u0644\u0625\u0646\u062c\u0644\u064a\u0632\u064a\u0629",
    "fieldname": "excerpt_en",
    "fieldtype": "Long Text",
-   "hidden": 1,
    "label": "Excerpt En"
   },
   {
@@ -89,7 +89,6 @@
    "description": "\u0645\u062d\u062a\u0648\u0649 \u0627\u0644\u0645\u0642\u0627\u0644 \u0628\u0627\u0644\u0625\u0646\u062c\u0644\u064a\u0632\u064a\u0629",
    "fieldname": "content_en",
    "fieldtype": "Long Text",
-   "hidden": 1,
    "label": "Content En"
   },
   {
@@ -102,7 +101,6 @@
    "description": "\u0627\u0633\u0645 \u0627\u0644\u0643\u0627\u062a\u0628 \u0628\u0627\u0644\u0625\u0646\u062c\u0644\u064a\u0632\u064a\u0629",
    "fieldname": "author_name_en",
    "fieldtype": "Data",
-   "hidden": 1,
    "label": "Author Name En"
   },
   {
@@ -121,8 +119,12 @@
    "description": "\u0648\u0638\u064a\u0641\u0629 \u0627\u0644\u0643\u0627\u062a\u0628 \u0628\u0627\u0644\u0625\u0646\u062c\u0644\u064a\u0632\u064a\u0629",
    "fieldname": "author_role_en",
    "fieldtype": "Data",
-   "hidden": 1,
    "label": "Author Role En"
+  },
+  {
+   "fieldname": "media_section",
+   "fieldtype": "Section Break",
+   "label": "\u0627\u0644\u0648\u0633\u0627\u0626\u0637"
   },
   {
    "description": "\u0627\u0644\u0641\u0626\u0629",
@@ -140,7 +142,6 @@
    "description": "\u0627\u0644\u0641\u0626\u0629 \u0628\u0627\u0644\u0625\u0646\u062c\u0644\u064a\u0632\u064a\u0629",
    "fieldname": "category_en",
    "fieldtype": "Data",
-   "hidden": 1,
    "label": "Category En"
   },
   {
@@ -148,6 +149,12 @@
    "fieldname": "image",
    "fieldtype": "Attach Image",
    "label": "\u0635\u0648\u0631\u0629 \u0627\u0644\u0645\u0642\u0627\u0644"
+  },
+  {
+   "description": "\u0635\u0648\u0631\u0629 \u062e\u0644\u0641\u064a\u0629 \u062a\u0638\u0647\u0631 \u0641\u064a \u0631\u0623\u0633 \u0635\u0641\u062d\u0629 \u0627\u0644\u0645\u0642\u0627\u0644",
+   "fieldname": "background_image",
+   "fieldtype": "Attach Image",
+   "label": "\u0635\u0648\u0631\u0629 \u0627\u0644\u062e\u0644\u0641\u064a\u0629"
   },
   {
    "description": "\u062a\u0627\u0631\u064a\u062e \u0627\u0644\u0646\u0634\u0631",
@@ -190,7 +197,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-03-17 15:11:00.594980",
+ "modified": "2026-04-05 22:52:20.855343",
  "modified_by": "Administrator",
  "module": "AAU",
  "name": "Blog Posts",
@@ -217,6 +224,30 @@
    "read": 1,
    "report": 1,
    "role": "AAU Content Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "AAU Site Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "AAU Editor",
    "share": 1,
    "write": 1
   }

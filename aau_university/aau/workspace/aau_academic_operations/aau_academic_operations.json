@@ -88,7 +88,7 @@
    "type": "Link"
   }
  ],
- "modified": "2026-03-31 08:56:37.042165",
+ "modified": "2026-04-08 09:20:18.901965",
  "modified_by": "Administrator",
  "module": "AAU",
  "name": "AAU Academic Operations",
@@ -129,6 +129,9 @@
   },
   {
    "role": "AAU Site Manager"
+  },
+  {
+   "role": "AAU Coordinator"
   }
  ],
  "sequence_id": 74.0,

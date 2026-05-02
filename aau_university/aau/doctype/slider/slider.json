@@ -7,7 +7,9 @@
  "field_order": [
   "section_slider",
   "title",
+  "title_en",
   "subtitle",
+  "subtitle_en",
   "image",
   "link",
   "order",
@@ -17,39 +19,51 @@
   {
    "fieldname": "section_slider",
    "fieldtype": "Section Break",
-   "label": "\u0628\u064a\u0627\u0646\u0627\u062a \u0627\u0644\u0633\u0644\u0627\u064a\u062f\u0631"
+   "label": "بيانات السلايدر"
   },
   {
    "fieldname": "title",
    "fieldtype": "Data",
-   "label": "\u0627\u0644\u0639\u0646\u0648\u0627\u0646"
+   "label": "العنوان"
+  },
+  {
+   "fieldname": "title_en",
+   "fieldtype": "Data",
+   "insert_after": "title",
+   "label": "العنوان (English)"
   },
   {
    "fieldname": "subtitle",
    "fieldtype": "Small Text",
-   "label": "\u0627\u0644\u0639\u0646\u0648\u0627\u0646 \u0627\u0644\u0641\u0631\u0639\u064a"
+   "label": "العنوان الفرعي"
+  },
+  {
+   "fieldname": "subtitle_en",
+   "fieldtype": "Small Text",
+   "insert_after": "subtitle",
+   "label": "العنوان الفرعي (English)"
   },
   {
    "fieldname": "image",
    "fieldtype": "Attach Image",
-   "label": "\u0627\u0644\u0635\u0648\u0631\u0629"
+   "label": "الصورة"
   },
   {
    "fieldname": "link",
    "fieldtype": "Data",
-   "label": "\u0627\u0644\u0631\u0627\u0628\u0637"
+   "label": "الرابط"
   },
   {
-   "description": "\u062a\u0631\u062a\u064a\u0628 \u0627\u0644\u0639\u0646\u0635\u0631 \u062f\u0627\u062e\u0644 \u0627\u0644\u0633\u0644\u0627\u064a\u062f\u0631",
+   "description": "ترتيب العنصر داخل السلايدر",
    "fieldname": "order",
    "fieldtype": "Int",
-   "label": "\u062a\u0631\u062a\u064a\u0628 \u0627\u0644\u0638\u0647\u0648\u0631"
+   "label": "ترتيب الظهور"
   },
   {
    "default": "0",
    "fieldname": "is_active",
    "fieldtype": "Check",
-   "label": "\u0645\u0641\u0639\u0644"
+   "label": "مفعل"
   }
  ],
  "grid_page_length": 50,

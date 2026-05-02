@@ -65,6 +65,12 @@ def api_endpoint(func):
 
 
 def ok_response(data: Any = None, meta: dict | None = None, status_code: int = 200) -> dict:
+    cache_headers = {
+        "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
+        "Pragma": "no-cache",
+        "Expires": "0",
+    }
+    frappe.local.response.setdefault("headers", {}).update(cache_headers)
     frappe.response.http_status_code = status_code
     return {"ok": True, "data": data, "error": None, "meta": meta or {}}
 
@@ -75,6 +81,12 @@ def error_response(
     details: Any | None = None,
     status_code: int = 400,
 ) -> dict:
+    cache_headers = {
+        "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
+        "Pragma": "no-cache",
+        "Expires": "0",
+    }
+    frappe.local.response.setdefault("headers", {}).update(cache_headers)
     frappe.response.http_status_code = status_code
     return {"ok": False, "data": None, "error": {"code": code, "message": message, "details": details}, "meta": {}}
 
@@ -173,6 +185,7 @@ def build_filters(allowed_fields: Iterable[str]) -> list:
 
 
 def serialize_doc(doc: dict, table_fields: dict[str, str]) -> dict:
+    doc = _apply_bilingual_fallback(doc)
     output = {"docname": doc.get("name")}
     for key, value in doc.items():
         if key in ("doctype", "name", "owner", "creation", "modified", "modified_by"):
@@ -184,6 +197,11 @@ def serialize_doc(doc: dict, table_fields: dict[str, str]) -> dict:
     if "id" not in output and doc.get("name"):
         output["id"] = doc.get("name")
     return output
+
+
+def _apply_bilingual_fallback(doc: dict) -> dict:
+    # WHY+WHAT: keep languages strictly separated. Do not auto-fill either direction.
+    return dict(doc) if isinstance(doc, dict) else doc
 
 
 def serialize_child_rows(rows: list, value_field: str) -> list:

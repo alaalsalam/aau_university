@@ -13,9 +13,12 @@
   "desc_ar",
   "desc_en",
   "services",
+  "services_en",
   "programs",
+  "programs_en",
   "image",
   "location",
+  "location_en",
   "phone",
   "email",
   "is_published",
@@ -68,10 +71,20 @@
    "label": "\u0627\u0644\u062e\u062f\u0645\u0627\u062a"
   },
   {
+   "fieldname": "services_en",
+   "fieldtype": "Long Text",
+   "label": "\u0627\u0644\u062e\u062f\u0645\u0627\u062a (English)"
+  },
+  {
    "description": "\u0627\u0644\u0628\u0631\u0627\u0645\u062c \u0627\u0644\u062a\u0627\u0628\u0639\u0629",
    "fieldname": "programs",
    "fieldtype": "Long Text",
    "label": "\u0627\u0644\u0628\u0631\u0627\u0645\u062c \u0627\u0644\u0645\u0631\u062a\u0628\u0637\u0629"
+  },
+  {
+   "fieldname": "programs_en",
+   "fieldtype": "Long Text",
+   "label": "\u0627\u0644\u0628\u0631\u0627\u0645\u062c \u0627\u0644\u0645\u0631\u062a\u0628\u0637\u0629 (English)"
   },
   {
    "description": "\u0635\u0648\u0631\u0629 \u0627\u0644\u0645\u0631\u0643\u0632",
@@ -84,6 +97,11 @@
    "fieldname": "location",
    "fieldtype": "Data",
    "label": "\u0627\u0644\u0645\u0648\u0642\u0639"
+  },
+  {
+   "fieldname": "location_en",
+   "fieldtype": "Data",
+   "label": "\u0627\u0644\u0645\u0648\u0642\u0639 (English)"
   },
   {
    "description": "\u0631\u0642\u0645 \u0627\u0644\u0647\u0627\u062a\u0641",
@@ -114,7 +132,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-03-17 15:05:48.166047",
+ "modified": "2026-04-03 10:53:46.752875",
  "modified_by": "Administrator",
  "module": "AAU",
  "name": "Centers",
@@ -141,6 +159,37 @@
    "read": 1,
    "report": 1,
    "role": "AAU Content Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "AAU Site Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "AAU Executive Manager"
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "AAU Coordinator",
    "share": 1,
    "write": 1
   }

@@ -8,8 +8,10 @@
  "field_order": [
   "main_section",
   "page_title",
+  "page_title_en",
   "slug",
   "content",
+  "content_en",
   "seo_title",
   "seo_description",
   "is_published"
@@ -21,7 +23,7 @@
    "label": "Main Section"
   },
   {
-   "description": "\u0639\u0646\u0648\u0627\u0646 \u0627\u0644\u0635\u0641\u062d\u0629",
+   "description": "عنوان الصفحة",
    "fieldname": "page_title",
    "fieldtype": "Data",
    "in_list_view": 1,
@@ -29,7 +31,13 @@
    "reqd": 1
   },
   {
-   "description": "\u0631\u0627\u0628\u0637 \u0627\u0644\u0635\u0641\u062d\u0629",
+   "fieldname": "page_title_en",
+   "fieldtype": "Data",
+   "insert_after": "page_title",
+   "label": "Page Title (English)"
+  },
+  {
+   "description": "رابط الصفحة",
    "fieldname": "slug",
    "fieldtype": "Data",
    "in_list_view": 1,
@@ -37,26 +45,32 @@
    "reqd": 1
   },
   {
-   "description": "\u0645\u062d\u062a\u0648\u0649 \u0627\u0644\u0635\u0641\u062d\u0629",
+   "description": "محتوى الصفحة",
    "fieldname": "content",
    "fieldtype": "Long Text",
    "label": "Content"
   },
   {
-   "description": "\u0639\u0646\u0648\u0627\u0646 SEO",
+   "fieldname": "content_en",
+   "fieldtype": "Long Text",
+   "insert_after": "content",
+   "label": "Content (English)"
+  },
+  {
+   "description": "عنوان SEO",
    "fieldname": "seo_title",
    "fieldtype": "Data",
    "label": "SEO Title"
   },
   {
-   "description": "\u0648\u0635\u0641 SEO",
+   "description": "وصف SEO",
    "fieldname": "seo_description",
    "fieldtype": "Small Text",
    "label": "SEO Description"
   },
   {
    "default": "0",
-   "description": "\u0645\u0646\u0634\u0648\u0631",
+   "description": "منشور",
    "fieldname": "is_published",
    "fieldtype": "Check",
    "label": "Is Published"

@@ -5,6 +5,7 @@ from __future__ import annotations
 ENTITY_CONFIG = {
     "colleges": {"doctype": "Colleges", "id_field": "id", "slug_field": "slug"},
     "college_deans": {"doctype": "College Deans", "id_field": "id"},
+    "admission_requirements": {"doctype": "Admission Requirements", "id_field": "id"},
     "academic_programs": {"doctype": "Academic Programs", "id_field": "id"},
     "program_objectives": {"doctype": "Program Objectives", "id_field": "id"},
     "study_plans": {"doctype": "Study Plans", "id_field": "id"},
@@ -31,6 +32,7 @@ ENTITY_CONFIG = {
         "doctype_candidates": ["Contact Us Messages", "Contact Messages"],
         "id_field": "id",
     },
+    "email_requests": {"doctype": "Email Requests", "id_field": "id"},
     "join_requests": {"doctype": "Join Requests", "id_field": "id"},
 }
 
@@ -48,16 +50,32 @@ SEARCH_TYPES = {
 }
 
 
-ADMIN_ROLES = {"System Manager", "Administrator", "AAU Admin", "AAU Content Manager"}
+ADMIN_ROLES = {
+    "System Manager",
+    "Administrator",
+    "AAU Admin",
+    "AAU Content Manager",
+    "AAU Executive Manager",
+    "AAU Site Manager",
+}
 
-SUPER_ADMIN_ROLES = {"System Manager", "Administrator", "AAU Admin", "AUU Admin"}
-CONTENT_MANAGER_ROLES = {"AAU Content Manager", "Website Manager", "Blogger"}
-ACADEMIC_MANAGER_ROLES = {"AAU Academic Manager", "Education Manager", "Academics User", "Instructor"}
-SERVICE_MANAGER_ROLES = {"AAU Service Manager", "Support Team"}
+SUPER_ADMIN_ROLES = {"System Manager", "Administrator", "AAU Admin", "AUU Admin", "AAU Site Manager"}
+CONTENT_MANAGER_ROLES = {"AAU Content Manager", "Website Manager", "Blogger", "AAU Editor", "AAU Site Manager"}
+ACADEMIC_MANAGER_ROLES = {
+    "AAU Academic Manager",
+    "Education Manager",
+    "Academics User",
+    "Instructor",
+    "AAU Coordinator",
+    "AAU Site Manager",
+}
+SERVICE_MANAGER_ROLES = {"AAU Service Manager", "Support Team", "AAU Executive Manager", "AAU Site Manager"}
+SITE_CONFIGURATION_ROLES = {"AAU Content Manager", "AAU Site Manager", "System Manager", "Administrator", "AAU Admin"}
 
 ENTITY_ROLE_PERMISSIONS = {
     "colleges": {"read": ACADEMIC_MANAGER_ROLES, "write": ACADEMIC_MANAGER_ROLES},
     "college_deans": {"read": ACADEMIC_MANAGER_ROLES, "write": ACADEMIC_MANAGER_ROLES},
+    "admission_requirements": {"read": ACADEMIC_MANAGER_ROLES, "write": ACADEMIC_MANAGER_ROLES},
     "academic_programs": {"read": ACADEMIC_MANAGER_ROLES, "write": ACADEMIC_MANAGER_ROLES},
     "program_objectives": {"read": ACADEMIC_MANAGER_ROLES, "write": ACADEMIC_MANAGER_ROLES},
     "study_plans": {"read": ACADEMIC_MANAGER_ROLES, "write": ACADEMIC_MANAGER_ROLES},
@@ -66,20 +84,21 @@ ENTITY_ROLE_PERMISSIONS = {
     "program_faculty": {"read": ACADEMIC_MANAGER_ROLES, "write": ACADEMIC_MANAGER_ROLES},
     "news": {"read": CONTENT_MANAGER_ROLES, "write": CONTENT_MANAGER_ROLES},
     "events": {"read": CONTENT_MANAGER_ROLES, "write": CONTENT_MANAGER_ROLES},
-    "centers": {"read": CONTENT_MANAGER_ROLES, "write": CONTENT_MANAGER_ROLES},
-    "center_services": {"read": CONTENT_MANAGER_ROLES, "write": CONTENT_MANAGER_ROLES},
-    "center_programs": {"read": CONTENT_MANAGER_ROLES, "write": CONTENT_MANAGER_ROLES},
+    "centers": {"read": ACADEMIC_MANAGER_ROLES, "write": ACADEMIC_MANAGER_ROLES},
+    "center_services": {"read": ACADEMIC_MANAGER_ROLES, "write": ACADEMIC_MANAGER_ROLES},
+    "center_programs": {"read": ACADEMIC_MANAGER_ROLES, "write": ACADEMIC_MANAGER_ROLES},
     "partners": {"read": CONTENT_MANAGER_ROLES, "write": CONTENT_MANAGER_ROLES},
     "offers": {"read": CONTENT_MANAGER_ROLES, "write": CONTENT_MANAGER_ROLES},
     "faqs": {"read": CONTENT_MANAGER_ROLES, "write": CONTENT_MANAGER_ROLES},
-    "team_members": {"read": CONTENT_MANAGER_ROLES, "write": CONTENT_MANAGER_ROLES},
+    "team_members": {"read": ACADEMIC_MANAGER_ROLES, "write": ACADEMIC_MANAGER_ROLES},
     "projects": {"read": CONTENT_MANAGER_ROLES, "write": CONTENT_MANAGER_ROLES},
     "campus_life": {"read": CONTENT_MANAGER_ROLES, "write": CONTENT_MANAGER_ROLES},
     "blog_posts": {"read": CONTENT_MANAGER_ROLES, "write": CONTENT_MANAGER_ROLES},
     "pages": {"read": CONTENT_MANAGER_ROLES, "write": CONTENT_MANAGER_ROLES},
     "media": {"read": CONTENT_MANAGER_ROLES, "write": CONTENT_MANAGER_ROLES},
-    "settings": {"read": CONTENT_MANAGER_ROLES, "write": CONTENT_MANAGER_ROLES},
+    "settings": {"read": SITE_CONFIGURATION_ROLES, "write": SITE_CONFIGURATION_ROLES},
     "contact_messages": {"read": SERVICE_MANAGER_ROLES, "write": SERVICE_MANAGER_ROLES},
+    "email_requests": {"read": SERVICE_MANAGER_ROLES, "write": SERVICE_MANAGER_ROLES},
     "join_requests": {"read": SERVICE_MANAGER_ROLES, "write": SERVICE_MANAGER_ROLES},
 }
 

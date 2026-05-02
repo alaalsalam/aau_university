@@ -1,0 +1,301 @@
+{
+ "actions": [],
+ "creation": "2026-04-03 16:32:17.700100",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "page_header_section",
+  "contact_page_badge_ar",
+  "contact_page_badge_en",
+  "contact_page_title_ar",
+  "contact_page_title_en",
+  "contact_page_description_ar",
+  "contact_page_description_en",
+  "form_section",
+  "contact_form_title_ar",
+  "contact_form_title_en",
+  "contact_form_name_label_ar",
+  "contact_form_name_label_en",
+  "contact_form_name_placeholder_ar",
+  "contact_form_name_placeholder_en",
+  "contact_form_email_label_ar",
+  "contact_form_email_label_en",
+  "contact_form_email_placeholder_ar",
+  "contact_form_email_placeholder_en",
+  "contact_form_subject_label_ar",
+  "contact_form_subject_label_en",
+  "contact_form_subject_placeholder_ar",
+  "contact_form_subject_placeholder_en",
+  "contact_form_message_label_ar",
+  "contact_form_message_label_en",
+  "contact_form_message_placeholder_ar",
+  "contact_form_message_placeholder_en",
+  "contact_form_submit_text_ar",
+  "contact_form_submit_text_en",
+  "info_section",
+  "contact_phone_label_ar",
+  "contact_phone_label_en",
+  "contact_email_label_ar",
+  "contact_email_label_en",
+  "contact_address_label_ar",
+  "contact_address_label_en",
+  "contact_phone",
+  "contact_email",
+  "address_ar",
+  "address_en",
+  "map_location",
+  "social_section_title_ar",
+  "social_section_title_en"
+ ],
+ "fields": [
+  {
+   "fieldname": "page_header_section",
+   "fieldtype": "Section Break",
+   "label": "Page Header"
+  },
+  {
+   "fieldname": "contact_page_badge_ar",
+   "fieldtype": "Data",
+   "label": "\u0634\u0627\u0631\u0629 \u0627\u0644\u0635\u0641\u062d\u0629"
+  },
+  {
+   "fieldname": "contact_page_badge_en",
+   "fieldtype": "Data",
+   "label": "Page Badge (EN)"
+  },
+  {
+   "fieldname": "contact_page_title_ar",
+   "fieldtype": "Data",
+   "label": "\u0639\u0646\u0648\u0627\u0646 \u0627\u0644\u0635\u0641\u062d\u0629"
+  },
+  {
+   "fieldname": "contact_page_title_en",
+   "fieldtype": "Data",
+   "label": "Page Title (EN)"
+  },
+  {
+   "fieldname": "contact_page_description_ar",
+   "fieldtype": "Small Text",
+   "label": "\u0648\u0635\u0641 \u0627\u0644\u0635\u0641\u062d\u0629"
+  },
+  {
+   "fieldname": "contact_page_description_en",
+   "fieldtype": "Small Text",
+   "label": "Page Description (EN)"
+  },
+  {
+   "fieldname": "form_section",
+   "fieldtype": "Section Break",
+   "label": "Contact Form"
+  },
+  {
+   "fieldname": "contact_form_title_ar",
+   "fieldtype": "Data",
+   "label": "\u0639\u0646\u0648\u0627\u0646 \u0627\u0644\u0646\u0645\u0648\u0630\u062c"
+  },
+  {
+   "fieldname": "contact_form_title_en",
+   "fieldtype": "Data",
+   "label": "Form Title (EN)"
+  },
+  {
+   "fieldname": "contact_form_name_label_ar",
+   "fieldtype": "Data",
+   "label": "\u062a\u0633\u0645\u064a\u0629 \u0627\u0644\u0627\u0633\u0645"
+  },
+  {
+   "fieldname": "contact_form_name_label_en",
+   "fieldtype": "Data",
+   "label": "Name Label (EN)"
+  },
+  {
+   "fieldname": "contact_form_name_placeholder_ar",
+   "fieldtype": "Data",
+   "label": "Placeholder \u0627\u0644\u0627\u0633\u0645"
+  },
+  {
+   "fieldname": "contact_form_name_placeholder_en",
+   "fieldtype": "Data",
+   "label": "Name Placeholder (EN)"
+  },
+  {
+   "fieldname": "contact_form_email_label_ar",
+   "fieldtype": "Data",
+   "label": "\u062a\u0633\u0645\u064a\u0629 \u0627\u0644\u0628\u0631\u064a\u062f \u0627\u0644\u0625\u0644\u0643\u062a\u0631\u0648\u0646\u064a"
+  },
+  {
+   "fieldname": "contact_form_email_label_en",
+   "fieldtype": "Data",
+   "label": "Email Label (EN)"
+  },
+  {
+   "fieldname": "contact_form_email_placeholder_ar",
+   "fieldtype": "Data",
+   "label": "Placeholder \u0627\u0644\u0628\u0631\u064a\u062f \u0627\u0644\u0625\u0644\u0643\u062a\u0631\u0648\u0646\u064a"
+  },
+  {
+   "fieldname": "contact_form_email_placeholder_en",
+   "fieldtype": "Data",
+   "label": "Email Placeholder (EN)"
+  },
+  {
+   "fieldname": "contact_form_subject_label_ar",
+   "fieldtype": "Data",
+   "label": "\u062a\u0633\u0645\u064a\u0629 \u0627\u0644\u0645\u0648\u0636\u0648\u0639"
+  },
+  {
+   "fieldname": "contact_form_subject_label_en",
+   "fieldtype": "Data",
+   "label": "Subject Label (EN)"
+  },
+  {
+   "fieldname": "contact_form_subject_placeholder_ar",
+   "fieldtype": "Data",
+   "label": "Placeholder \u0627\u0644\u0645\u0648\u0636\u0648\u0639"
+  },
+  {
+   "fieldname": "contact_form_subject_placeholder_en",
+   "fieldtype": "Data",
+   "label": "Subject Placeholder (EN)"
+  },
+  {
+   "fieldname": "contact_form_message_label_ar",
+   "fieldtype": "Data",
+   "label": "\u062a\u0633\u0645\u064a\u0629 \u0627\u0644\u0631\u0633\u0627\u0644\u0629"
+  },
+  {
+   "fieldname": "contact_form_message_label_en",
+   "fieldtype": "Data",
+   "label": "Message Label (EN)"
+  },
+  {
+   "fieldname": "contact_form_message_placeholder_ar",
+   "fieldtype": "Data",
+   "label": "Placeholder \u0627\u0644\u0631\u0633\u0627\u0644\u0629"
+  },
+  {
+   "fieldname": "contact_form_message_placeholder_en",
+   "fieldtype": "Data",
+   "label": "Message Placeholder (EN)"
+  },
+  {
+   "fieldname": "contact_form_submit_text_ar",
+   "fieldtype": "Data",
+   "label": "\u0646\u0635 \u0632\u0631 \u0627\u0644\u0625\u0631\u0633\u0627\u0644"
+  },
+  {
+   "fieldname": "contact_form_submit_text_en",
+   "fieldtype": "Data",
+   "label": "Submit Text (EN)"
+  },
+  {
+   "fieldname": "info_section",
+   "fieldtype": "Section Break",
+   "label": "Contact Information"
+  },
+  {
+   "fieldname": "contact_phone_label_ar",
+   "fieldtype": "Data",
+   "label": "\u062a\u0633\u0645\u064a\u0629 \u0627\u0644\u0647\u0627\u062a\u0641"
+  },
+  {
+   "fieldname": "contact_phone_label_en",
+   "fieldtype": "Data",
+   "label": "Phone Label (EN)"
+  },
+  {
+   "fieldname": "contact_email_label_ar",
+   "fieldtype": "Data",
+   "label": "\u062a\u0633\u0645\u064a\u0629 \u0627\u0644\u0628\u0631\u064a\u062f \u0627\u0644\u0625\u0644\u0643\u062a\u0631\u0648\u0646\u064a"
+  },
+  {
+   "fieldname": "contact_email_label_en",
+   "fieldtype": "Data",
+   "label": "Email Label (EN)"
+  },
+  {
+   "fieldname": "contact_address_label_ar",
+   "fieldtype": "Data",
+   "label": "\u062a\u0633\u0645\u064a\u0629 \u0627\u0644\u0639\u0646\u0648\u0627\u0646"
+  },
+  {
+   "fieldname": "contact_address_label_en",
+   "fieldtype": "Data",
+   "label": "Address Label (EN)"
+  },
+  {
+   "fieldname": "contact_phone",
+   "fieldtype": "Data",
+   "label": "\u0631\u0642\u0645 \u0627\u0644\u0647\u0627\u062a\u0641"
+  },
+  {
+   "fieldname": "contact_email",
+   "fieldtype": "Data",
+   "label": "\u0627\u0644\u0628\u0631\u064a\u062f \u0627\u0644\u0625\u0644\u0643\u062a\u0631\u0648\u0646\u064a"
+  },
+  {
+   "fieldname": "address_ar",
+   "fieldtype": "Small Text",
+   "label": "\u0627\u0644\u0639\u0646\u0648\u0627\u0646"
+  },
+  {
+   "fieldname": "address_en",
+   "fieldtype": "Small Text",
+   "label": "Address (EN)"
+  },
+  {
+   "fieldname": "map_location",
+   "fieldtype": "Data",
+   "label": "\u0631\u0627\u0628\u0637 \u0627\u0644\u062e\u0631\u064a\u0637\u0629"
+  },
+  {
+   "fieldname": "social_section_title_ar",
+   "fieldtype": "Data",
+   "label": "\u0639\u0646\u0648\u0627\u0646 \u0627\u0644\u0634\u0628\u0643\u0627\u062a \u0627\u0644\u0627\u062c\u062a\u0645\u0627\u0639\u064a\u0629"
+  },
+  {
+   "fieldname": "social_section_title_en",
+   "fieldtype": "Data",
+   "label": "Social Section Title (EN)"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2026-04-08 09:20:17.745038",
+ "modified_by": "Administrator",
+ "module": "AAU",
+ "name": "Contact Page Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "AAU Site Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "print": 1,
+   "read": 1,
+   "role": "AAU Editor"
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

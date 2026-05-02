@@ -8,7 +8,29 @@
  "field_order": [
   "main_section",
   "title",
+  "title_en",
   "content",
+  "content_en",
+  "highlights_section",
+  "sidebar_title_ar",
+  "sidebar_title_en",
+  "highlights_title_ar",
+  "highlights_title_en",
+  "highlight_1_ar",
+  "highlight_1_en",
+  "highlight_2_ar",
+  "highlight_2_en",
+  "highlight_3_ar",
+  "highlight_3_en",
+  "stats_section",
+  "stat_1_value",
+  "stat_1_label_ar",
+  "stat_1_label_en",
+  "stat_2_value",
+  "stat_2_label_ar",
+  "stat_2_label_en",
+  "sidebar_note_ar",
+  "sidebar_note_en",
   "image",
   "is_published",
   "display_order"
@@ -28,10 +50,140 @@
    "reqd": 1
   },
   {
+   "fieldname": "title_en",
+   "fieldtype": "Data",
+   "label": "Title (English)"
+  },
+  {
    "description": "\u0627\u0644\u0645\u062d\u062a\u0648\u0649",
    "fieldname": "content",
    "fieldtype": "Long Text",
    "label": "Content"
+  },
+  {
+   "fieldname": "content_en",
+   "fieldtype": "Long Text",
+   "label": "Content (English)"
+  },
+  {
+   "fieldname": "highlights_section",
+   "fieldtype": "Section Break",
+   "label": "\u0642\u0633\u0645 \u0645\u0627 \u064a\u0645\u064a\u0632 \u0647\u0630\u0627 \u0627\u0644\u0645\u0631\u0641\u0642"
+  },
+  {
+   "description": "\u0639\u0646\u0648\u0627\u0646 \u0627\u0644\u0628\u0637\u0627\u0642\u0629 \u0627\u0644\u062c\u0627\u0646\u0628\u064a\u0629 \u0628\u0627\u0644\u0639\u0631\u0628\u064a\u0629",
+   "fieldname": "sidebar_title_ar",
+   "fieldtype": "Data",
+   "label": "\u0639\u0646\u0648\u0627\u0646 \u0627\u0644\u0628\u0637\u0627\u0642\u0629 (\u0639\u0631\u0628\u064a)"
+  },
+  {
+   "description": "\u0639\u0646\u0648\u0627\u0646 \u0627\u0644\u0628\u0637\u0627\u0642\u0629 \u0627\u0644\u062c\u0627\u0646\u0628\u064a\u0629 \u0628\u0627\u0644\u0625\u0646\u062c\u0644\u064a\u0632\u064a\u0629",
+   "fieldname": "sidebar_title_en",
+   "fieldtype": "Data",
+   "label": "\u0639\u0646\u0648\u0627\u0646 \u0627\u0644\u0628\u0637\u0627\u0642\u0629 (English)"
+  },
+  {
+   "description": "\u0639\u0646\u0648\u0627\u0646 \u0642\u0633\u0645 \u0645\u0627 \u064a\u0645\u064a\u0632 \u0628\u0627\u0644\u0639\u0631\u0628\u064a\u0629",
+   "fieldname": "highlights_title_ar",
+   "fieldtype": "Data",
+   "label": "\u0639\u0646\u0648\u0627\u0646 \u0645\u0627 \u064a\u0645\u064a\u0632 (\u0639\u0631\u0628\u064a)"
+  },
+  {
+   "description": "\u0639\u0646\u0648\u0627\u0646 \u0642\u0633\u0645 \u0645\u0627 \u064a\u0645\u064a\u0632 \u0628\u0627\u0644\u0625\u0646\u062c\u0644\u064a\u0632\u064a\u0629",
+   "fieldname": "highlights_title_en",
+   "fieldtype": "Data",
+   "label": "\u0639\u0646\u0648\u0627\u0646 \u0645\u0627 \u064a\u0645\u064a\u0632 (English)"
+  },
+  {
+   "description": "\u0627\u0644\u0645\u064a\u0632\u0629 \u0627\u0644\u0623\u0648\u0644\u0649 \u0628\u0627\u0644\u0639\u0631\u0628\u064a\u0629",
+   "fieldname": "highlight_1_ar",
+   "fieldtype": "Data",
+   "label": "\u0627\u0644\u0645\u064a\u0632\u0629 1 (\u0639\u0631\u0628\u064a)"
+  },
+  {
+   "description": "\u0627\u0644\u0645\u064a\u0632\u0629 \u0627\u0644\u0623\u0648\u0644\u0649 \u0628\u0627\u0644\u0625\u0646\u062c\u0644\u064a\u0632\u064a\u0629",
+   "fieldname": "highlight_1_en",
+   "fieldtype": "Data",
+   "label": "\u0627\u0644\u0645\u064a\u0632\u0629 1 (English)"
+  },
+  {
+   "description": "\u0627\u0644\u0645\u064a\u0632\u0629 \u0627\u0644\u062b\u0627\u0646\u064a\u0629 \u0628\u0627\u0644\u0639\u0631\u0628\u064a\u0629",
+   "fieldname": "highlight_2_ar",
+   "fieldtype": "Data",
+   "label": "\u0627\u0644\u0645\u064a\u0632\u0629 2 (\u0639\u0631\u0628\u064a)"
+  },
+  {
+   "description": "\u0627\u0644\u0645\u064a\u0632\u0629 \u0627\u0644\u062b\u0627\u0646\u064a\u0629 \u0628\u0627\u0644\u0625\u0646\u062c\u0644\u064a\u0632\u064a\u0629",
+   "fieldname": "highlight_2_en",
+   "fieldtype": "Data",
+   "label": "\u0627\u0644\u0645\u064a\u0632\u0629 2 (English)"
+  },
+  {
+   "description": "\u0627\u0644\u0645\u064a\u0632\u0629 \u0627\u0644\u062b\u0627\u0644\u062b\u0629 \u0628\u0627\u0644\u0639\u0631\u0628\u064a\u0629",
+   "fieldname": "highlight_3_ar",
+   "fieldtype": "Data",
+   "label": "\u0627\u0644\u0645\u064a\u0632\u0629 3 (\u0639\u0631\u0628\u064a)"
+  },
+  {
+   "description": "\u0627\u0644\u0645\u064a\u0632\u0629 \u0627\u0644\u062b\u0627\u0644\u062b\u0629 \u0628\u0627\u0644\u0625\u0646\u062c\u0644\u064a\u0632\u064a\u0629",
+   "fieldname": "highlight_3_en",
+   "fieldtype": "Data",
+   "label": "\u0627\u0644\u0645\u064a\u0632\u0629 3 (English)"
+  },
+  {
+   "fieldname": "stats_section",
+   "fieldtype": "Section Break",
+   "label": "\u0642\u0633\u0645 \u0627\u0644\u0625\u062d\u0635\u0627\u0626\u064a\u0627\u062a \u0648\u0627\u0644\u0645\u0644\u0627\u062d\u0638\u0629"
+  },
+  {
+   "default": "15",
+   "description": "\u0627\u0644\u0642\u064a\u0645\u0629 \u0627\u0644\u0623\u0648\u0644\u0649 (\u0645\u062b\u0627\u0644: 15)",
+   "fieldname": "stat_1_value",
+   "fieldtype": "Int",
+   "label": "\u0627\u0644\u0642\u064a\u0645\u0629 1"
+  },
+  {
+   "description": "\u0648\u0635\u0641 \u0627\u0644\u0642\u064a\u0645\u0629 \u0627\u0644\u0623\u0648\u0644\u0649 \u0628\u0627\u0644\u0639\u0631\u0628\u064a\u0629",
+   "fieldname": "stat_1_label_ar",
+   "fieldtype": "Data",
+   "label": "\u0648\u0635\u0641 \u0627\u0644\u0642\u064a\u0645\u0629 1 (\u0639\u0631\u0628\u064a)"
+  },
+  {
+   "description": "\u0648\u0635\u0641 \u0627\u0644\u0642\u064a\u0645\u0629 \u0627\u0644\u0623\u0648\u0644\u0649 \u0628\u0627\u0644\u0625\u0646\u062c\u0644\u064a\u0632\u064a\u0629",
+   "fieldname": "stat_1_label_en",
+   "fieldtype": "Data",
+   "label": "\u0648\u0635\u0641 \u0627\u0644\u0642\u064a\u0645\u0629 1 (English)"
+  },
+  {
+   "default": "10",
+   "description": "\u0627\u0644\u0642\u064a\u0645\u0629 \u0627\u0644\u062b\u0627\u0646\u064a\u0629 (\u0645\u062b\u0627\u0644: 10)",
+   "fieldname": "stat_2_value",
+   "fieldtype": "Int",
+   "label": "\u0627\u0644\u0642\u064a\u0645\u0629 2"
+  },
+  {
+   "description": "\u0648\u0635\u0641 \u0627\u0644\u0642\u064a\u0645\u0629 \u0627\u0644\u062b\u0627\u0646\u064a\u0629 \u0628\u0627\u0644\u0639\u0631\u0628\u064a\u0629",
+   "fieldname": "stat_2_label_ar",
+   "fieldtype": "Data",
+   "label": "\u0648\u0635\u0641 \u0627\u0644\u0642\u064a\u0645\u0629 2 (\u0639\u0631\u0628\u064a)"
+  },
+  {
+   "description": "\u0648\u0635\u0641 \u0627\u0644\u0642\u064a\u0645\u0629 \u0627\u0644\u062b\u0627\u0646\u064a\u0629 \u0628\u0627\u0644\u0625\u0646\u062c\u0644\u064a\u0632\u064a\u0629",
+   "fieldname": "stat_2_label_en",
+   "fieldtype": "Data",
+   "label": "\u0648\u0635\u0641 \u0627\u0644\u0642\u064a\u0645\u0629 2 (English)"
+  },
+  {
+   "description": "\u0627\u0644\u0646\u0635 \u0627\u0644\u0633\u0641\u0644\u064a \u0628\u0627\u0644\u0639\u0631\u0628\u064a\u0629",
+   "fieldname": "sidebar_note_ar",
+   "fieldtype": "Small Text",
+   "label": "\u0627\u0644\u0646\u0635 \u0627\u0644\u0633\u0641\u0644\u064a (\u0639\u0631\u0628\u064a)"
+  },
+  {
+   "description": "\u0627\u0644\u0646\u0635 \u0627\u0644\u0633\u0641\u0644\u064a \u0628\u0627\u0644\u0625\u0646\u062c\u0644\u064a\u0632\u064a\u0629",
+   "fieldname": "sidebar_note_en",
+   "fieldtype": "Small Text",
+   "label": "\u0627\u0644\u0646\u0635 \u0627\u0644\u0633\u0641\u0644\u064a (English)"
   },
   {
    "description": "\u0627\u0644\u0635\u0648\u0631\u0629",
@@ -56,7 +208,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-03-15 04:25:19.956880",
+ "modified": "2026-04-05 22:52:22.673161",
  "modified_by": "Administrator",
  "module": "AAU",
  "name": "Campus Life",
@@ -83,6 +235,30 @@
    "read": 1,
    "report": 1,
    "role": "AAU Content Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "AAU Site Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "AAU Coordinator",
    "share": 1,
    "write": 1
   }

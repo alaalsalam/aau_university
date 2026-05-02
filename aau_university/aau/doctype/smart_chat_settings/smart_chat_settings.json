@@ -1,0 +1,179 @@
+{
+ "actions": [],
+ "creation": "2026-04-03 00:00:00.000000",
+ "doctype": "DocType",
+ "document_type": "Setup",
+ "engine": "InnoDB",
+ "field_order": [
+  "general_section",
+  "enabled",
+  "provider",
+  "column_break_general",
+  "chat_name_ar",
+  "chat_name_en",
+  "model_section",
+  "generation_model",
+  "embedding_model",
+  "temperature",
+  "security_section",
+  "provider_api_key",
+  "knowledge_section",
+  "knowledge_source_file",
+  "knowledge_index_file",
+  "column_break_knowledge",
+  "indexed_records",
+  "last_indexed_on",
+  "help_text"
+ ],
+ "fields": [
+  {
+   "fieldname": "general_section",
+   "fieldtype": "Section Break",
+   "label": "General"
+  },
+  {
+   "default": "1",
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "label": "Enable Smart Chat"
+  },
+  {
+   "default": "Gemini",
+   "fieldname": "provider",
+   "fieldtype": "Select",
+   "label": "AI Provider",
+   "options": "Gemini\nOpenAI",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_general",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "المساعد الذكي",
+   "fieldname": "chat_name_ar",
+   "fieldtype": "Data",
+   "label": "Chat Name (Arabic)",
+   "reqd": 1
+  },
+  {
+   "default": "Smart Assistant",
+   "fieldname": "chat_name_en",
+   "fieldtype": "Data",
+   "label": "Chat Name (English)",
+   "reqd": 1
+  },
+  {
+   "fieldname": "model_section",
+   "fieldtype": "Section Break",
+   "label": "Models"
+  },
+  {
+   "default": "gemini-2.5-flash",
+   "fieldname": "generation_model",
+   "fieldtype": "Data",
+   "label": "Generation Model"
+  },
+  {
+   "default": "gemini-embedding-001",
+   "fieldname": "embedding_model",
+   "fieldtype": "Data",
+   "label": "Embedding Model"
+  },
+  {
+   "default": "0.25",
+   "fieldname": "temperature",
+   "fieldtype": "Float",
+   "label": "Temperature"
+  },
+  {
+   "fieldname": "security_section",
+   "fieldtype": "Section Break",
+   "label": "Security"
+  },
+  {
+   "fieldname": "provider_api_key",
+   "fieldtype": "Password",
+   "label": "Provider API Key",
+   "reqd": 1
+  },
+  {
+   "fieldname": "knowledge_section",
+   "fieldtype": "Section Break",
+   "label": "Knowledge Base"
+  },
+  {
+   "description": "Upload an Excel or CSV file with question and answer columns. Supported headers: question, question_ar, answer, answer_ar, سؤال, الإجابة",
+   "fieldname": "knowledge_source_file",
+   "fieldtype": "Attach",
+   "label": "Knowledge Source File",
+   "reqd": 1
+  },
+  {
+   "fieldname": "knowledge_index_file",
+   "fieldtype": "Attach",
+   "label": "Knowledge Index File",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_knowledge",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "indexed_records",
+   "fieldtype": "Int",
+   "label": "Indexed Records",
+   "read_only": 1
+  },
+  {
+   "fieldname": "last_indexed_on",
+   "fieldtype": "Datetime",
+   "label": "Last Indexed On",
+   "read_only": 1
+  },
+  {
+   "fieldname": "help_text",
+   "fieldtype": "Small Text",
+   "label": "Notes",
+   "read_only": 1,
+   "default": "ارفع ملف الأسئلة ثم احفظ السجل وبعدها اضغط على زر إعادة بناء فهرس الشات. المفتاح يتم حفظه داخل النظام ولا يتم كشفه في الواجهات العامة."
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2026-04-03 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "AAU",
+ "name": "Smart Chat Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "AAU Site Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

@@ -18,12 +18,23 @@
   "mission_en",
   "goals_ar",
   "goals_en",
-  "admission_requirements_ar",
-  "admission_requirements_en",
+  "quality_ar",
+  "quality_en",
+  "values_ar",
+  "values_en",
+  "strategy_ar",
+  "strategy_en",
   "icon",
   "programs_json",
+  "dean_name_ar",
   "dean_name",
+  "dean_name_en",
+  "dean_image",
+  "department_head_name",
+  "department_head_name_en",
+  "department_head_image",
   "image",
+  "background_image",
   "is_active",
   "main_section",
   "display_order"
@@ -101,14 +112,34 @@
    "label": "Goals (EN)"
   },
   {
-   "fieldname": "admission_requirements_ar",
+   "fieldname": "quality_ar",
    "fieldtype": "Long Text",
-   "label": "Admission Requirements (AR)"
+   "label": "Quality (AR)"
   },
   {
-   "fieldname": "admission_requirements_en",
+   "fieldname": "quality_en",
    "fieldtype": "Long Text",
-   "label": "Admission Requirements (EN)"
+   "label": "Quality (EN)"
+  },
+  {
+   "fieldname": "values_ar",
+   "fieldtype": "Long Text",
+   "label": "Values (AR)"
+  },
+  {
+   "fieldname": "values_en",
+   "fieldtype": "Long Text",
+   "label": "Values (EN)"
+  },
+  {
+   "fieldname": "strategy_ar",
+   "fieldtype": "Long Text",
+   "label": "Strategic Objectives (AR)"
+  },
+  {
+   "fieldname": "strategy_en",
+   "fieldtype": "Long Text",
+   "label": "Strategic Objectives (EN)"
   },
   {
    "fieldname": "icon",
@@ -121,16 +152,52 @@
    "label": "Programs JSON"
   },
   {
+   "fieldname": "dean_name_ar",
+   "fieldtype": "Data",
+   "label": "\u0627\u0633\u0645 \u0639\u0645\u064a\u062f \u0627\u0644\u0643\u0644\u064a\u0629 (\u0639\u0631\u0628\u064a)"
+  },
+  {
    "description": "\u0627\u0633\u0645 \u0627\u0644\u0639\u0645\u064a\u062f",
    "fieldname": "dean_name",
    "fieldtype": "Data",
-   "label": "Dean Name"
+   "label": "\u0627\u0633\u0645 \u0639\u0645\u064a\u062f \u0627\u0644\u0643\u0644\u064a\u0629"
+  },
+  {
+   "fieldname": "dean_name_en",
+   "fieldtype": "Data",
+   "label": "\u0627\u0633\u0645 \u0639\u0645\u064a\u062f \u0627\u0644\u0643\u0644\u064a\u0629 (English)"
+  },
+  {
+   "fieldname": "dean_image",
+   "fieldtype": "Attach Image",
+   "label": "\u0635\u0648\u0631\u0629 \u0639\u0645\u064a\u062f \u0627\u0644\u0643\u0644\u064a\u0629"
+  },
+  {
+   "fieldname": "department_head_name",
+   "fieldtype": "Data",
+   "label": "\u0627\u0633\u0645 \u0631\u0626\u064a\u0633 \u0627\u0644\u0642\u0633\u0645"
+  },
+  {
+   "fieldname": "department_head_name_en",
+   "fieldtype": "Data",
+   "label": "\u0627\u0633\u0645 \u0631\u0626\u064a\u0633 \u0627\u0644\u0642\u0633\u0645 (English)"
+  },
+  {
+   "fieldname": "department_head_image",
+   "fieldtype": "Attach Image",
+   "label": "\u0635\u0648\u0631\u0629 \u0631\u0626\u064a\u0633 \u0627\u0644\u0642\u0633\u0645"
   },
   {
    "description": "\u0635\u0648\u0631\u0629 \u0627\u0644\u0643\u0644\u064a\u0629",
    "fieldname": "image",
    "fieldtype": "Attach Image",
    "label": "Image"
+  },
+  {
+   "description": "\u0635\u0648\u0631\u0629 \u062e\u0644\u0641\u064a\u0629 \u0635\u0641\u062d\u0629 \u0627\u0644\u0643\u0644\u064a\u0629",
+   "fieldname": "background_image",
+   "fieldtype": "Attach Image",
+   "label": "Background Image"
   },
   {
    "default": "0",
@@ -154,7 +221,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-03-17 15:01:42.379700",
+ "modified": "2026-04-05 21:38:16.768925",
  "modified_by": "Administrator",
  "module": "AAU",
  "name": "Colleges",
@@ -182,6 +249,45 @@
    "report": 1,
    "role": "AAU Content Manager",
    "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "AAU Site Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "AAU Executive Manager"
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "AAU Coordinator",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "AAU Editor",
    "write": 1
   }
  ],

@@ -15,11 +15,22 @@
   "admission_rate",
   "high_school_type",
   "high_school_type_en",
+  "high_school_type_ar",
   "description",
   "description_ar",
   "description_en",
+  "objectives_ar",
+  "objectives_en",
+  "career_prospects_ar",
+  "career_prospects_en",
+  "application_steps_ar",
+  "application_steps_en",
+  "why_program_ar",
+  "why_program_en",
   "duration",
+  "duration_en",
   "study_years",
+  "study_years_en",
   "image",
   "is_active",
   "column_break_ypdg",
@@ -28,7 +39,7 @@
  ],
  "fields": [
   {
-   "description": "اسم البرنامج",
+   "description": "\u0627\u0633\u0645 \u0627\u0644\u0628\u0631\u0646\u0627\u0645\u062c",
    "fieldname": "program_name",
    "fieldtype": "Data",
    "in_list_view": 1,
@@ -36,27 +47,32 @@
    "reqd": 1
   },
   {
-   "description": "نوع الدرجة العلمية",
+   "description": "\u0646\u0648\u0639 \u0627\u0644\u062f\u0631\u062c\u0629 \u0627\u0644\u0639\u0644\u0645\u064a\u0629",
    "fieldname": "degree_type",
    "fieldtype": "Select",
    "label": "Degree Type",
    "options": "Diploma\nBachelor\nMaster\nPhD"
   },
   {
-   "description": "وصف البرنامج",
+   "description": "\u0648\u0635\u0641 \u0627\u0644\u0628\u0631\u0646\u0627\u0645\u062c",
    "fieldname": "description",
    "fieldtype": "Long Text",
    "label": "Description"
   },
   {
-   "description": "مدة الدراسة",
+   "description": "\u0645\u062f\u0629 \u0627\u0644\u062f\u0631\u0627\u0633\u0629",
    "fieldname": "duration",
    "fieldtype": "Data",
    "label": "Duration"
   },
   {
+   "fieldname": "duration_en",
+   "fieldtype": "Data",
+   "label": "Duration (English)"
+  },
+  {
    "default": "0",
-   "description": "مفعل",
+   "description": "\u0645\u0641\u0639\u0644",
    "fieldname": "is_active",
    "fieldtype": "Check",
    "label": "Is Active"
@@ -71,7 +87,7 @@
    "label": "Main Section"
   },
   {
-   "description": "الكلية التابعة",
+   "description": "\u0627\u0644\u0643\u0644\u064a\u0629 \u0627\u0644\u062a\u0627\u0628\u0639\u0629",
    "fieldname": "college",
    "fieldtype": "Link",
    "in_list_view": 1,
@@ -82,9 +98,9 @@
   {
    "fieldname": "id",
    "fieldtype": "Data",
+   "in_list_view": 1,
    "label": "ID",
-   "unique": 1,
-   "in_list_view": 1
+   "unique": 1
   },
   {
    "fieldname": "name_ar",
@@ -105,6 +121,46 @@
    "fieldname": "description_en",
    "fieldtype": "Long Text",
    "label": "Description (EN)"
+  },
+  {
+   "fieldname": "objectives_ar",
+   "fieldtype": "Long Text",
+   "label": "Program Objectives (AR)"
+  },
+  {
+   "fieldname": "objectives_en",
+   "fieldtype": "Long Text",
+   "label": "Program Objectives (EN)"
+  },
+  {
+   "fieldname": "career_prospects_ar",
+   "fieldtype": "Long Text",
+   "label": "Career Opportunities (AR)"
+  },
+  {
+   "fieldname": "career_prospects_en",
+   "fieldtype": "Long Text",
+   "label": "Career Opportunities (EN)"
+  },
+  {
+   "fieldname": "application_steps_ar",
+   "fieldtype": "Long Text",
+   "label": "Application Steps (AR)"
+  },
+  {
+   "fieldname": "application_steps_en",
+   "fieldtype": "Long Text",
+   "label": "Application Steps (EN)"
+  },
+  {
+   "fieldname": "why_program_ar",
+   "fieldtype": "Long Text",
+   "label": "Why This Program (AR)"
+  },
+  {
+   "fieldname": "why_program_en",
+   "fieldtype": "Long Text",
+   "label": "Why This Program (EN)"
   },
   {
    "fieldname": "department_ar",
@@ -132,9 +188,19 @@
    "label": "High School Type (EN)"
   },
   {
+   "fieldname": "high_school_type_ar",
+   "fieldtype": "Data",
+   "label": "High School Type (EN) (\u0639\u0631\u0628\u064a)"
+  },
+  {
    "fieldname": "study_years",
    "fieldtype": "Data",
    "label": "Study Years"
+  },
+  {
+   "fieldname": "study_years_en",
+   "fieldtype": "Data",
+   "label": "Study Years (English)"
   },
   {
    "fieldname": "image",
@@ -145,7 +211,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-03-15 15:23:39.547188",
+ "modified": "2026-04-05 22:52:22.252746",
  "modified_by": "Administrator",
  "module": "AAU",
  "name": "Academic Programs",
@@ -192,6 +258,37 @@
    "report": 1,
    "role": "Academics User",
    "share": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "AAU Site Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "AAU Executive Manager"
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "AAU Coordinator",
+   "share": 1,
+   "write": 1
   }
  ],
  "row_format": "Dynamic",

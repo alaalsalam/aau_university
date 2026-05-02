@@ -126,6 +126,14 @@ app_license = "mit"
 # 	"Event": "frappe.desk.doctype.event.event.has_permission",
 # }
 
+permission_query_conditions = {
+    "Colleges": "aau_university.aau.doctype.colleges.colleges.get_permission_query_conditions",
+}
+
+has_permission = {
+    "Colleges": "aau_university.aau.doctype.colleges.colleges.has_permission",
+}
+
 # DocType Class
 # ---------------
 # Override standard doctype classes

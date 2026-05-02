@@ -42,6 +42,7 @@
    "description": "\u0627\u0644\u0645\u0639\u0631\u0641 \u0627\u0644\u0641\u0631\u064a\u062f",
    "fieldname": "id",
    "fieldtype": "Data",
+   "in_list_view": 1,
    "label": "ID",
    "reqd": 1
   },
@@ -49,6 +50,7 @@
    "description": "\u0646\u0648\u0639 \u0627\u0644\u0637\u0644\u0628",
    "fieldname": "type",
    "fieldtype": "Select",
+   "in_list_view": 1,
    "label": "Type",
    "options": "student\nemployee",
    "reqd": 1
@@ -62,6 +64,7 @@
    "description": "\u0627\u0644\u0627\u0633\u0645 \u0627\u0644\u0643\u0627\u0645\u0644",
    "fieldname": "full_name",
    "fieldtype": "Data",
+   "in_list_view": 1,
    "label": "Name",
    "reqd": 1
   },
@@ -69,6 +72,7 @@
    "description": "\u0627\u0644\u0628\u0631\u064a\u062f \u0627\u0644\u0625\u0644\u0643\u062a\u0631\u0648\u0646\u064a",
    "fieldname": "email",
    "fieldtype": "Data",
+   "in_list_view": 1,
    "label": "Email",
    "reqd": 1
   },
@@ -195,7 +199,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-03-15 04:25:20.780812",
+ "modified": "2026-04-03 10:53:44.105309",
  "modified_by": "Administrator",
  "module": "AAU",
  "name": "Join Requests",
@@ -224,6 +228,25 @@
    "role": "AAU Content Manager",
    "share": 1,
    "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "AAU Site Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "AAU Executive Manager"
   }
  ],
  "row_format": "Dynamic",

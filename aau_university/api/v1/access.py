@@ -14,6 +14,13 @@ from .utils import ApiError, api_endpoint, require_roles
 
 DOCTOR_ROLE = "Instructor"
 STUDENT_ROLE = "Student"
+PORTAL_ROLE = "AAU Portal User"
+AAU_STUDENT_ROLE = "AAU Student User"
+AAU_INSTRUCTOR_ROLE = "AAU Instructor User"
+AAU_EDITOR_ROLE = "AAU Editor"
+AAU_COORDINATOR_ROLE = "AAU Coordinator"
+AAU_SITE_MANAGER_ROLE = "AAU Site Manager"
+AAU_EXECUTIVE_ROLE = "AAU Executive Manager"
 
 PERMISSION_CATALOG = [
     {
@@ -133,6 +140,51 @@ PERMISSION_CATALOG = [
         "descriptionEn": "Export reports",
         "category": "reports",
     },
+    {
+        "id": "p14",
+        "key": "users.reset_password",
+        "nameAr": "إعادة تعيين كلمات المرور",
+        "nameEn": "Reset User Passwords",
+        "descriptionAr": "إعادة تعيين كلمة مرور المستخدم",
+        "descriptionEn": "Reset user passwords",
+        "category": "users",
+    },
+    {
+        "id": "p15",
+        "key": "system.backup",
+        "nameAr": "النسخ الاحتياطي",
+        "nameEn": "Backup Management",
+        "descriptionAr": "الوصول إلى النسخ الاحتياطية وإدارتها",
+        "descriptionEn": "Access and manage backups",
+        "category": "settings",
+    },
+    {
+        "id": "p16",
+        "key": "content.publish",
+        "nameAr": "اعتماد ونشر المحتوى",
+        "nameEn": "Publish Content",
+        "descriptionAr": "اعتماد المحتوى قبل النشر وإظهاره في الموقع",
+        "descriptionEn": "Approve and publish content",
+        "category": "content",
+    },
+    {
+        "id": "p17",
+        "key": "academic.manage",
+        "nameAr": "إدارة الكليات والبرامج",
+        "nameEn": "Manage Colleges and Programs",
+        "descriptionAr": "إدارة الكليات والمراكز والأقسام والبرامج",
+        "descriptionEn": "Manage colleges, centers, departments and programs",
+        "category": "content",
+    },
+    {
+        "id": "p18",
+        "key": "visibility.toggle",
+        "nameAr": "إظهار وإخفاء العناصر",
+        "nameEn": "Toggle Visibility",
+        "descriptionAr": "إظهار وإخفاء الكليات والهيئة والمحتوى",
+        "descriptionEn": "Show and hide colleges, faculty and content",
+        "category": "content",
+    },
 ]
 
 ALL_PERMISSION_KEYS = [item["key"] for item in PERMISSION_CATALOG]
@@ -141,6 +193,13 @@ SYSTEM_ROLE_KEYS = {
     "Administrator",
     "AAU Admin",
     "AAU Content Manager",
+    AAU_EXECUTIVE_ROLE,
+    AAU_SITE_MANAGER_ROLE,
+    AAU_EDITOR_ROLE,
+    AAU_COORDINATOR_ROLE,
+    PORTAL_ROLE,
+    AAU_STUDENT_ROLE,
+    AAU_INSTRUCTOR_ROLE,
     "Website Manager",
     "Blogger",
     STUDENT_ROLE,
@@ -154,6 +213,26 @@ ROLE_PERMISSION_MAP = {
     "AAU Content Manager": ["content.news", "content.events", "content.projects", "content.media", "settings.general"],
     "Website Manager": ["content.news", "content.events", "content.projects", "content.media", "settings.general"],
     "Blogger": ["content.news"],
+    AAU_SITE_MANAGER_ROLE: ALL_PERMISSION_KEYS,
+    AAU_EXECUTIVE_ROLE: ["reports.view", "reports.export", "users.view", "content.publish", "system.backup"],
+    AAU_EDITOR_ROLE: [
+        "content.news",
+        "content.events",
+        "content.projects",
+        "content.media",
+        "content.publish",
+        "reports.view",
+        "visibility.toggle",
+    ],
+    AAU_COORDINATOR_ROLE: [
+        "academic.manage",
+        "reports.view",
+        "reports.export",
+        "visibility.toggle",
+    ],
+    PORTAL_ROLE: [],
+    AAU_STUDENT_ROLE: [],
+    AAU_INSTRUCTOR_ROLE: ["reports.view"],
     DOCTOR_ROLE: ["reports.view"],
     STUDENT_ROLE: [],
 }
@@ -166,7 +245,22 @@ def _role_permissions(role_name: str) -> list[str]:
 
 
 def _primary_role(user_roles: list[str]) -> str:
-    priority = ["System Manager", "Administrator", "AAU Admin", "AAU Content Manager", "Website Manager", DOCTOR_ROLE, STUDENT_ROLE]
+    priority = [
+        "System Manager",
+        "Administrator",
+        "AAU Admin",
+        AAU_SITE_MANAGER_ROLE,
+        AAU_EXECUTIVE_ROLE,
+        "AAU Content Manager",
+        AAU_EDITOR_ROLE,
+        AAU_COORDINATOR_ROLE,
+        "Website Manager",
+        AAU_INSTRUCTOR_ROLE,
+        DOCTOR_ROLE,
+        AAU_STUDENT_ROLE,
+        STUDENT_ROLE,
+        PORTAL_ROLE,
+    ]
     for role_name in priority:
         if role_name in user_roles:
             return role_name

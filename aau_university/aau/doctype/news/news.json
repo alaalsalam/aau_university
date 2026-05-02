@@ -1,31 +1,34 @@
 {
  "actions": [],
  "allow_rename": 1,
- "creation": "2026-01-10 22:17:00",
+ "creation": "2026-04-01 20:06:57.729955",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
   "section_news",
   "title",
-  "slug",
+  "title_en",
   "news_identity_column",
-  "summary",
-  "content",
-  "date",
-  "tags",
-  "views",
+  "slug",
   "publish_date",
+  "date",
+  "college",
+  "summary",
+  "summary_en",
+  "description_en",
+  "content",
+  "content_en",
+  "tags",
+  "tags_en",
   "image",
   "featured_image",
+  "is_published",
+  "display_order",
   "translation_section",
   "title_ar",
-  "title_en",
   "description_ar",
-  "description_en",
   "content_ar",
-  "content_en",
-  "is_published",
-  "display_order"
+  "views"
  ],
  "fields": [
   {
@@ -38,7 +41,7 @@
    "fieldname": "title",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "\u0639\u0646\u0648\u0627\u0646 \u0627\u0644\u062e\u0628\u0631",
+   "label": "\u0639\u0646\u0648\u0627\u0646 \u0627\u0644\u062e\u0628\u0631 (\u0639\u0631\u0628\u064a)",
    "reqd": 1
   },
   {
@@ -57,37 +60,34 @@
    "fieldname": "title_ar",
    "fieldtype": "Data",
    "hidden": 1,
-   "label": "Title (AR)"
+   "label": "\u0639\u0646\u0648\u0627\u0646 \u062f\u0627\u062e\u0644\u064a \u0639\u0631\u0628\u064a"
   },
   {
    "fieldname": "title_en",
    "fieldtype": "Data",
-   "hidden": 1,
-   "label": "Title (EN)"
+   "label": "\u0639\u0646\u0648\u0627\u0646 \u0627\u0644\u062e\u0628\u0631 (English)"
   },
   {
    "fieldname": "description_ar",
    "fieldtype": "Small Text",
    "hidden": 1,
-   "label": "Description (AR)"
+   "label": "\u0645\u0644\u062e\u0635 \u062f\u0627\u062e\u0644\u064a \u0639\u0631\u0628\u064a"
   },
   {
    "fieldname": "description_en",
    "fieldtype": "Small Text",
-   "hidden": 1,
-   "label": "Description (EN)"
+   "label": "\u0645\u0644\u062e\u0635 \u0627\u0644\u062e\u0628\u0631 (English)"
   },
   {
    "fieldname": "content_ar",
    "fieldtype": "Long Text",
    "hidden": 1,
-   "label": "Content (AR)"
+   "label": "\u0645\u062d\u062a\u0648\u0649 \u062f\u0627\u062e\u0644\u064a \u0639\u0631\u0628\u064a"
   },
   {
    "fieldname": "content_en",
    "fieldtype": "Long Text",
-   "hidden": 1,
-   "label": "Content (EN)"
+   "label": "\u0645\u062d\u062a\u0648\u0649 \u0627\u0644\u062e\u0628\u0631 (English)"
   },
   {
    "fieldname": "date",
@@ -95,9 +95,20 @@
    "label": "\u062a\u0627\u0631\u064a\u062e \u0627\u0644\u062e\u0628\u0631"
   },
   {
+   "fieldname": "college",
+   "fieldtype": "Link",
+   "label": "\u0627\u0644\u0643\u0644\u064a\u0629 \u0627\u0644\u0645\u0631\u062a\u0628\u0637\u0629",
+   "options": "Colleges"
+  },
+  {
    "fieldname": "tags",
    "fieldtype": "Small Text",
    "label": "\u0627\u0644\u0648\u0633\u0648\u0645"
+  },
+  {
+   "fieldname": "tags_en",
+   "fieldtype": "Small Text",
+   "label": "\u0627\u0644\u0648\u0633\u0648\u0645 (English)"
   },
   {
    "default": "0",
@@ -116,7 +127,7 @@
    "description": "\u0645\u062d\u062a\u0648\u0649 \u0627\u0644\u062e\u0628\u0631",
    "fieldname": "content",
    "fieldtype": "Long Text",
-   "label": "\u0645\u062d\u062a\u0648\u0649 \u0627\u0644\u062e\u0628\u0631"
+   "label": "\u0645\u062d\u062a\u0648\u0649 \u0627\u0644\u062e\u0628\u0631 (\u0639\u0631\u0628\u064a)"
   },
   {
    "fieldname": "image",
@@ -134,7 +145,12 @@
    "description": "\u0645\u0644\u062e\u0635 \u0627\u0644\u062e\u0628\u0631",
    "fieldname": "summary",
    "fieldtype": "Small Text",
-   "label": "\u0645\u0644\u062e\u0635 \u0627\u0644\u062e\u0628\u0631"
+   "label": "\u0645\u0644\u062e\u0635 \u0627\u0644\u062e\u0628\u0631 (\u0639\u0631\u0628\u064a)"
+  },
+  {
+   "fieldname": "summary_en",
+   "fieldtype": "Small Text",
+   "label": "\u0645\u0644\u062e\u0635 \u0627\u0644\u062e\u0628\u0631 (English)"
   },
   {
    "description": "\u0627\u0644\u0635\u0648\u0631\u0629 \u0627\u0644\u0631\u0626\u064a\u0633\u064a\u0629",
@@ -152,13 +168,13 @@
    "collapsible": 1,
    "fieldname": "translation_section",
    "fieldtype": "Section Break",
-   "label": "\u062d\u0642\u0648\u0644 \u062f\u0627\u062e\u0644\u064a\u0629 \u0644\u0644\u062a\u0631\u062c\u0645\u0629"
+   "label": "\u062d\u0642\u0648\u0644 \u0646\u0638\u0627\u0645 \u062f\u0627\u062e\u0644\u064a\u0629 (\u0644\u0644\u0645\u0632\u0627\u0645\u0646\u0629)"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-03-17 15:05:47.741934",
+ "modified": "2026-04-03 10:53:44.420111",
  "modified_by": "Administrator",
  "module": "AAU",
  "name": "News",
@@ -184,6 +200,37 @@
    "read": 1,
    "report": 1,
    "role": "AAU Content Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "AAU Site Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "AAU Executive Manager"
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "AAU Editor",
    "share": 1,
    "write": 1
   }

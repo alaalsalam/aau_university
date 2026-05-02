@@ -7,7 +7,7 @@ from decimal import Decimal
 from typing import Any
 
 import frappe
-from frappe.utils import cint
+from frappe.utils import cint, getdate, now_datetime
 from frappe.utils.file_manager import save_file
 
 from .utils import ApiError, api_endpoint, require_auth
@@ -2517,6 +2517,132 @@ def list_student_admission_requests():
 def mark_student_notification_read(notification_id: str):
     """Mark student notification as read."""
     return _mark_notification(notification_id)
+
+
+@frappe.whitelist()
+@api_endpoint
+def get_student_survey_status():
+    """Return survey completion status for current student."""
+    student = _find_student_by_current_user(required=True)
+    if not frappe.db.exists("DocType", "Student Portal Survey Response"):
+        return {
+            "enabled": False,
+            "required": False,
+            "submittedToday": False,
+            "lastSubmittedOn": None,
+            "totalSubmitted": 0,
+        }
+
+    student_name = _clean(student.get("name"))
+    rows = frappe.get_all(
+        "Student Portal Survey Response",
+        filters={"student": student_name},
+        fields=["name", "submitted_on", "creation"],
+        order_by="creation desc",
+        ignore_permissions=True,
+        limit_page_length=1,
+    )
+    total = frappe.db.count("Student Portal Survey Response", filters={"student": student_name}, cache=False)
+    last_submitted = rows[0].get("submitted_on") if rows else None
+    last_date = getdate(last_submitted) if last_submitted else None
+    today = getdate(now_datetime())
+    submitted_today = bool(last_date and last_date == today)
+    submitted_before = cint(total) > 0
+
+    return {
+        "enabled": True,
+        # The survey is required once on first portal entry, then stays optional.
+        "required": not submitted_before,
+        "submittedToday": submitted_today,
+        "submittedBefore": submitted_before,
+        "lastSubmittedOn": _iso(last_submitted or (rows[0].get("creation") if rows else None)),
+        "totalSubmitted": cint(total),
+    }
+
+
+@frappe.whitelist()
+@api_endpoint
+def submit_student_survey(**payload):
+    """Submit or update today's student survey response."""
+    student = _find_student_by_current_user(required=True)
+    if not frappe.db.exists("DocType", "Student Portal Survey Response"):
+        raise ApiError("NOT_IMPLEMENTED", "Student survey doctype is not configured.", status_code=501)
+
+    merged = frappe._dict({})
+    merged.update(getattr(frappe.local, "form_dict", {}) or {})
+    if frappe.request:
+        try:
+            body = frappe.request.get_json(silent=True) or {}
+            if isinstance(body, dict):
+                merged.update(body)
+        except Exception:
+            pass
+    if isinstance(payload, dict):
+        merged.update(payload)
+
+    rating = cint(merged.get("digitalServices") or merged.get("digital_services"))
+    campus_life = _clean(merged.get("campusLife") or merged.get("campus_life"))
+    academic_support = _clean(merged.get("academicSupport") or merged.get("academic_support"))
+    suggestions = _clean(merged.get("suggestions"))
+    language = _clean(merged.get("language") or frappe.local.lang or "ar")
+    submitted_from = _clean(merged.get("submittedFrom") or "student-dashboard")
+
+    if rating < 1 or rating > 5:
+        raise ApiError("VALIDATION_ERROR", "digitalServices must be between 1 and 5.", status_code=400)
+    if not campus_life:
+        raise ApiError("VALIDATION_ERROR", "campusLife is required.", status_code=400)
+    if not academic_support:
+        raise ApiError("VALIDATION_ERROR", "academicSupport is required.", status_code=400)
+
+    student_name = _clean(student.get("name"))
+    user_identity = _user_identity()
+    now_ts = now_datetime()
+    today = getdate(now_ts)
+
+    latest = frappe.get_all(
+        "Student Portal Survey Response",
+        filters={"student": student_name},
+        fields=["name", "submitted_on", "creation"],
+        order_by="creation desc",
+        ignore_permissions=True,
+        limit_page_length=1,
+    )
+
+    doc = None
+    if latest:
+        submitted_on = latest[0].get("submitted_on") or latest[0].get("creation")
+        if submitted_on and getdate(submitted_on) == today:
+            doc = frappe.get_doc("Student Portal Survey Response", latest[0]["name"])
+
+    if not doc:
+        doc = frappe.new_doc("Student Portal Survey Response")
+        doc.student = student_name
+        doc.status = "Submitted"
+
+    doc.student_name_ar = _clean(student.get("student_name") or student.get("title"))
+    doc.student_name_en = _clean(student.get("student_name") or student.get("title"))
+    doc.academic_number = _clean(student.get("name"))
+    doc.user = _clean(user_identity.get("user"))
+    doc.submitted_on = now_ts
+    doc.digital_services = rating
+    doc.campus_life = campus_life
+    doc.academic_support = academic_support
+    doc.suggestions = suggestions
+    doc.submitted_from = submitted_from
+    doc.language = language
+
+    if doc.is_new():
+        doc.insert(ignore_permissions=True)
+    else:
+        doc.save(ignore_permissions=True)
+    frappe.db.commit()
+
+    return {
+        "ok": True,
+        "submittedOn": _iso(doc.submitted_on),
+        "responseId": doc.name,
+        "submittedToday": True,
+    }
 
 
 @frappe.whitelist()

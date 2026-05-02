@@ -6,8 +6,11 @@
  "engine": "InnoDB",
  "field_order": [
   "group_name_ar",
+  "group_name_en",
   "full_name_ar",
+  "full_name_en",
   "job_title_ar",
+  "job_title_en",
   "member_image",
   "display_order"
  ],
@@ -41,12 +44,30 @@
    "fieldtype": "Int",
    "in_list_view": 1,
    "label": "\u0627\u0644\u062a\u0631\u062a\u064a\u0628"
+  },
+  {
+   "fieldname": "group_name_en",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Group (EN)"
+  },
+  {
+   "fieldname": "full_name_en",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Name (EN)"
+  },
+  {
+   "fieldname": "job_title_en",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Job Title (EN)"
   }
  ],
  "grid_page_length": 50,
  "istable": 1,
  "links": [],
- "modified": "2026-03-15 15:05:00",
+ "modified": "2026-04-08 09:20:18.134389",
  "modified_by": "Administrator",
  "module": "AAU",
  "name": "About Team Member",

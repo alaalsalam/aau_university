@@ -160,6 +160,12 @@ def ensure_routes():
         Rule("/contact-messages/<path:message_id>", methods=["GET"], endpoint=public.get_contact_message),
         Rule("/contact-messages/<path:message_id>", methods=["DELETE"], endpoint=public.delete_contact_message),
         Rule("/contact-messages/<path:message_id>/status", methods=["PUT"], endpoint=public.update_contact_message_status),
+        # Email requests
+        Rule("/email-requests", methods=["GET"], endpoint=public.list_email_requests),
+        Rule("/email-requests", methods=["POST"], endpoint=public.create_email_request),
+        Rule("/email-requests/<path:request_id>", methods=["GET"], endpoint=public.get_email_request),
+        Rule("/email-requests/<path:request_id>", methods=["DELETE"], endpoint=public.delete_email_request),
+        Rule("/email-requests/<path:request_id>/status", methods=["PUT"], endpoint=public.update_email_request_status),
         # Join requests
         Rule("/join-requests", methods=["GET"], endpoint=public.list_join_requests),
         Rule("/join-requests", methods=["POST"], endpoint=public.create_join_request),
@@ -178,6 +184,7 @@ def ensure_routes():
         Rule("/aau/colleges", methods=["GET"], endpoint=public.list_public_colleges),
         Rule("/aau/colleges/<path:slug>", methods=["GET"], endpoint=public.get_public_college),
         Rule("/aau/page/<path:slug>", methods=["GET"], endpoint=public.get_public_page),
+        Rule("/aau/student-affairs/docs", methods=["GET"], endpoint=public.list_student_affairs_documents),
         Rule("/aau/menu/<path:key>", methods=["GET"], endpoint=public.get_public_menu),
         Rule("/aau/profile", methods=["GET"], endpoint=public.get_site_profile),
         Rule("/aau/profile", methods=["PUT"], endpoint=public.update_site_profile),
@@ -239,6 +246,8 @@ def ensure_routes():
         Rule("/student/admission-requests", methods=["GET"], endpoint=portal.list_student_admission_requests),
         Rule("/student/notifications", methods=["GET"], endpoint=portal.list_student_notifications),
         Rule("/student/notifications/<path:notification_id>/read", methods=["PUT"], endpoint=portal.mark_student_notification_read),
+        Rule("/student/survey", methods=["GET"], endpoint=portal.get_student_survey_status),
+        Rule("/student/survey", methods=["POST"], endpoint=portal.submit_student_survey),
         # Messages
         Rule("/messages/conversations", methods=["GET"], endpoint=portal.list_conversations),
         Rule("/messages/conversations/<path:conversation_id>", methods=["GET"], endpoint=portal.get_conversation),

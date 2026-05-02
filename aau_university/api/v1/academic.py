@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import frappe
+import re
 from frappe.translate import get_all_translations
 from frappe.utils import cint
 
@@ -62,9 +63,29 @@ def list_college_programs(college_id: str):
     }
     desired = [
         "name",
+        "id",
         "program_name",
+        "name_ar",
+        "name_en",
         "degree_type",
         "description",
+        "description_ar",
+        "description_en",
+        "objectives_ar",
+        "objectives_en",
+        "career_prospects_ar",
+        "career_prospects_en",
+        "application_steps_ar",
+        "application_steps_en",
+        "why_program_ar",
+        "why_program_en",
+        "department_ar",
+        "department_en",
+        "admission_rate",
+        "high_school_type",
+        "high_school_type_en",
+        "study_years",
+        "image",
         "duration",
         "is_active",
         "college",
@@ -392,12 +413,12 @@ def _enrich_college_payload(payload: dict) -> dict:
     extra = frappe.db.get_value(
         "Colleges",
         docname,
-        ["college_name", "dean_name"],
+        ["college_name", "dean_name_ar", "dean_name"],
         as_dict=True,
     ) or {}
 
     college_name = extra.get("college_name")
-    dean_name = extra.get("dean_name")
+    dean_name = extra.get("dean_name_ar") or extra.get("dean_name")
     if college_name and not row.get("collegeName"):
         row["collegeName"] = college_name
     if dean_name and not row.get("deanName"):
@@ -409,6 +430,29 @@ def _public_college_slug(source: str | None) -> str:
     if not source:
         return ""
     return frappe.scrub(source).replace("_", "-").strip("-")
+
+
+def _canonical_public_college_slug(payload: dict) -> str:
+    row = payload or {}
+    slug = _as_text(row.get("slug"))
+    name_ar = _as_text(row.get("nameAr") or row.get("collegeName"))
+    name_en = _as_text(row.get("nameEn"))
+    icon = _as_text(row.get("icon")).lower()
+    haystack = f"{name_ar} {name_en}".lower()
+
+    if slug in {"medicine", "health-sciences", "engineering-it", "business-humanities"}:
+        return slug
+
+    if icon == "stethoscope" or "الطب البشري" in haystack or "human medicine" in haystack:
+        return "medicine"
+    if icon == "heart" or "العلوم الطبية" in haystack or "health sciences" in haystack or "medical and health sciences" in haystack:
+        return "health-sciences"
+    if icon == "settings" or "الهندسة" in haystack or "engineering" in haystack or "technology" in haystack or "تكنولوجيا المعلومات" in haystack:
+        return "engineering-it"
+    if icon == "briefcase" or "العلوم الإدارية" in haystack or "administrative" in haystack or "humanitarian" in haystack:
+        return "business-humanities"
+
+    return slug or _public_college_slug(name_ar or name_en)
 
 
 def _normalize_public_college_row(payload: dict | None) -> dict | None:
@@ -425,7 +469,7 @@ def _normalize_public_college_row(payload: dict | None) -> dict | None:
     if not is_active or not display_name:
         return None
 
-    slug = (row.get("slug") or "").strip() or _public_college_slug(display_name)
+    slug = _canonical_public_college_slug(row) or _public_college_slug(display_name)
     if not slug:
         return None
 
@@ -477,7 +521,17 @@ def _resolve_college_docname(college_id: str) -> str:
     if frappe.db.exists("Colleges", college_id):
         return college_id
 
-    for filters in ({"slug": college_id}, {"id": college_id}, {"name_ar": college_id}, {"name_en": college_id}, {"college_name": college_id}):
+    meta = frappe.get_meta("Colleges")
+    available_fields = {
+        df.fieldname
+        for df in meta.fields
+        if df.fieldname and df.fieldtype not in {"Section Break", "Column Break", "Tab Break", "Fold", "HTML", "Button"}
+    }
+
+    for fieldname in ("slug", "id", "name_ar", "name_en", "college_name"):
+        if fieldname not in available_fields:
+            continue
+        filters = {fieldname: college_id}
         resolved = frappe.db.get_value("Colleges", filters, "name")
         if resolved:
             return resolved
@@ -486,20 +540,48 @@ def _resolve_college_docname(college_id: str) -> str:
 
 
 def _serialize_program_row(row: dict) -> dict:
+    name_ar = row.get("name_ar") or row.get("program_name") or ""
+    name_en = row.get("name_en") or ""
     description = row.get("description") or ""
+    description_ar = row.get("description_ar") or description
+    description_en = row.get("description_en") or ""
+    objectives_ar = _split_text_lines(row.get("objectives_ar"))
+    objectives_en = _split_text_lines(row.get("objectives_en"))
+    career_ar = _split_text_lines(row.get("career_prospects_ar"))
+    career_en = _split_text_lines(row.get("career_prospects_en"))
+    application_steps_ar = _split_text_lines(row.get("application_steps_ar"))
+    application_steps_en = _split_text_lines(row.get("application_steps_en"))
+    why_program_ar = _split_text_lines(row.get("why_program_ar"))
+    why_program_en = _split_text_lines(row.get("why_program_en"))
     return {
-        "id": row.get("name"),
+        "id": row.get("id") or row.get("name"),
         "programName": row.get("program_name") or "",
-        "nameAr": row.get("program_name") or "",
-        "nameEn": row.get("program_name") or "",
+        "nameAr": name_ar,
+        "nameEn": name_en,
         "degreeType": row.get("degree_type"),
         "description": description,
-        "descriptionAr": description,
-        "descriptionEn": description,
-        "duration": row.get("duration") or "",
-        "studyYears": row.get("duration") or "",
+        "descriptionAr": description_ar,
+        "descriptionEn": description_en,
+        "departmentAr": row.get("department_ar") or "",
+        "departmentEn": row.get("department_en") or "",
+        "admissionRate": cint(row.get("admission_rate") or 0),
+        "highSchoolType": row.get("high_school_type") or "علمي",
+        "highSchoolTypeEn": row.get("high_school_type_en") or "",
+        "image": row.get("image") or "",
+        "duration": row.get("duration") or row.get("study_years") or "",
+        "studyYears": row.get("study_years") or row.get("duration") or "",
+        "studyYearsEn": row.get("study_years_en") or row.get("duration_en") or row.get("study_years") or row.get("duration") or "",
         "isActive": cint(row.get("is_active")),
         "college": row.get("college"),
+        "updatedAt": _as_text(row.get("modified")),
+        "objectives": _merge_program_objectives(objectives_ar, objectives_en),
+        "careerProspectsAr": career_ar,
+        "careerProspectsEn": career_en or [_translated_text(item) for item in career_ar],
+        "applicationStepsAr": application_steps_ar,
+        "applicationStepsEn": application_steps_en or [_translated_text(item) for item in application_steps_ar],
+        "whyProgramAr": why_program_ar,
+        "whyProgramEn": why_program_en or [_translated_text(item) for item in why_program_ar],
+        "facultyMembers": _list_program_faculty_members(_as_text(row.get("name"))),
     }
 
 
@@ -520,7 +602,20 @@ def _list_faculty_payload(include_inactive: bool = False, college_name: str | No
     rows = frappe.get_all(
         "Faculty Members",
         filters=filters,
-        fields=["name", "full_name", "academic_title", "department", "linked_college", "biography", "photo", "is_active"],
+        fields=[
+            "name",
+            "full_name",
+            "full_name_en",
+            "academic_title",
+            "academic_title_en",
+            "department",
+            "linked_college",
+            "linked_program",
+            "biography",
+            "biography_en",
+            "photo",
+            "is_active",
+        ],
         order_by="modified desc",
         ignore_permissions=True,
         limit_page_length=0,
@@ -596,10 +691,14 @@ def _get_faculty_payload(member_id: str) -> dict:
 
 def _serialize_faculty_row(row) -> dict:
     full_name = _as_text(_doc_value(row, "full_name"))
+    full_name_en = _as_text(_doc_value(row, "full_name_en"))
     academic_title = _as_text(_doc_value(row, "academic_title"))
+    academic_title_en = _as_text(_doc_value(row, "academic_title_en"))
     biography = _as_text(_doc_value(row, "biography"))
+    biography_en = _as_text(_doc_value(row, "biography_en"))
     department_link = _as_text(_doc_value(row, "department"))
     linked_college = _as_text(_doc_value(row, "linked_college"))
+    linked_program = _as_text(_doc_value(row, "linked_program"))
     department_name, department_college_name = _resolve_department_names(department_link)
     college_name = linked_college or department_college_name
     college_label = _resolve_college_label(college_name)
@@ -608,41 +707,115 @@ def _serialize_faculty_row(row) -> dict:
     college_ar = college_label or department_ar
     college_en = _translated_text(college_ar)
 
+    research_interests_ar = [
+        item.strip()
+        for item in _as_text(_doc_value(row, "research_interests_ar")).replace("\r", "").split("\n")
+        if item.strip()
+    ]
+    research_interests_en = [
+        item.strip()
+        for item in _as_text(_doc_value(row, "research_interests_en")).replace("\r", "").split("\n")
+        if item.strip()
+    ]
+    publications = []
+    for item in (_doc_value(row, "publications") or []):
+        publications.append(
+            {
+                "id": _as_text(getattr(item, "name", "") or item.get("name")),
+                "titleAr": _as_text(getattr(item, "title_ar", "") or item.get("title_ar")),
+                "titleEn": _as_text(getattr(item, "title_en", "") or item.get("title_en")) or _translated_text(_as_text(getattr(item, "title_ar", "") or item.get("title_ar"))),
+                "journal": _as_text(getattr(item, "journal", "") or item.get("journal")),
+                "year": _as_text(getattr(item, "year", "") or item.get("year")),
+                "link": _as_text(getattr(item, "link", "") or item.get("link")),
+            }
+        )
+    courses = []
+    for item in (_doc_value(row, "courses") or []):
+        courses.append(
+            {
+                "id": _as_text(getattr(item, "name", "") or item.get("name")),
+                "code": _as_text(getattr(item, "code", "") or item.get("code")),
+                "nameAr": _as_text(getattr(item, "name_ar", "") or item.get("name_ar")),
+                "nameEn": _as_text(getattr(item, "name_en", "") or item.get("name_en")) or _translated_text(_as_text(getattr(item, "name_ar", "") or item.get("name_ar"))),
+                "semester": _as_text(getattr(item, "semester", "") or item.get("semester")),
+            }
+        )
+    education = []
+    for item in (_doc_value(row, "education") or []):
+        education.append(
+            {
+                "id": _as_text(getattr(item, "name", "") or item.get("name")),
+                "degreeAr": _as_text(getattr(item, "degree_ar", "") or item.get("degree_ar")),
+                "degreeEn": _as_text(getattr(item, "degree_en", "") or item.get("degree_en")) or _translated_text(_as_text(getattr(item, "degree_ar", "") or item.get("degree_ar"))),
+                "institutionAr": _as_text(getattr(item, "institution_ar", "") or item.get("institution_ar")),
+                "institutionEn": _as_text(getattr(item, "institution_en", "") or item.get("institution_en")) or _translated_text(_as_text(getattr(item, "institution_ar", "") or item.get("institution_ar"))),
+                "year": _as_text(getattr(item, "year", "") or item.get("year")),
+            }
+        )
+    experience = []
+    for item in (_doc_value(row, "experience") or []):
+        experience.append(
+            {
+                "id": _as_text(getattr(item, "name", "") or item.get("name")),
+                "positionAr": _as_text(getattr(item, "position_ar", "") or item.get("position_ar")),
+                "positionEn": _as_text(getattr(item, "position_en", "") or item.get("position_en")) or _translated_text(_as_text(getattr(item, "position_ar", "") or item.get("position_ar"))),
+                "organizationAr": _as_text(getattr(item, "organization_ar", "") or item.get("organization_ar")),
+                "organizationEn": _as_text(getattr(item, "organization_en", "") or item.get("organization_en")) or _translated_text(_as_text(getattr(item, "organization_ar", "") or item.get("organization_ar"))),
+                "periodAr": _as_text(getattr(item, "period_ar", "") or item.get("period_ar")),
+                "periodEn": _as_text(getattr(item, "period_en", "") or item.get("period_en")) or _translated_text(_as_text(getattr(item, "period_ar", "") or item.get("period_ar"))),
+            }
+        )
+
     return {
         "id": _doc_value(row, "name"),
         "nameAr": full_name,
-        "nameEn": _translated_text(full_name),
+        "nameEn": full_name_en or _translated_text(full_name),
         "degreeAr": academic_title,
-        "degreeEn": _translated_text(academic_title),
+        "degreeEn": academic_title_en or _translated_text(academic_title),
         "specializationAr": department_ar,
         "specializationEn": department_en,
         "collegeAr": college_ar,
         "collegeEn": college_en,
         "linkedCollege": college_name,
+        "linkedProgram": linked_program,
         "departmentAr": department_ar,
         "departmentEn": department_en,
         "email": _as_text(_doc_value(row, "email")),
         "phone": _as_text(_doc_value(row, "phone")),
         "bioAr": biography,
-        "bioEn": _translated_text(biography),
+        "bioEn": biography_en or _translated_text(biography),
         "image": _as_text(_doc_value(row, "photo") or _doc_value(row, "image")),
         "officeHoursAr": _as_text(_doc_value(row, "office_hours")),
-        "officeHoursEn": _translated_text(_as_text(_doc_value(row, "office_hours"))),
-        "researchInterestsAr": [],
-        "researchInterestsEn": [],
-        "publications": [],
-        "courses": [],
-        "education": [],
-        "experience": [],
+        "officeHoursEn": _as_text(_doc_value(row, "office_hours_en")) or _translated_text(_as_text(_doc_value(row, "office_hours"))),
+        "researchInterestsAr": research_interests_ar,
+        "researchInterestsEn": research_interests_en or [_translated_text(item) for item in research_interests_ar if _translated_text(item)],
+        "publications": publications,
+        "courses": courses,
+        "education": education,
+        "experience": experience,
     }
 
 
 def _normalize_faculty_payload(payload: dict, is_update: bool = False) -> dict:
     name_ar = _payload_value(payload, "nameAr", "name_ar", "full_name")
+    name_en = _payload_value(payload, "nameEn", "name_en", "full_name_en")
     degree_ar = _payload_value(payload, "degreeAr", "degree_ar", "academic_title")
+    degree_en = _payload_value(payload, "degreeEn", "degree_en", "academic_title_en")
     department = _payload_value(payload, "departmentAr", "department_ar", "department", "specializationAr", "specialization_ar", "collegeAr", "college_ar")
     linked_college = _payload_value(payload, "linkedCollege", "linked_college")
+    linked_program = _payload_value(payload, "linkedProgram", "linked_program")
     biography = _payload_value(payload, "bioAr", "bio_ar", "biography")
+    biography_en = _payload_value(payload, "bioEn", "bio_en", "biography_en")
+    email = _payload_value(payload, "email")
+    phone = _payload_value(payload, "phone")
+    office_hours = _payload_value(payload, "officeHoursAr", "office_hours")
+    office_hours_en = _payload_value(payload, "officeHoursEn", "office_hours_en")
+    research_interests_ar = payload.get("researchInterestsAr") or payload.get("research_interests_ar")
+    research_interests_en = payload.get("researchInterestsEn") or payload.get("research_interests_en")
+    publications = payload.get("publications")
+    courses = payload.get("courses")
+    education = payload.get("education")
+    experience = payload.get("experience")
     photo = _payload_value(payload, "image", "photo")
     is_active = payload.get("is_active")
     if is_active is None:
@@ -651,17 +824,89 @@ def _normalize_faculty_payload(payload: dict, is_update: bool = False) -> dict:
     normalized = {}
     if not is_update:
         normalized["doctype"] = "Faculty Members"
-    if name_ar:
+    if _payload_has_any_key(payload, "nameAr", "name_ar", "full_name"):
         normalized["full_name"] = name_ar
-    if degree_ar:
+    if _payload_has_any_key(payload, "nameEn", "name_en", "full_name_en"):
+        normalized["full_name_en"] = name_en
+    if _payload_has_any_key(payload, "degreeAr", "degree_ar", "academic_title"):
         normalized["academic_title"] = degree_ar
-    if department:
+    if _payload_has_any_key(payload, "degreeEn", "degree_en", "academic_title_en"):
+        normalized["academic_title_en"] = degree_en
+    if _payload_has_any_key(payload, "departmentAr", "department_ar", "department", "specializationAr", "specialization_ar", "collegeAr", "college_ar"):
         normalized["department"] = department
-    if linked_college:
+    if _payload_has_any_key(payload, "linkedCollege", "linked_college"):
         normalized["linked_college"] = _resolve_college_docname(linked_college)
-    if biography:
+    if _payload_has_any_key(payload, "linkedProgram", "linked_program"):
+        normalized["linked_program"] = linked_program
+    if _payload_has_any_key(payload, "bioAr", "bio_ar", "biography"):
         normalized["biography"] = biography
-    if photo:
+    if _payload_has_any_key(payload, "bioEn", "bio_en", "biography_en"):
+        normalized["biography_en"] = biography_en
+    if _payload_has_any_key(payload, "email"):
+        normalized["email"] = email
+    if _payload_has_any_key(payload, "phone"):
+        normalized["phone"] = phone
+    if _payload_has_any_key(payload, "officeHoursAr", "office_hours"):
+        normalized["office_hours"] = office_hours
+    if _payload_has_any_key(payload, "officeHoursEn", "office_hours_en"):
+        normalized["office_hours_en"] = office_hours_en
+    if research_interests_ar is not None:
+        normalized["research_interests_ar"] = "\n".join(
+            [str(item).strip() for item in (research_interests_ar if isinstance(research_interests_ar, list) else str(research_interests_ar).split("\n")) if str(item).strip()]
+        )
+    if research_interests_en is not None:
+        normalized["research_interests_en"] = "\n".join(
+            [str(item).strip() for item in (research_interests_en if isinstance(research_interests_en, list) else str(research_interests_en).split("\n")) if str(item).strip()]
+        )
+    if isinstance(publications, list):
+        normalized["publications"] = [
+            {
+                "doctype": "Faculty Publication",
+                "title_ar": _payload_value(item, "titleAr", "title_ar"),
+                "title_en": _payload_value(item, "titleEn", "title_en"),
+                "journal": _payload_value(item, "journal"),
+                "year": _payload_value(item, "year"),
+                "link": _payload_value(item, "link"),
+            }
+            for item in publications
+        ]
+    if isinstance(courses, list):
+        normalized["courses"] = [
+            {
+                "doctype": "Faculty Course",
+                "code": _payload_value(item, "code"),
+                "name_ar": _payload_value(item, "nameAr", "name_ar"),
+                "name_en": _payload_value(item, "nameEn", "name_en"),
+                "semester": _payload_value(item, "semester"),
+            }
+            for item in courses
+        ]
+    if isinstance(education, list):
+        normalized["education"] = [
+            {
+                "doctype": "Faculty Education",
+                "degree_ar": _payload_value(item, "degreeAr", "degree_ar"),
+                "degree_en": _payload_value(item, "degreeEn", "degree_en"),
+                "institution_ar": _payload_value(item, "institutionAr", "institution_ar"),
+                "institution_en": _payload_value(item, "institutionEn", "institution_en"),
+                "year": _payload_value(item, "year"),
+            }
+            for item in education
+        ]
+    if isinstance(experience, list):
+        normalized["experience"] = [
+            {
+                "doctype": "Faculty Experience",
+                "position_ar": _payload_value(item, "positionAr", "position_ar"),
+                "position_en": _payload_value(item, "positionEn", "position_en"),
+                "organization_ar": _payload_value(item, "organizationAr", "organization_ar"),
+                "organization_en": _payload_value(item, "organizationEn", "organization_en"),
+                "period_ar": _payload_value(item, "periodAr", "period_ar"),
+                "period_en": _payload_value(item, "periodEn", "period_en"),
+            }
+            for item in experience
+        ]
+    if _payload_has_any_key(payload, "image", "photo"):
         normalized["photo"] = photo
     if is_active is not None:
         normalized["is_active"] = 1 if str(is_active).lower() in {"1", "true", "yes"} else 0
@@ -742,6 +987,83 @@ def _translated_text(value: str, lang: str = "en") -> str:
     return _as_text(translations.get(source), default=source)
 
 
+def _split_text_lines(value) -> list[str]:
+    text = _as_text(value)
+    if not text:
+        return []
+    normalized = re.sub(r"[;,،]+", "\n", text)
+    return [line.strip() for line in normalized.splitlines() if line.strip()]
+
+
+def _merge_program_objectives(objectives_ar: list[str], objectives_en: list[str]) -> list[dict]:
+    size = max(len(objectives_ar), len(objectives_en))
+    result = []
+    for index in range(size):
+        text_ar = objectives_ar[index] if index < len(objectives_ar) else ""
+        text_en = objectives_en[index] if index < len(objectives_en) else ""
+        if not text_en and text_ar:
+            text_en = _translated_text(text_ar)
+        if not text_ar and text_en:
+            text_ar = text_en
+        if not text_ar and not text_en:
+            continue
+        result.append({"id": f"objective-{index + 1}", "textAr": text_ar, "textEn": text_en})
+    return result
+
+
+def _list_program_faculty_members(program_docname: str) -> list[dict]:
+    if not program_docname:
+        return []
+    if not frappe.db.exists("DocType", "Faculty Members"):
+        return []
+
+    meta = frappe.get_meta("Faculty Members")
+    if not meta.get_field("linked_program"):
+        return []
+
+    filters = {"linked_program": program_docname}
+    if meta.get_field("is_active"):
+        filters["is_active"] = 1
+
+    rows = frappe.get_all(
+        "Faculty Members",
+        filters=filters,
+        fields=[
+            "name",
+            "full_name",
+            "full_name_en",
+            "academic_title",
+            "academic_title_en",
+            "department",
+            "photo",
+        ],
+        order_by="modified desc",
+        ignore_permissions=True,
+        limit_page_length=24,
+    )
+
+    items = []
+    for row in rows:
+        name_ar = _as_text(row.get("full_name"))
+        name_en = _as_text(row.get("full_name_en") or _translated_text(name_ar))
+        title_ar = _as_text(row.get("academic_title"))
+        title_en = _as_text(row.get("academic_title_en") or _translated_text(title_ar))
+        spec_ar = _as_text(row.get("department"))
+        items.append(
+            {
+                "id": _as_text(row.get("name")),
+                "nameAr": name_ar,
+                "nameEn": name_en,
+                "titleAr": title_ar,
+                "titleEn": title_en,
+                "specializationAr": spec_ar,
+                "specializationEn": _translated_text(spec_ar),
+                "image": _as_text(row.get("photo")),
+            }
+        )
+    return items
+
+
 def _doc_value(row, fieldname: str):
     if isinstance(row, dict):
         return row.get(fieldname)
@@ -763,6 +1085,10 @@ def _payload_value(payload: dict, *keys: str) -> str:
         if value is not None and str(value).strip():
             return str(value).strip()
     return ""
+
+
+def _payload_has_any_key(payload: dict, *keys: str) -> bool:
+    return any(key in payload for key in keys)
 
 
 def _faculty_request_value(*keys: str) -> str:

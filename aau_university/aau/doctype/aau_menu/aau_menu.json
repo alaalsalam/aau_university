@@ -35,7 +35,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-03-15 15:23:39.475110",
+ "modified": "2026-04-05 22:52:21.353497",
  "modified_by": "Administrator",
  "module": "AAU",
  "name": "AAU Menu",
@@ -64,6 +64,25 @@
    "role": "AAU Content Manager",
    "share": 1,
    "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "AAU Site Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "AAU Editor"
   }
  ],
  "row_format": "Dynamic",

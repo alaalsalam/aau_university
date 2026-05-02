@@ -1,16 +1,31 @@
 {
  "actions": [],
  "allow_rename": 1,
- "creation": "2026-01-15 21:09:33.680837",
+ "creation": "2026-04-03 17:27:55.707287",
  "doctype": "DocType",
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
   "main_section",
   "full_name",
+  "full_name_en",
   "academic_title",
+  "academic_title_en",
+  "linked_college",
+  "linked_program",
   "department",
   "biography",
+  "biography_en",
+  "email",
+  "phone",
+  "office_hours",
+  "office_hours_en",
+  "research_interests_ar",
+  "research_interests_en",
+  "publications",
+  "courses",
+  "education",
+  "experience",
   "photo",
   "is_active"
  ],
@@ -29,10 +44,20 @@
    "reqd": 1
   },
   {
+   "fieldname": "full_name_en",
+   "fieldtype": "Data",
+   "label": "\u0627\u0644\u0627\u0633\u0645 \u0627\u0644\u0643\u0627\u0645\u0644 (English)"
+  },
+  {
    "description": "\u0627\u0644\u0644\u0642\u0628 \u0627\u0644\u0623\u0643\u0627\u062f\u064a\u0645\u064a",
    "fieldname": "academic_title",
    "fieldtype": "Data",
    "label": "\u0627\u0644\u0644\u0642\u0628 \u0627\u0644\u0623\u0643\u0627\u062f\u064a\u0645\u064a"
+  },
+  {
+   "fieldname": "academic_title_en",
+   "fieldtype": "Data",
+   "label": "\u0627\u0644\u0644\u0642\u0628 \u0627\u0644\u0623\u0643\u0627\u062f\u064a\u0645\u064a (English)"
   },
   {
    "description": "\u0627\u0644\u0642\u0633\u0645",
@@ -42,10 +67,83 @@
    "options": "Academic Departments"
   },
   {
+   "fieldname": "linked_college",
+   "fieldtype": "Link",
+   "label": "\u0627\u0644\u0643\u0644\u064a\u0629 \u0627\u0644\u0645\u0631\u062a\u0628\u0637\u0629",
+   "options": "Colleges"
+  },
+  {
+   "fieldname": "linked_program",
+   "fieldtype": "Link",
+   "label": "\u0627\u0644\u0628\u0631\u0646\u0627\u0645\u062c \u0627\u0644\u0645\u0631\u062a\u0628\u0637",
+   "options": "Academic Programs"
+  },
+  {
    "description": "\u0646\u0628\u0630\u0629/\u0633\u064a\u0631\u0629",
    "fieldname": "biography",
    "fieldtype": "Long Text",
    "label": "\u0627\u0644\u0646\u0628\u0630\u0629 \u0627\u0644\u062a\u0639\u0631\u064a\u0641\u064a\u0629"
+  },
+  {
+   "fieldname": "biography_en",
+   "fieldtype": "Long Text",
+   "label": "\u0627\u0644\u0646\u0628\u0630\u0629 \u0627\u0644\u062a\u0639\u0631\u064a\u0641\u064a\u0629 (English)"
+  },
+  {
+   "fieldname": "email",
+   "fieldtype": "Data",
+   "label": "\u0627\u0644\u0628\u0631\u064a\u062f \u0627\u0644\u0625\u0644\u0643\u062a\u0631\u0648\u0646\u064a"
+  },
+  {
+   "fieldname": "phone",
+   "fieldtype": "Data",
+   "label": "\u0631\u0642\u0645 \u0627\u0644\u0647\u0627\u062a\u0641"
+  },
+  {
+   "fieldname": "office_hours",
+   "fieldtype": "Data",
+   "label": "\u0633\u0627\u0639\u0627\u062a \u0627\u0644\u0645\u0643\u062a\u0628"
+  },
+  {
+   "fieldname": "office_hours_en",
+   "fieldtype": "Data",
+   "label": "Office Hours (English)"
+  },
+  {
+   "description": "\u0643\u0644 \u0627\u0647\u062a\u0645\u0627\u0645 \u0641\u064a \u0633\u0637\u0631 \u0645\u0633\u062a\u0642\u0644",
+   "fieldname": "research_interests_ar",
+   "fieldtype": "Small Text",
+   "label": "\u0627\u0644\u0627\u0647\u062a\u0645\u0627\u0645\u0627\u062a \u0627\u0644\u0628\u062d\u062b\u064a\u0629"
+  },
+  {
+   "description": "One interest per line",
+   "fieldname": "research_interests_en",
+   "fieldtype": "Small Text",
+   "label": "Research Interests (English)"
+  },
+  {
+   "fieldname": "publications",
+   "fieldtype": "Table",
+   "label": "\u0627\u0644\u0645\u0646\u0634\u0648\u0631\u0627\u062a \u0627\u0644\u0639\u0644\u0645\u064a\u0629",
+   "options": "Faculty Publication"
+  },
+  {
+   "fieldname": "courses",
+   "fieldtype": "Table",
+   "label": "\u0627\u0644\u0645\u0642\u0631\u0631\u0627\u062a",
+   "options": "Faculty Course"
+  },
+  {
+   "fieldname": "education",
+   "fieldtype": "Table",
+   "label": "\u0627\u0644\u062a\u0639\u0644\u064a\u0645",
+   "options": "Faculty Education"
+  },
+  {
+   "fieldname": "experience",
+   "fieldtype": "Table",
+   "label": "\u0627\u0644\u062e\u0628\u0631\u0627\u062a",
+   "options": "Faculty Experience"
   },
   {
    "description": "\u0627\u0644\u0635\u0648\u0631\u0629",
@@ -64,7 +162,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-03-17 15:11:00.733280",
+ "modified": "2026-04-05 22:52:22.396451",
  "modified_by": "Administrator",
  "module": "AAU",
  "name": "Faculty Members",
@@ -111,6 +209,49 @@
    "report": 1,
    "role": "Academics User",
    "share": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "AAU Site Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "AAU Executive Manager"
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "AAU Editor",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "AAU Coordinator",
+   "share": 1,
+   "write": 1
   }
  ],
  "row_format": "Dynamic",

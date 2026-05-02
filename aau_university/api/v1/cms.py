@@ -36,6 +36,14 @@ SETTINGS_KEY_MAP = {
     "instagram": "instagram",
     "linkedin": "linkedin",
     "youtube": "youtube",
+    "footerBackgroundType": "footerBackgroundType",
+    "footer_background_type": "footerBackgroundType",
+    "footerBackgroundImage": "footerBackgroundImage",
+    "footer_background_image": "footerBackgroundImage",
+    "footerBackgroundVideo": "footerBackgroundVideo",
+    "footer_background_video": "footerBackgroundVideo",
+    "footerBackgroundOverlayOpacity": "footerBackgroundOverlayOpacity",
+    "footer_background_overlay_opacity": "footerBackgroundOverlayOpacity",
 }
 
 

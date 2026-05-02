@@ -1,0 +1,27 @@
+{
+ "actions": [],
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "code",
+  "name_ar",
+  "name_en",
+  "semester"
+ ],
+ "fields": [
+  { "fieldname": "code", "fieldtype": "Data", "in_list_view": 1, "label": "Code" },
+  { "fieldname": "name_ar", "fieldtype": "Data", "in_list_view": 1, "label": "Name (AR)", "reqd": 1 },
+  { "fieldname": "name_en", "fieldtype": "Data", "in_list_view": 1, "label": "Name (EN)" },
+  { "fieldname": "semester", "fieldtype": "Data", "label": "Semester" }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "module": "AAU",
+ "name": "Faculty Course",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
+
